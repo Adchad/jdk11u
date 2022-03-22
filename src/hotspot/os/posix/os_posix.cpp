@@ -164,44 +164,61 @@ void os::wait_for_keypress_at_exit(void) {
   return;
 }
 
-int os::create_file_for_heap(const char* dir) {
 
-  const char name_template[] = "/jvmheap.XXXXXX";
+int os::create_file_for_heap(const char* file) {
+    int fd;
 
-  size_t fullname_len = strlen(dir) + strlen(name_template);
-  char *fullname = (char*)os::malloc(fullname_len + 1, mtInternal);
-  if (fullname == NULL) {
-    vm_exit_during_initialization(err_msg("Malloc failed during creation of backing file for heap (%s)", os::strerror(errno)));
+#if defined(LINUX)
+    char* native_file = os::strdup(file);
+  if (native_file == NULL) {
+    vm_exit_during_initialization(err_msg("strdup failed during creation of backing file for heap (%s)", os::strerror(errno)));
     return -1;
   }
-  int n = snprintf(fullname, fullname_len + 1, "%s%s", dir, name_template);
-  assert((size_t)n == fullname_len, "Unexpected number of characters in string");
-
-  os::native_path(fullname);
-
-  sigset_t set, oldset;
-  int ret = sigfillset(&set);
-  assert_with_errno(ret == 0, "sigfillset returned error");
-
-  // set the file creation mask.
-  mode_t file_mode = S_IRUSR | S_IWUSR;
-
-  // create a new file.
-  int fd = mkstemp(fullname);
-
-  if (fd < 0) {
-    warning("Could not create file for heap with template %s", fullname);
-    os::free(fullname);
-    return -1;
-  }
-
-  // delete the name from the filesystem. When 'fd' is closed, the file (and space) will be deleted.
-  ret = unlink(fullname);
-  assert_with_errno(ret == 0, "unlink returned error");
-
-  os::free(fullname);
+  os::native_path(native_file);
+  fd = os::open(file, O_RDWR, S_IRUSR | S_IWUSR);
+  os::free(native_file);
+#endif
   return fd;
 }
+
+//int os::create_file_for_heap(const char* dir) {
+//
+//  const char name_template[] = "/jvmheap.XXXXXX";
+//
+//  size_t fullname_len = strlen(dir) + strlen(name_template);
+//  char *fullname = (char*)os::malloc(fullname_len + 1, mtInternal);
+//  if (fullname == NULL) {
+//    vm_exit_during_initialization(err_msg("Malloc failed during creation of backing file for heap (%s)", os::strerror(errno)));
+//    return -1;
+//  }
+//  int n = snprintf(fullname, fullname_len + 1, "%s%s", dir, name_template);
+//  assert((size_t)n == fullname_len, "Unexpected number of characters in string");
+//
+//  os::native_path(fullname);
+//
+//  sigset_t set, oldset;
+//  int ret = sigfillset(&set);
+//  assert_with_errno(ret == 0, "sigfillset returned error");
+//
+//  // set the file creation mask.
+//  mode_t file_mode = S_IRUSR | S_IWUSR;
+//
+//  // create a new file.
+//  int fd = mkstemp(fullname);
+//
+//  if (fd < 0) {
+//    warning("Could not create file for heap with template %s", fullname);
+//    os::free(fullname);
+//    return -1;
+//  }
+//
+//  // delete the name from the filesystem. When 'fd' is closed, the file (and space) will be deleted.
+//  ret = unlink(fullname);
+//  assert_with_errno(ret == 0, "unlink returned error");
+//
+//  os::free(fullname);
+//  return fd;
+//}
 
 static char* reserve_mmapped_memory(size_t bytes, char* requested_addr) {
   char * addr;
@@ -224,35 +241,35 @@ static char* reserve_mmapped_memory(size_t bytes, char* requested_addr) {
   return NULL;
 }
 
-static int util_posix_fallocate(int fd, off_t offset, off_t len) {
-#ifdef __APPLE__
-  fstore_t store = { F_ALLOCATECONTIG, F_PEOFPOSMODE, 0, len };
-  // First we try to get a continuous chunk of disk space
-  int ret = fcntl(fd, F_PREALLOCATE, &store);
-  if (ret == -1) {
-    // Maybe we are too fragmented, try to allocate non-continuous range
-    store.fst_flags = F_ALLOCATEALL;
-    ret = fcntl(fd, F_PREALLOCATE, &store);
-  }
-  if(ret != -1) {
-    return ftruncate(fd, len);
-  }
-  return -1;
-#else
-  return posix_fallocate(fd, offset, len);
-#endif
-}
+//static int util_posix_fallocate(int fd, off_t offset, off_t len) {
+//#ifdef __APPLE__
+//  fstore_t store = { F_ALLOCATECONTIG, F_PEOFPOSMODE, 0, len };
+//  // First we try to get a continuous chunk of disk space
+//  int ret = fcntl(fd, F_PREALLOCATE, &store);
+//  if (ret == -1) {
+//    // Maybe we are too fragmented, try to allocate non-continuous range
+//    store.fst_flags = F_ALLOCATEALL;
+//    ret = fcntl(fd, F_PREALLOCATE, &store);
+//  }
+//  if(ret != -1) {
+//    return ftruncate(fd, len);
+//  }
+//  return -1;
+//#else
+//  return posix_fallocate(fd, offset, len);
+//#endif
+//}
 
 // Map the given address range to the provided file descriptor.
 char* os::map_memory_to_file(char* base, size_t size, int fd) {
   assert(fd != -1, "File descriptor is not valid");
 
   // allocate space for the file
-  int ret = util_posix_fallocate(fd, 0, (off_t)size);
-  if (ret != 0) {
-    vm_exit_during_initialization(err_msg("Error in mapping Java heap at the given filesystem directory. error(%d)", ret));
-    return NULL;
-  }
+//  int ret = util_posix_fallocate(fd, 0, (off_t)size);
+//  if (ret != 0) {
+//    vm_exit_during_initialization(err_msg("Error in mapping Java heap at the given filesystem directory. error(%d)", ret));
+//    return NULL;
+//  }
 
   int prot = PROT_READ | PROT_WRITE;
   int flags = MAP_SHARED;
