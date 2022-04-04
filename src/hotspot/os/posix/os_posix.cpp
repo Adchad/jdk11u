@@ -175,7 +175,7 @@ int os::create_file_for_heap(const char* file) {
     return -1;
   }
   os::native_path(native_file);
-  fd = os::open(file, O_RDWR, S_IRUSR | S_IWUSR);
+  fd = os::open(file, O_RDWR , S_IRUSR | S_IWUSR);
   os::free(native_file);
 #endif
   return fd;
