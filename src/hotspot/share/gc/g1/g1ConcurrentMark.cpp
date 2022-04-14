@@ -160,7 +160,6 @@ G1CMMarkStack::~G1CMMarkStack() {
     MmapArrayAllocator<TaskQueueEntryChunk>::free(_base, _chunk_capacity);
   }
 }
-
 void G1CMMarkStack::add_chunk_to_list(TaskQueueEntryChunk* volatile* list, TaskQueueEntryChunk* elem) {
   elem->next = *list;
   *list = elem;

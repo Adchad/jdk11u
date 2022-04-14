@@ -29,6 +29,7 @@
 #include "memory/allocation.hpp"
 #include "memory/allocation.inline.hpp"
 #include "memory/resourceArea.hpp"
+#include "gc/epsilon/RemoteSpace.hpp"
 
 jint EpsilonHeap::initialize() {
   size_t align = _policy->heap_alignment();
@@ -44,7 +45,12 @@ jint EpsilonHeap::initialize() {
 
   initialize_reserved_region(reserved_region.start(), reserved_region.end());
 
+#ifdef REMOTE_SPACE
+  _space = new RemoteSpace();
+#else
   _space = new ContiguousSpace();
+#endif
+
   _space->initialize(committed_region, /* clear_space = */ true, /* mangle_space = */ true);
 
   // Precompute hot fields

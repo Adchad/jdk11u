@@ -213,10 +213,9 @@ class HeapWord {
   friend class VMStructs;
  private:
   char* i;
-#ifndef PRODUCT
  public:
   char* value() { return i; }
-#endif
+  void setI(char* i_) { i=i_;}
 };
 
 // Analogous opaque struct for metadata allocated from
