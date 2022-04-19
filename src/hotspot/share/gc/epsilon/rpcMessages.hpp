@@ -10,26 +10,21 @@
 
 
 struct msg_initialize{
-    char msg ;
-    char* mr_start;
-    size_t mr_word_size;
+    uint64_t mr_start;
+    uint64_t mr_word_size;
     bool clear_space;
     bool mangle_space;
 };
 
 struct msg_par_allocate{
-    char msg;
-    size_t word_size;
+    uint64_t word_size;
 };
 
 struct msg_set_end{
-    char msg;
-    char* value;
+    uint64_t value;
 };
 
-struct msg_used{
-    char msg;
-};
+
 
 
 #endif //JDK11U_RPCMESSAGES_HPP

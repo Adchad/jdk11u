@@ -8,12 +8,15 @@
 #include "gc/shared/space.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <mutex>
 
 
 class RemoteSpace : public ContiguousSpace{
 private:
     int sockfd;
     struct sockaddr_in server;
+    mutable std::mutex lock;
+
 public:
     RemoteSpace();
     ~RemoteSpace();

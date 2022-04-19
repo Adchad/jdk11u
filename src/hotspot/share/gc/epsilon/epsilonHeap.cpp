@@ -31,6 +31,8 @@
 #include "memory/resourceArea.hpp"
 #include "gc/epsilon/RemoteSpace.hpp"
 
+#define REMOTE_SPACE
+
 jint EpsilonHeap::initialize() {
   size_t align = _policy->heap_alignment();
   size_t init_byte_size = align_up(_policy->initial_heap_byte_size(), align);
@@ -131,21 +133,22 @@ HeapWord* EpsilonHeap::allocate_work(size_t size) {
   while (true) {
     // Try to allocate, assume space is available
     res = _space->par_allocate(size);
-    if (res != NULL) {
+    //printf("Pointeur: %p\n", (void*) res);
+      if (res != NULL) {
       break;
     }
 
-    // Allocation failed, attempt expansion, and retry:
+      // Allocation failed, attempt expansion, and retry:
     {
       MutexLockerEx ml(Heap_lock);
 
       // Try to allocate under the lock, assume another thread was able to expand
       res = _space->par_allocate(size);
-      if (res != NULL) {
+        if (res != NULL) {
         break;
       }
 
-      // Expand and loop back if space is available
+        // Expand and loop back if space is available
       size_t space_left = max_capacity() - capacity();
       size_t want_space = MAX2(size, EpsilonMinHeapExpand);
 
