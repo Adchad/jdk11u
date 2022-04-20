@@ -310,6 +310,7 @@ void EpsilonHeap::do_full_collection(bool clear_all_soft_refs) {
 }
 
 void EpsilonHeap::safe_object_iterate(ObjectClosure *cl) {
+  printf("Trying to safe_object iterate\n");
   _space->safe_object_iterate(cl);
 }
 

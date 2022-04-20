@@ -763,6 +763,7 @@ intptr_t ObjectSynchronizer::FastHashCode(Thread * Self, oop obj) {
     // for fast path, but it does not worth the complexity.
   } else if (mark->has_monitor()) {
     monitor = mark->monitor();
+    printf("monitor :%p\n", monitor);
     temp = monitor->header();
     assert(temp->is_neutral(), "invariant");
     hash = temp->hash();
