@@ -35,16 +35,12 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
     msg->mr_word_size =  mr_word_size;
     msg->clear_space = clear_space;
     msg->mangle_space = mangle_space;
-    //printf("Start value: %p\n",  mr_start->value());
-    //printf("WordSize: %p\n",  mr_word_size);
-    //printf("Start: %ld\nWordSize: %ld\n", msg->mr_start, msg->mr_word_size);
     lock.lock();
     write(sockfd, &msg_tag, 1);
     write(sockfd, msg, sizeof(struct msg_initialize));
     lock.unlock();
 
     std::free(msg);
-
 }
 
 HeapWord *RemoteSpace::par_allocate(size_t word_size) {
@@ -55,14 +51,13 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
     lock.lock();
     write(sockfd, &msg_tag, 1);
     write(sockfd, msg, sizeof(struct msg_par_allocate));
-    lock.unlock();
 
     HeapWord** result = (HeapWord**) malloc(sizeof(HeapWord*));
     read(sockfd, result, sizeof(HeapWord*));
+    lock.unlock();
     std::free(msg);
-    HeapWord * allocated =  *result;
-    //printf("New allocated word: %p\n", (void*) allocated);
-    //allocated->setI(*result);
+    HeapWord * allocated = *result;
+    std::free(result);
     return allocated;
 }
 
@@ -80,14 +75,13 @@ void RemoteSpace::set_end(HeapWord* value){
 }
 
 size_t RemoteSpace::used() const{
-   char msg_tag = 'u';
+    char msg_tag = 'u';
 
     lock.lock();
     write(sockfd, &msg_tag, 1);
-    lock.unlock();
-
-    size_t* result = (size_t*) malloc(sizeof(size_t));
+    size_t *result = (size_t*) malloc(sizeof(size_t));
     read(sockfd, result, sizeof(size_t));
+    lock.unlock();
 
     return *result;
 }
