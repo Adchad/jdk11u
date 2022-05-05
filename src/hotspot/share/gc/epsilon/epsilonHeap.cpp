@@ -131,19 +131,24 @@ EpsilonHeap* EpsilonHeap::heap() {
 HeapWord* EpsilonHeap::allocate_work(size_t size) {
   assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
 
+  /////////////////////////////////////////////
+  /* Ce bout de code sert à trouver et  afficher les racines du tas pour le gc*/
   counter++;
   if(counter == 30){
       RootMark rm(RootMark::threads);
       rm.do_it();
-      linked_list * curr = rm.rc.head;
-      while(curr!=NULL){
-          HeapWord* val = (HeapWord*) curr->value;
-          printf("%ld\n", (unsigned long) val);
-          curr=curr->next;
+      int array_length = rm.getArraySize();
+      unsigned long *array_test= rm.rootArray();
+
+      for(int i = 0; i<array_length; i++){
+          printf("Root: %lu \n", *(array_test+i));
       }
   }
 
-  HeapWord* res = NULL;
+  /////////////////////////////////////////////
+
+
+    HeapWord* res = NULL;
   while (true) {
     // Try to allocate, assume space is available
     res = _space->par_allocate(size);

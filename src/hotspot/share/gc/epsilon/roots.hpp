@@ -6,37 +6,67 @@
 #define JDK11U_ROOTS_HPP
 
 #include "memory/iterator.hpp"
+#include <mutex>
+#include <stdio.h>
+
 
 struct linked_list{
-    oop value;
+    HeapWord* value;
     struct linked_list *next;
 };
 
-struct narrow_linked_list{
-    narrowOop value;
-    struct narrow_linked_list *next;
-};
 
 class RemoteClosure : public OopClosure{
+private:
+    //mutable std::mutex lock;
 public:
     struct linked_list* head = NULL;
-    struct narrow_linked_list* narrow_head = NULL;
+    int list_length = 0;
+
 public:
+
     void do_oop(oop* o){
-        struct linked_list* curr = head;
         struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
-        new_node->value = *o;
+        //lock.lock();
+        list_length++;
+        struct linked_list* curr = head;
+        new_node->value = (HeapWord*) *o;
         new_node->next = curr;
         head = new_node;
+        //lock.unlock();
+
     };
 
     void do_oop(narrowOop* o){
-        struct narrow_linked_list* curr = narrow_head;
-        struct narrow_linked_list* new_node = (struct narrow_linked_list*) malloc(sizeof(struct narrow_linked_list));
-        new_node->value = *o;
+        struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
+        //lock.lock();
+        list_length++;
+        struct linked_list* curr = head;
+        new_node->value = (HeapWord*) (unsigned long) *o;
         new_node->next = curr;
-        narrow_head = new_node;
+        head = new_node;
+        //lock.unlock();
     };
+
+    int getSize(){
+        return list_length;
+    }
+
+    unsigned long* getArray(){
+        //lock.lock();
+        unsigned long *array = (unsigned long *) malloc(list_length*sizeof(unsigned long));
+        linked_list * curr = head;
+        int i = 0;
+        while(curr!=NULL){
+            HeapWord* val = (HeapWord*) curr->value;
+           // printf("Root: %lu\n", (unsigned long) val);
+            *(array + i) = (unsigned long) val;
+            i++;
+            curr=curr->next;
+        }
+        return array;
+        //lock.unlock();
+    }
 
 };
 
@@ -58,7 +88,15 @@ public:
     RemoteClosure rc;
 public:
     RootMark(RootType value) : _root_type(value) {}
+
     void do_it();
+
+    int getArraySize(){
+        return rc.getSize();
+    }
+    unsigned long* rootArray(){
+        return rc.getArray();
+    }
 };
 
 #endif //JDK11U_ROOTS_HPP
