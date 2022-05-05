@@ -30,10 +30,12 @@
 #include "memory/allocation.inline.hpp"
 #include "memory/resourceArea.hpp"
 #include "gc/epsilon/RemoteSpace.hpp"
+#include "gc/epsilon/roots.hpp"
 
 #define REMOTE_SPACE
 
 jint EpsilonHeap::initialize() {
+  counter=0;
   size_t align = _policy->heap_alignment();
   size_t init_byte_size = align_up(_policy->initial_heap_byte_size(), align);
   size_t max_byte_size  = align_up(_policy->max_heap_byte_size(), align);
@@ -128,6 +130,18 @@ EpsilonHeap* EpsilonHeap::heap() {
 
 HeapWord* EpsilonHeap::allocate_work(size_t size) {
   assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
+
+  counter++;
+  if(counter == 30){
+      RootMark rm(RootMark::threads);
+      rm.do_it();
+      linked_list * curr = rm.rc.head;
+      while(curr!=NULL){
+          HeapWord* val = (HeapWord*) curr->value;
+          printf("%ld\n", (unsigned long) val);
+          curr=curr->next;
+      }
+  }
 
   HeapWord* res = NULL;
   while (true) {

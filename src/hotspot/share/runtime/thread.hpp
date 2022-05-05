@@ -575,8 +575,7 @@ class Thread: public ThreadShadow {
   //   Used by JavaThread::oops_do.
   // Apply "cf->do_code_blob" (if !NULL) to all code blobs active in frames
   virtual void oops_do(OopClosure* f, CodeBlobClosure* cf);
-
-  // Handles the parallel case for the method below.
+    // Handles the parallel case for the method below.
  private:
   bool claim_oops_do_par_case(int collection_parity);
  public:
@@ -2222,7 +2221,7 @@ class Threads: AllStatic {
   // Apply "f->do_oop" to all root oops in all threads.
   // This version may only be called by sequential code.
   static void oops_do(OopClosure* f, CodeBlobClosure* cf);
-  // This version may be called by sequential or parallel code.
+    // This version may be called by sequential or parallel code.
   static void possibly_parallel_oops_do(bool is_par, OopClosure* f, CodeBlobClosure* cf);
 
   // Apply "f->do_oop" to roots in all threads that
