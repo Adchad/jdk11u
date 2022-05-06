@@ -61,6 +61,26 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
     return allocated;
 }
 
+
+HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
+    struct msg_par_allocate * msg = (struct msg_par_allocate*) malloc(sizeof(struct msg_par_allocate));
+    char msg_tag = 'a';
+    msg->word_size =  word_size;
+
+    lock.lock();
+    write(sockfd, &msg_tag, 1);
+    write(sockfd, msg, sizeof(struct msg_par_allocate));
+
+    HeapWord** result = (HeapWord**) malloc(sizeof(HeapWord*));
+    read(sockfd, result, sizeof(HeapWord*));
+    lock.unlock();
+    std::free(msg);
+    HeapWord * allocated = *result;
+    std::free(result);
+    return allocated;
+}
+
+
 void RemoteSpace::set_end(HeapWord* value){
     struct msg_set_end * msg = (struct msg_set_end*) malloc(sizeof(struct msg_set_end));
     char msg_tag = 'e';

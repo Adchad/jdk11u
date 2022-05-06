@@ -23,6 +23,7 @@ public:
 
     void initialize(MemRegion mr, bool clear_space, bool mangle_space);
     HeapWord* par_allocate(size_t word_size);
+    HeapWord* par_allocate_klass(size_t word_size, Klass* klass);
     void set_end(HeapWord* value);
     size_t used() const;
     void safe_object_iterate(ObjectClosure* blk);

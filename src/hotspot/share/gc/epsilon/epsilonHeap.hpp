@@ -102,7 +102,10 @@ public:
 
   // Allocation
   HeapWord* allocate_work(size_t size);
+  HeapWord* allocate_work_klass(size_t size, Klass* klass);
   virtual HeapWord* mem_allocate(size_t size, bool* gc_overhead_limit_was_exceeded);
+  HeapWord* mem_allocate_klass(size_t size, bool* gc_overhead_limit_was_exceeded, Klass *klass);
+
   virtual HeapWord* allocate_new_tlab(size_t min_size,
                                       size_t requested_size,
                                       size_t* actual_size);

@@ -131,23 +131,6 @@ EpsilonHeap* EpsilonHeap::heap() {
 HeapWord* EpsilonHeap::allocate_work(size_t size) {
   assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
 
-  /////////////////////////////////////////////
-  /* Ce bout de code sert à trouver et  afficher les racines du tas pour le gc*/
-  counter++;
-  if(counter == 30){
-      RootMark rm(RootMark::threads);
-      rm.do_it();
-      int array_length = rm.getArraySize();
-      unsigned long *array_test= rm.rootArray();
-
-      for(int i = 0; i<array_length; i++){
-          printf("Root: %lu \n", *(array_test+i));
-      }
-  }
-
-  /////////////////////////////////////////////
-
-
     HeapWord* res = NULL;
   while (true) {
     // Try to allocate, assume space is available
@@ -211,6 +194,97 @@ HeapWord* EpsilonHeap::allocate_work(size_t size) {
   assert(is_object_aligned(res), "Object should be aligned: " PTR_FORMAT, p2i(res));
   return res;
 }
+
+
+
+
+HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
+    assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
+
+    /*==========================================================================*/
+    /* Ce bout de code sert à trouver et  afficher les racines du tas pour le gc*/
+    counter++;
+    if(counter == 500){
+        RootMark rm(RootMark::threads);
+        rm.do_it();
+        int array_length = rm.getArraySize();
+        unsigned long *array_test= rm.rootArray();
+
+        for(int i = 0; i<array_length; i++){
+            printf("Root: %lu \n", *(array_test+i));
+        }
+    }
+    /*==========================================================================*/
+
+    HeapWord* res = NULL;
+    while (true) {
+        // Try to allocate, assume space is available
+        res = _space->par_allocate_klass(size, klass);
+        //printf("Pointeur: %p\n", (void*) res);
+        if (res != NULL) {
+            break;
+        }
+
+        // Allocation failed, attempt expansion, and retry:
+        {
+            MutexLockerEx ml(Heap_lock);
+
+            // Try to allocate under the lock, assume another thread was able to expand
+            res = _space->par_allocate_klass(size, klass);
+            if (res != NULL) {
+                break;
+            }
+
+            // Expand and loop back if space is available
+            size_t space_left = max_capacity() - capacity();
+            size_t want_space = MAX2(size, EpsilonMinHeapExpand);
+
+            if (want_space < space_left) {
+                // Enough space to expand in bulk:
+                bool expand = _virtual_space.expand_by(want_space);
+                assert(expand, "Should be able to expand");
+            } else if (size < space_left) {
+                // No space to expand in bulk, and this allocation is still possible,
+                // take all the remaining space:
+                bool expand = _virtual_space.expand_by(space_left);
+                assert(expand, "Should be able to expand");
+            } else {
+                // No space left:
+                return NULL;
+            }
+
+            _space->set_end((HeapWord *) _virtual_space.high());
+        }
+    }
+
+    size_t used = _space->used();
+
+    // Allocation successful, update counters
+    {
+        size_t last = _last_counter_update;
+        if ((used - last >= _step_counter_update) && Atomic::cmpxchg(used, &_last_counter_update, last) == last) {
+            _monitoring_support->update_counters();
+        }
+    }
+
+    // ...and print the occupancy line, if needed
+    {
+        size_t last = _last_heap_print;
+        if ((used - last >= _step_heap_print) && Atomic::cmpxchg(used, &_last_heap_print, last) == last) {
+            print_heap_info(used);
+            print_metaspace_info();
+        }
+    }
+
+    assert(is_object_aligned(res), "Object should be aligned: " PTR_FORMAT, p2i(res));
+    return res;
+}
+
+
+
+
+
+
 
 HeapWord* EpsilonHeap::allocate_new_tlab(size_t min_size,
                                          size_t requested_size,
@@ -303,6 +377,11 @@ HeapWord* EpsilonHeap::allocate_new_tlab(size_t min_size,
 HeapWord* EpsilonHeap::mem_allocate(size_t size, bool *gc_overhead_limit_was_exceeded) {
   *gc_overhead_limit_was_exceeded = false;
   return allocate_work(size);
+}
+
+HeapWord* EpsilonHeap::mem_allocate_klass(size_t size, bool *gc_overhead_limit_was_exceeded, Klass* klass) {
+    *gc_overhead_limit_was_exceeded = false;
+    return allocate_work(size);
 }
 
 void EpsilonHeap::collect(GCCause::Cause cause) {
