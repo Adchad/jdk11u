@@ -215,6 +215,11 @@ public:
 
   HeapWord* mem_allocate(size_t size, bool*  gc_overhead_limit_was_exceeded);
 
+  HeapWord* mem_allocate_klass(size_t word_size,
+                                 bool*  gc_overhead_limit_was_exceeded, Klass *klass){
+        return mem_allocate(word_size,gc_overhead_limit_was_exceeded );
+  }
+
   // We may support a shared contiguous allocation area, if the youngest
   // generation does.
   bool supports_inline_contig_alloc() const;

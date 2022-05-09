@@ -80,6 +80,12 @@ public:
   virtual bool is_in_closed_subset(const void* p) const;
 
   virtual HeapWord* mem_allocate(size_t size, bool* gc_overhead_limit_was_exceeded);
+
+  HeapWord* mem_allocate_klass(size_t word_size,
+                                 bool*  gc_overhead_limit_was_exceeded, Klass *klass){
+        return mem_allocate(word_size,gc_overhead_limit_was_exceeded );
+  }
+
   virtual MetaWord* satisfy_failed_metadata_allocation(ClassLoaderData* loader_data,
                                                        size_t size,
                                                        Metaspace::MetadataType mdtype);

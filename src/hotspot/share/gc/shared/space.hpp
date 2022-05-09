@@ -580,6 +580,7 @@ class ContiguousSpace: public CompactibleSpace {
   virtual HeapWord* allocate(size_t word_size);
   virtual HeapWord* par_allocate(size_t word_size);
   virtual HeapWord* par_allocate_klass(size_t word_size, Klass* klass);
+  virtual void getandsend_roots();
   HeapWord* allocate_aligned(size_t word_size);
 
   // Iteration

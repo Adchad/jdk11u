@@ -6,6 +6,7 @@
 #include "rpcMessages.hpp"
 #include <arpa/inet.h>
 #include <stdlib.h>
+#include "gc/epsilon/roots.hpp"
 
 RemoteSpace::RemoteSpace() : ContiguousSpace() {
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -44,6 +45,7 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 }
 
 HeapWord *RemoteSpace::par_allocate(size_t word_size) {
+    counter++;
     struct msg_par_allocate * msg = (struct msg_par_allocate*) malloc(sizeof(struct msg_par_allocate));
     char msg_tag = 'a';
     msg->word_size =  word_size;
@@ -63,10 +65,23 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
 
 
 HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
+
+    /*----------------/
+    /* Ce bout de code sert à trouver et  afficher les racines du tas pour le gc*/
+    /*à terme, la fonction getandsend_roots est appelée par le RemoteSpace via des sockets ou un signal*/
+    counter++;
+    if(counter >= 2000 && roots == true){
+        getandsend_roots();
+        roots = false;
+    }
+    /*-------------*/
+
+
     struct msg_par_allocate * msg = (struct msg_par_allocate*) malloc(sizeof(struct msg_par_allocate));
     char msg_tag = 'a';
     msg->word_size =  word_size;
 
+    printf("klass: %s\n", klass->external_name());
     lock.lock();
     write(sockfd, &msg_tag, 1);
     write(sockfd, msg, sizeof(struct msg_par_allocate));
@@ -104,6 +119,20 @@ size_t RemoteSpace::used() const{
     lock.unlock();
 
     return *result;
+}
+
+void RemoteSpace::getandsend_roots() {
+    char msg_tag = 'r';
+
+    RootMark rm(RootMark::threads);
+    rm.do_it();
+    int array_length = rm.getArraySize();
+    unsigned long *root_array= rm.rootArray();
+    lock.lock();
+    write(sockfd, &msg_tag,1);
+    write(sockfd, &array_length, sizeof(int));
+    write(sockfd, root_array, sizeof(unsigned long)*array_length );
+    lock.unlock();
 }
 
 

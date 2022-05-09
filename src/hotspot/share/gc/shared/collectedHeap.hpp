@@ -159,9 +159,7 @@ class CollectedHeap : public CHeapObj<mtInternal> {
   virtual HeapWord* mem_allocate(size_t size,
                                  bool* gc_overhead_limit_was_exceeded) = 0;
 
-  HeapWord* mem_allocate_klass(size_t size, bool* gc_overhead_limit_was_exceeded, Klass *klass){
-      return mem_allocate(size, gc_overhead_limit_was_exceeded);
-  };
+  virtual HeapWord* mem_allocate_klass(size_t size, bool* gc_overhead_limit_was_exceeded, Klass *klass) = 0;
 
   // Filler object utilities.
   static inline size_t filler_array_hdr_size();

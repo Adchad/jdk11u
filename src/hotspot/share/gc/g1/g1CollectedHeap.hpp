@@ -433,6 +433,12 @@ private:
   virtual HeapWord* mem_allocate(size_t word_size,
                                  bool*  gc_overhead_limit_was_exceeded);
 
+  HeapWord* mem_allocate_klass(size_t word_size,
+                           bool*  gc_overhead_limit_was_exceeded, Klass *klass){
+        return mem_allocate(word_size,gc_overhead_limit_was_exceeded );
+  }
+
+
   // First-level mutator allocation attempt: try to allocate out of
   // the mutator alloc region without taking the Heap_lock. This
   // should only be used for non-humongous allocations.

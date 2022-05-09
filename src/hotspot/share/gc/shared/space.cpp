@@ -636,6 +636,10 @@ HeapWord* ContiguousSpace::par_allocate_klass(size_t size, Klass* klass) {
     return par_allocate_impl(size);
 }
 
+void ContiguousSpace::getandsend_roots(){
+    return;
+}
+
 void ContiguousSpace::allocate_temporary_filler(int factor) {
   // allocate temporary type array decreasing free size with factor 'factor'
   assert(factor >= 0, "just checking");

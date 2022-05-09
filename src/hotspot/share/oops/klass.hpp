@@ -627,7 +627,7 @@ protected:
   void set_is_cloneable();
 
   // Biased locking support
-  // Note: the prototype header is always set up to be at least the
+  // Note: the prototype header is always set up to be at least then
   // prototype markOop. If biased locking is enabled it may further be
   // biasable and have an epoch.
   markOop prototype_header() const      { return _prototype_header; }

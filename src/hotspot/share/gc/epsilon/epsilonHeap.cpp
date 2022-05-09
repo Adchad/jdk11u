@@ -129,7 +129,7 @@ EpsilonHeap* EpsilonHeap::heap() {
 }
 
 HeapWord* EpsilonHeap::allocate_work(size_t size) {
-  assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
+    assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
 
     HeapWord* res = NULL;
   while (true) {
@@ -200,21 +200,6 @@ HeapWord* EpsilonHeap::allocate_work(size_t size) {
 
 HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
     assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
-
-    /*==========================================================================*/
-    /* Ce bout de code sert à trouver et  afficher les racines du tas pour le gc*/
-    counter++;
-    if(counter == 500){
-        RootMark rm(RootMark::threads);
-        rm.do_it();
-        int array_length = rm.getArraySize();
-        unsigned long *array_test= rm.rootArray();
-
-        for(int i = 0; i<array_length; i++){
-            printf("Root: %lu \n", *(array_test+i));
-        }
-    }
-    /*==========================================================================*/
 
     HeapWord* res = NULL;
     while (true) {
@@ -381,7 +366,7 @@ HeapWord* EpsilonHeap::mem_allocate(size_t size, bool *gc_overhead_limit_was_exc
 
 HeapWord* EpsilonHeap::mem_allocate_klass(size_t size, bool *gc_overhead_limit_was_exceeded, Klass* klass) {
     *gc_overhead_limit_was_exceeded = false;
-    return allocate_work(size);
+    return allocate_work_klass(size, klass);
 }
 
 void EpsilonHeap::collect(GCCause::Cause cause) {

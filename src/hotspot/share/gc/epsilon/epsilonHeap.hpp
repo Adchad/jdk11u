@@ -38,6 +38,7 @@ class EpsilonHeap : public CollectedHeap {
   friend class VMStructs;
 private:
   int counter;
+  bool roots = true;
   EpsilonCollectorPolicy* _policy;
   SoftRefPolicy _soft_ref_policy;
   EpsilonMonitoringSupport* _monitoring_support;
