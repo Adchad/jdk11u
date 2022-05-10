@@ -10,14 +10,13 @@
 #include <netinet/in.h>
 #include <mutex>
 
+void getandsend_roots(int sig);
 
 class RemoteSpace : public ContiguousSpace{
 private:
-    int sockfd;
     int counter;
     bool roots = true;
     struct sockaddr_in server;
-    mutable std::mutex lock;
 
 public:
     RemoteSpace();
@@ -30,8 +29,8 @@ public:
     size_t used() const;
     void safe_object_iterate(ObjectClosure* blk);
     void print_on(outputStream* st) const;
-    void getandsend_roots();
 
 };
+
 
 #endif //JDK11U_REMOTESPACE_HPP

@@ -7,6 +7,11 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include "gc/epsilon/roots.hpp"
+#include <string.h>
+#include <csignal>
+
+int sockfd;
+std::mutex lock;
 
 RemoteSpace::RemoteSpace() : ContiguousSpace() {
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -24,6 +29,8 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
     {
         puts("connect error");
     }
+
+    signal(SIGUSR1, getandsend_roots);
 }
 
 
@@ -70,27 +77,32 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     /* Ce bout de code sert à trouver et  afficher les racines du tas pour le gc*/
     /*à terme, la fonction getandsend_roots est appelée par le RemoteSpace via des sockets ou un signal*/
     counter++;
-    if(counter >= 2000 && roots == true){
-        getandsend_roots();
+    if(counter >= 2000 && roots){
+        getandsend_roots(0);
         roots = false;
     }
     /*-------------*/
+    //printf("klass: %s\n", klass->external_name());
 
 
-    struct msg_par_allocate * msg = (struct msg_par_allocate*) malloc(sizeof(struct msg_par_allocate));
-    char msg_tag = 'a';
+    struct msg_par_allocate_klass* msg = (struct msg_par_allocate_klass*) malloc(sizeof(struct msg_par_allocate_klass));
+    char msg_tag = 'k';
     msg->word_size =  word_size;
-
-    printf("klass: %s\n", klass->external_name());
+    msg->klass = (unsigned long) klass;
     lock.lock();
     write(sockfd, &msg_tag, 1);
-    write(sockfd, msg, sizeof(struct msg_par_allocate));
+    write(sockfd, msg, sizeof(struct msg_par_allocate_klass));
 
-    HeapWord** result = (HeapWord**) malloc(sizeof(HeapWord*));
-    read(sockfd, result, sizeof(HeapWord*));
+    msg_alloc_response* result = (msg_alloc_response*) malloc(sizeof(msg_alloc_response));
+    read(sockfd, result, sizeof(msg_alloc_response));
+    if(result->send_metadata){
+        int size = strlen(klass->external_name());
+        write(sockfd, &size, sizeof(int));
+        write(sockfd,klass->external_name(), size);
+    }
     lock.unlock();
     std::free(msg);
-    HeapWord * allocated = *result;
+    HeapWord* allocated = result->ptr;
     std::free(result);
     return allocated;
 }
@@ -121,7 +133,10 @@ size_t RemoteSpace::used() const{
     return *result;
 }
 
-void RemoteSpace::getandsend_roots() {
+
+
+
+void getandsend_roots(int sig) {
     char msg_tag = 'r';
 
     RootMark rm(RootMark::threads);

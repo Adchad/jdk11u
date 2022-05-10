@@ -20,10 +20,19 @@ struct msg_par_allocate{
     size_t word_size;
 };
 
+struct msg_par_allocate_klass{
+    size_t word_size;
+    unsigned long klass;
+};
+
 struct msg_set_end{
     HeapWord* value;
 };
 
+struct msg_alloc_response{
+    HeapWord* ptr;
+    bool send_metadata = false;
+};
 
 
 
