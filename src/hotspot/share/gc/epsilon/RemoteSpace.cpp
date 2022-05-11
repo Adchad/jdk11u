@@ -93,12 +93,16 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     write(sockfd, &msg_tag, 1);
     write(sockfd, msg, sizeof(struct msg_par_allocate_klass));
 
-    msg_alloc_response* result = (msg_alloc_response*) malloc(sizeof(msg_alloc_response));
+    struct msg_alloc_response* result = (struct msg_alloc_response*) malloc(sizeof(struct msg_alloc_response));
     read(sockfd, result, sizeof(msg_alloc_response));
     if(result->send_metadata){
-        int size = strlen(klass->external_name());
-        write(sockfd, &size, sizeof(int));
-        write(sockfd,klass->external_name(), size);
+        struct msg_klass_data* klass_data = (struct msg_klass_data*) malloc(sizeof(struct msg_klass_data));
+        klass_data->name_length = strlen(klass->external_name());
+        klass_data->table_length = klass->vtable_length();
+        write(sockfd, klass_data, sizeof(struct msg_klass_data));
+        write(sockfd,klass->external_name(), klass_data->name_length);
+        write(sockfd, klass->vtable().table(), klass_data->table_length);
+        std::free(klass_data);
     }
     lock.unlock();
     std::free(msg);

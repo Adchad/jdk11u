@@ -34,6 +34,11 @@ struct msg_alloc_response{
     bool send_metadata = false;
 };
 
+struct msg_klass_data{
+    int name_length;
+    int table_length;
+};
+
 
 
 #endif //JDK11U_RPCMESSAGES_HPP
