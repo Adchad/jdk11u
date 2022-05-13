@@ -84,7 +84,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     /*-------------*/
     //printf("klass: %s\n", klass->external_name());
 
-
+    //printf("Avant\n");
     struct msg_par_allocate_klass* msg = (struct msg_par_allocate_klass*) malloc(sizeof(struct msg_par_allocate_klass));
     char msg_tag = 'k';
     msg->word_size =  word_size;
@@ -98,16 +98,26 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     if(result->send_metadata){
         struct msg_klass_data* klass_data = (struct msg_klass_data*) malloc(sizeof(struct msg_klass_data));
         klass_data->name_length = strlen(klass->external_name());
-        klass_data->table_length = klass->vtable_length();
+        klass_data->fields_length = 0;
+        u2* field_array = NULL;
+        if(klass->is_instance_klass()){
+            InstanceKlass* iklass = (InstanceKlass*) klass;
+            Array<u2>* fields = iklass->fields();
+            klass_data->fields_length = fields->length();
+            field_array = fields->data();
+        }
         write(sockfd, klass_data, sizeof(struct msg_klass_data));
         write(sockfd,klass->external_name(), klass_data->name_length);
-        write(sockfd, klass->vtable().table(), klass_data->table_length);
+        if(klass->is_instance_klass()){
+            write(sockfd, field_array, klass_data->fields_length*sizeof(u2));
+        }
         std::free(klass_data);
     }
     lock.unlock();
     std::free(msg);
     HeapWord* allocated = result->ptr;
     std::free(result);
+    //printf("Après\n");
     return allocated;
 }
 

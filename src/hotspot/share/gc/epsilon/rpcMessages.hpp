@@ -36,7 +36,7 @@ struct msg_alloc_response{
 
 struct msg_klass_data{
     int name_length;
-    int table_length;
+    int fields_length;
 };
 
 
