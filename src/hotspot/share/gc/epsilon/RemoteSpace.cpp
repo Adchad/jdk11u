@@ -9,6 +9,7 @@
 #include "gc/epsilon/roots.hpp"
 #include <string.h>
 #include <csignal>
+#include "oops/objArrayKlass.hpp"
 
 int sockfd;
 std::mutex lock;
@@ -98,19 +99,32 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     if(result->send_metadata){
         struct msg_klass_data* klass_data = (struct msg_klass_data*) malloc(sizeof(struct msg_klass_data));
         klass_data->name_length = strlen(klass->external_name());
-        klass_data->fields_length = 0;
+        klass_data->length = 0;
         u2* field_array = NULL;
         if(klass->is_instance_klass()){
+            klass_data->klasstype = instance;
             InstanceKlass* iklass = (InstanceKlass*) klass;
             Array<u2>* fields = iklass->fields();
-            klass_data->fields_length = fields->length();
+            klass_data->length = fields->length();
             field_array = fields->data();
+            write(sockfd, klass_data, sizeof(struct msg_klass_data));
+            write(sockfd, field_array, klass_data->length*sizeof(u2));
         }
-        write(sockfd, klass_data, sizeof(struct msg_klass_data));
-        write(sockfd,klass->external_name(), klass_data->name_length);
-        if(klass->is_instance_klass()){
-            write(sockfd, field_array, klass_data->fields_length*sizeof(u2));
+        if(klass->is_objArray_klass()){
+            klass_data->klasstype = objarray;
+            ObjArrayKlass* oklass = (ObjArrayKlass*) klass;
+            klass_data->length = oklass->size();
+            klass_data->base_klass = (unsigned long)oklass->element_klass();
+            write(sockfd, klass_data, sizeof(struct msg_klass_data));
+            }
+        if(klass->is_typeArray_klass()){
+            klass_data->klasstype = typearray;
+            TypeArrayKlass* tklass = (TypeArrayKlass*) klass;
+            klass_data->length = tklass->size();
+            klass_data->basetype = tklass->element_type();
+            write(sockfd, klass_data, sizeof(struct msg_klass_data));
         }
+        write(sockfd, klass->external_name(), klass_data->name_length);
         std::free(klass_data);
     }
     lock.unlock();
@@ -137,7 +151,6 @@ void RemoteSpace::set_end(HeapWord* value){
 
 size_t RemoteSpace::used() const{
     char msg_tag = 'u';
-
     lock.lock();
     write(sockfd, &msg_tag, 1);
     size_t *result = (size_t*) malloc(sizeof(size_t));
@@ -146,8 +159,6 @@ size_t RemoteSpace::used() const{
 
     return *result;
 }
-
-
 
 
 void getandsend_roots(int sig) {

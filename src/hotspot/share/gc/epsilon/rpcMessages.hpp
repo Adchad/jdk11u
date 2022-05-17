@@ -8,6 +8,7 @@
 #include <stdlib.h>
 
 
+enum klass_type {instance = 1, objarray = 2, typearray = 3};
 
 struct msg_initialize{
     HeapWord* mr_start;
@@ -35,8 +36,11 @@ struct msg_alloc_response{
 };
 
 struct msg_klass_data{
+    klass_type klasstype;
     int name_length;
-    int fields_length;
+    int length; //field length for instance; size for arrays
+    unsigned long base_klass = 0; //only for obj_array
+    BasicType basetype = T_ILLEGAL; //only for typearray
 };
 
 
