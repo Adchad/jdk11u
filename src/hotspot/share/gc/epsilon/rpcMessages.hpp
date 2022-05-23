@@ -41,6 +41,7 @@ struct msg_klass_data{
     int length; //field length for instance; size for arrays
     unsigned long base_klass = 0; //only for obj_array
     BasicType basetype = T_ILLEGAL; //only for typearray
+    int layout_helper;
 };
 
 

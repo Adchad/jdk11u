@@ -100,6 +100,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
         struct msg_klass_data* klass_data = (struct msg_klass_data*) malloc(sizeof(struct msg_klass_data));
         klass_data->name_length = strlen(klass->external_name());
         klass_data->length = 0;
+        klass_data->layout_helper = klass->layout_helper();
         u2* field_array = NULL;
         if(klass->is_instance_klass()){
             klass_data->klasstype = instance;
