@@ -202,6 +202,9 @@ const int SerializePageShiftCount = 4;
 const int SerializePageShiftCount = 3;
 #endif
 
+int fakeblk_fd;
+
+
 // An opaque struct of heap-word width, so that HeapWord* can be a generic
 // pointer into the heap.  We require that object sizes be measured in
 // units of heap words, so that that

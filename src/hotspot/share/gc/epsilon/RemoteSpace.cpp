@@ -67,7 +67,7 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
     lock.unlock();
     std::free(msg);
     HeapWord * allocated = *result;
-	if(allocated == nullptr){
+    if(allocated == nullptr){
         collect();
     }
     std::free(result);
@@ -134,7 +134,11 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     lock.unlock();
     std::free(msg);
     HeapWord* allocated = result->ptr;
+<<<<<<< Updated upstream
 	if(allocated == nullptr){
+=======
+    if(allocated == nullptr){
+>>>>>>> Stashed changes
         collect();
     }
     std::free(result);
@@ -190,7 +194,10 @@ void getandsend_roots(){
     unsigned long *root_array= rm.rootArray();
     write(sockfd, &array_length, sizeof(int));
     write(sockfd, root_array, sizeof(unsigned long)*array_length );
+<<<<<<< Updated upstream
 	printf("End of roots collection\n");
+=======
+>>>>>>> Stashed changes
 }
 
 void RemoteSpace::safe_object_iterate(ObjectClosure* blk){
