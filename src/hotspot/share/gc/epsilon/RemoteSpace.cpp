@@ -177,7 +177,7 @@ void getandsend_roots(int sig) {
 }
 
 void getandsend_roots(){
-    RootMark rm(RootMark::threads);
+    RootMark rm();
     rm.do_it();
     int array_length = rm.getArraySize();
     unsigned long *root_array= rm.rootArray();
