@@ -11,6 +11,8 @@
 #include <mutex>
 
 void getandsend_roots(int sig);
+void getandsend_roots();
+
 
 class RemoteSpace : public ContiguousSpace{
 private:

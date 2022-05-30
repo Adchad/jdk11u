@@ -176,6 +176,16 @@ void getandsend_roots(int sig) {
     lock.unlock();
 }
 
+void getandsend_roots(){
+    RootMark rm(RootMark::threads);
+    rm.do_it();
+    int array_length = rm.getArraySize();
+    unsigned long *root_array= rm.rootArray();
+    lock.lock();
+    write(sockfd, &array_length, sizeof(int));
+    write(sockfd, root_array, sizeof(unsigned long)*array_length );
+    lock.unlock();
+}
 
 void RemoteSpace::safe_object_iterate(ObjectClosure* blk){
     return;
@@ -189,6 +199,7 @@ void RemoteSpace::collect() {
     char msg_tag = 'c';
     lock.lock();
     write(sockfd, &msg_tag, 1);
+    getandsend_roots();
     int* ack = (int*) malloc(sizeof(int));
     read(sockfd, ack, sizeof(int));
     lock.unlock();

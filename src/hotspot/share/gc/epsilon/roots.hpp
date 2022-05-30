@@ -84,10 +84,9 @@ public:
         code_cache            = 9
     };
 public:
-    RootType _root_type;
     RemoteClosure rc;
 public:
-    RootMark(RootType value) : _root_type(value) {}
+    RootMark();
 
     void do_it();
 
