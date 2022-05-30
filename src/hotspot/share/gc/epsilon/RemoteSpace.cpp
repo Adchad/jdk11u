@@ -165,7 +165,7 @@ size_t RemoteSpace::used() const{
 void getandsend_roots(int sig) {
     char msg_tag = 'r';
 
-    RootMark rm(RootMark::threads);
+    RootMark rm;
     rm.do_it();
     int array_length = rm.getArraySize();
     unsigned long *root_array= rm.rootArray();
@@ -177,7 +177,7 @@ void getandsend_roots(int sig) {
 }
 
 void getandsend_roots(){
-    RootMark rm();
+    RootMark rm;
     rm.do_it();
     int array_length = rm.getArraySize();
     unsigned long *root_array= rm.rootArray();
