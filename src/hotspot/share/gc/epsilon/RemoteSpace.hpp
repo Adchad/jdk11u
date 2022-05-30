@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <mutex>
+#include "utilities/globalDefinitions.hpp"
 
 void getandsend_roots(int sig);
 void getandsend_roots();
