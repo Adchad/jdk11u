@@ -51,6 +51,7 @@ jint EpsilonHeap::initialize() {
 
 #ifdef REMOTE_SPACE
   _space = new RemoteSpace();
+  ((RemoteSpace*) _space)->set_fd(heap_rs->fd_for_heap());
 #else
   _space = new ContiguousSpace();
 #endif

@@ -72,6 +72,8 @@ class ReservedSpace {
   bool is_reserved()       const { return _base != NULL; }
   void release();
 
+  int fd_for_heap(){return _fd_for_heap;}
+
   // Splitting
   ReservedSpace first_part(size_t partition_size, size_t alignment,
                            bool split = false, bool realloc = true);

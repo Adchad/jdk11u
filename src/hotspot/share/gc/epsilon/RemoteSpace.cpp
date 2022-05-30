@@ -203,7 +203,7 @@ void RemoteSpace::print_on(outputStream* st) const{
 
 void RemoteSpace::collect() {
     char msg_tag = 'c';
-    fsync(fakeblk_fd);
+    fsync(fd_for_heap);
     lock.lock();
     write(sockfd, &msg_tag, 1);
     getandsend_roots();

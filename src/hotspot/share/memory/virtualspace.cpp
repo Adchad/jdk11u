@@ -637,7 +637,6 @@ ReservedHeapSpace::ReservedHeapSpace(size_t size, size_t alignment, bool large, 
     MemTracker::record_virtual_memory_type((address)base(), mtJavaHeap);
   }
 
-  fakeblk_fd = _fd_for_heap;
   /*if (_fd_for_heap != -1) {
     os::close(_fd_for_heap);
   }*/

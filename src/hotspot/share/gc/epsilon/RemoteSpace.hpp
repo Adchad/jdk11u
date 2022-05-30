@@ -20,6 +20,7 @@ private:
     int counter;
     bool roots = true;
     struct sockaddr_in server;
+    int fd_for_heap;
 
 public:
     RemoteSpace();
@@ -34,6 +35,8 @@ public:
     void print_on(outputStream* st) const;
 
     void collect();
+
+    void set_fd(int fd){ fd_for_heap = fd;}
 
 };
 
