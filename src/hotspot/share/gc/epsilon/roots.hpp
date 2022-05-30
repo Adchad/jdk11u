@@ -86,7 +86,7 @@ public:
 public:
     RemoteClosure rc;
 public:
-    RootMark();
+    RootMark() {};
 
     void do_it();
 

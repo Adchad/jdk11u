@@ -67,6 +67,9 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
     lock.unlock();
     std::free(msg);
     HeapWord * allocated = *result;
+	if(allocated == nullptr){
+        collect();
+    }
     std::free(result);
     return allocated;
 }
@@ -74,14 +77,14 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
 
 HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 
-    /*----------------/
+    /*----------------*/
     /* Ce bout de code sert à trouver et  afficher les racines du tas pour le gc*/
     /*à terme, la fonction getandsend_roots est appelée par le RemoteSpace via des sockets ou un signal*/
-    counter++;
+    /*counter++;
     if(counter >= 2000 && roots){
         getandsend_roots(0);
         roots = false;
-    }
+    }*/
     /*-------------*/
     //printf("klass: %s\n", klass->external_name());
 
@@ -131,6 +134,9 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     lock.unlock();
     std::free(msg);
     HeapWord* allocated = result->ptr;
+	if(allocated == nullptr){
+        collect();
+    }
     std::free(result);
     //printf("Après\n");
     return allocated;
@@ -178,13 +184,13 @@ void getandsend_roots(int sig) {
 
 void getandsend_roots(){
     RootMark rm;
+	printf("Starting to collect roots\n");
     rm.do_it();
     int array_length = rm.getArraySize();
     unsigned long *root_array= rm.rootArray();
-    lock.lock();
     write(sockfd, &array_length, sizeof(int));
     write(sockfd, root_array, sizeof(unsigned long)*array_length );
-    lock.unlock();
+	printf("End of roots collection\n");
 }
 
 void RemoteSpace::safe_object_iterate(ObjectClosure* blk){

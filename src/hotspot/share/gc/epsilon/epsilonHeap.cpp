@@ -360,16 +360,17 @@ HeapWord* EpsilonHeap::allocate_new_tlab(size_t min_size,
 }
 
 HeapWord* EpsilonHeap::mem_allocate(size_t size, bool *gc_overhead_limit_was_exceeded) {
-  *gc_overhead_limit_was_exceeded = false;
+  *gc_overhead_limit_was_exceeded = true;
   return allocate_work(size);
 }
 
 HeapWord* EpsilonHeap::mem_allocate_klass(size_t size, bool *gc_overhead_limit_was_exceeded, Klass* klass) {
-    *gc_overhead_limit_was_exceeded = false;
+    *gc_overhead_limit_was_exceeded = true;
     return allocate_work_klass(size, klass);
 }
 
 void EpsilonHeap::collect(GCCause::Cause cause) {
+  ((RemoteSpace*)_space)->collect();
   switch (cause) {
     case GCCause::_metadata_GC_threshold:
     case GCCause::_metadata_GC_clear_soft_refs:

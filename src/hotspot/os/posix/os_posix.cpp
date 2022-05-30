@@ -48,6 +48,8 @@
 #include <unistd.h>
 #include <utmpx.h>
 
+#include <stdio.h>
+
 // Todo: provide a os::get_max_process_id() or similar. Number of processes
 // may have been configured, can be read more accurately from proc fs etc.
 #ifndef MAX_PID
@@ -277,6 +279,8 @@ char* os::map_memory_to_file(char* base, size_t size, int fd) {
     flags |= MAP_FIXED;
   }
   char* addr = (char*)mmap(base, size, prot, flags, fd, 0);
+
+  printf("Mmap starting address: %p\n", addr);
 
   if (addr == MAP_FAILED) {
     warning("Failed mmap to file. (%s)", os::strerror(errno));
