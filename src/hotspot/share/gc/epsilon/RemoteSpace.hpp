@@ -30,6 +30,8 @@ public:
     void safe_object_iterate(ObjectClosure* blk);
     void print_on(outputStream* st) const;
 
+    void collect();
+
 };
 
 

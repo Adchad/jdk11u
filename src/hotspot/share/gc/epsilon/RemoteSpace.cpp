@@ -184,3 +184,12 @@ void RemoteSpace::safe_object_iterate(ObjectClosure* blk){
 void RemoteSpace::print_on(outputStream* st) const{
     return;
 }
+
+void RemoteSpace::collect() {
+    char msg_tag = 'c';
+    lock.lock();
+    write(sockfd, &msg_tag, 1);
+    int* ack = (int*) malloc(sizeof(int));
+    read(sockfd, ack, sizeof(int));
+    lock.unlock();
+}
