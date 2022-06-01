@@ -7,6 +7,9 @@
 
 #include <stdlib.h>
 
+#define HEADER_OFFSET 16
+#define SIZE_OFFSET 12
+#define KLASS_OFFSET 8
 
 enum klass_type {instance = 1, objarray = 2, typearray = 3};
 
@@ -43,6 +46,8 @@ struct msg_klass_data{
     BasicType basetype = T_ILLEGAL; //only for typearray
     int layout_helper;
 };
+
+
 
 
 

@@ -132,11 +132,16 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
         std::free(klass_data);
     }
     lock.unlock();
-    std::free(msg);
     HeapWord* allocated = result->ptr;
     if(allocated == nullptr){
         collect();
     }
+    else{
+        uint64_t iptr = (uint64_t)allocated;
+        *((uint64_t*)(iptr - KLASS_OFFSET)) = msg->klass;
+        *((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size;
+    }
+    std::free(msg);
     std::free(result);
     //printf("Après\n");
     return allocated;
