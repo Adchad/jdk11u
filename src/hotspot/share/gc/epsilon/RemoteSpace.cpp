@@ -104,15 +104,14 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
         klass_data->name_length = strlen(klass->external_name());
         klass_data->length = 0;
         klass_data->layout_helper = klass->layout_helper();
-        u2* field_array = NULL;
+        OopMapBlock* field_array = NULL;
         if(klass->is_instance_klass()){
             klass_data->klasstype = instance;
             InstanceKlass* iklass = (InstanceKlass*) klass;
-            Array<u2>* fields = iklass->fields();
-            klass_data->length = fields->length();
-            field_array = fields->data();
+            klass_data->length = iklass->nonstatic_oop_map_count();
+            field_array = iklass->start_of_nonstatic_oop_maps();
             write(sockfd, klass_data, sizeof(struct msg_klass_data));
-            write(sockfd, field_array, klass_data->length*sizeof(u2));
+            write(sockfd, field_array, klass_data->length*sizeof(OopMapBlock));
         }
         if(klass->is_objArray_klass()){
             klass_data->klasstype = objarray;
