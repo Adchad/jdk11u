@@ -48,7 +48,10 @@ struct msg_klass_data{
 };
 
 
-
+struct msg_collect{
+	uint64_t base;
+	int32_t shift;
+};
 
 
 #endif //JDK11U_RPCMESSAGES_HPP

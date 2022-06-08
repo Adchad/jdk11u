@@ -10,6 +10,11 @@
 #include <string.h>
 #include <csignal>
 #include "oops/objArrayKlass.hpp"
+#include "oops/oop.hpp"
+#include "oops/oop.inline.hpp"
+#include "gc/serial/markSweep.hpp"
+#include "gc/serial/markSweep.inline.hpp"
+#include "memory/iterator.inline.hpp" 
 
 int sockfd;
 std::mutex lock;
@@ -22,8 +27,8 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
         exit (EXIT_FAILURE);
     }
 
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");
     server.sin_family = AF_INET;
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
     server.sin_port = htons( 42069 );
 
     if (connect(sockfd, (struct sockaddr *)&server , sizeof(server)) < 0)
@@ -38,6 +43,7 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
 void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) {
     struct msg_initialize * msg = (struct msg_initialize*) malloc(sizeof(struct msg_initialize));
     HeapWord* mr_start = mr.start();
+	printf("Start: %lu\n", (unsigned long) mr_start);
     size_t  mr_word_size = mr.word_size();
     char msg_tag = 'i';
     msg->mr_start =  mr_start;
@@ -172,6 +178,8 @@ size_t RemoteSpace::used() const{
 }
 
 
+unsigned long first_root;
+
 void getandsend_roots(int sig) {
     char msg_tag = 'r';
 
@@ -192,6 +200,7 @@ void getandsend_roots(){
     rm.do_it();
     int array_length = rm.getArraySize();
     unsigned long *root_array= rm.rootArray();
+	first_root = *root_array;
     write(sockfd, &array_length, sizeof(int));
     write(sockfd, root_array, sizeof(unsigned long)*array_length );
 	printf("End of roots collection\n");
@@ -206,12 +215,22 @@ void RemoteSpace::print_on(outputStream* st) const{
 }
 
 void RemoteSpace::collect() {
-    char msg_tag = 'c';
-    fsync(fd_for_heap);
-    lock.lock();
-    write(sockfd, &msg_tag, 1);
-    getandsend_roots();
-    int* ack = (int*) malloc(sizeof(int));
-    read(sockfd, ack, sizeof(int));
-    lock.unlock();
+	if(!collected){
+		collected = true;
+
+    	char msg_tag = 'c';
+    	fsync(fd_for_heap);
+    	lock.lock();
+    	write(sockfd, &msg_tag, 1);
+
+		struct msg_collect* msg = (struct msg_collect*) malloc(sizeof(struct msg_collect));
+		msg->base =(uint64_t) Universe::narrow_oop_base();
+		msg->shift = Universe::narrow_oop_shift();
+		write(sockfd, msg, sizeof(struct msg_collect));  // on envoie la base et le shift pour la conversion narrowoop en oop
+
+    	getandsend_roots();
+    	int* ack = (int*) malloc(sizeof(int));
+    	read(sockfd, ack, sizeof(int));
+    	lock.unlock();
+	}
 }

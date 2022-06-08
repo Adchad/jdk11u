@@ -21,6 +21,7 @@ private:
     bool roots = true;
     struct sockaddr_in server;
     int fd_for_heap;
+	bool collected = false;
 
 public:
     RemoteSpace();

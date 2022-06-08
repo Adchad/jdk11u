@@ -57,8 +57,9 @@ inline void InstanceKlass::release_set_methods_jmethod_ids(jmethodID* jmeths) {
 template <typename T, class OopClosureType>
 ALWAYSINLINE void InstanceKlass::oop_oop_iterate_oop_map(OopMapBlock* map, oop obj, OopClosureType* closure) {
   T* p         = (T*)obj->obj_field_addr_raw<T>(map->offset());
+  int status;
+//  std::cout << abi::__cxa_demangle(typeid(p).name(), 0, 0, &status) << std::endl;
   T* const end = p + map->count();
-
   for (; p < end; ++p) {
     Devirtualizer::do_oop(closure, p);
   }
