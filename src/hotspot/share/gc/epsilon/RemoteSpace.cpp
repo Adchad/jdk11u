@@ -10,6 +10,7 @@
 #include <string.h>
 #include <csignal>
 #include "oops/objArrayKlass.hpp"
+#include "oops/arrayOop.inline.hpp"
 #include "oops/oop.hpp"
 #include "oops/oop.inline.hpp"
 #include "gc/serial/markSweep.hpp"
@@ -48,6 +49,7 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
     char msg_tag = 'i';
     msg->mr_start =  mr_start;
     msg->mr_word_size =  mr_word_size;
+    msg->obj_array_base = arrayOopDesc::base_raw(T_OBJECT);
     msg->clear_space = clear_space;
     msg->mangle_space = mangle_space;
     lock.lock();
@@ -110,6 +112,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
         klass_data->name_length = strlen(klass->external_name());
         klass_data->length = 0;
         klass_data->layout_helper = klass->layout_helper();
+        klass_data->klass_holder = klass->klass_holder();
         OopMapBlock* field_array = NULL;
         if(klass->is_instance_klass()){
             klass_data->klasstype = instance;

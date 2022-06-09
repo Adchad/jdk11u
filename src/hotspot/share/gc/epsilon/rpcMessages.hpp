@@ -16,6 +16,7 @@ enum klass_type {instance = 1, objarray = 2, typearray = 3};
 struct msg_initialize{
     HeapWord* mr_start;
     size_t mr_word_size;
+    uint64_t obj_array_base;
     bool clear_space;
     bool mangle_space;
 };
@@ -39,12 +40,14 @@ struct msg_alloc_response{
 };
 
 struct msg_klass_data{
+    //TODO: Nettoyer ce struct de merde
     klass_type klasstype;
     int name_length;
     int length; //field length for instance; size for arrays
     unsigned long base_klass = 0; //only for obj_array
     BasicType basetype = T_ILLEGAL; //only for typearray
     int layout_helper;
+    unsigned long klass_holder;
 };
 
 
