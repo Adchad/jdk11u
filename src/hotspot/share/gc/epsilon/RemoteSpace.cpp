@@ -114,6 +114,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 		klass_data->length = 0;
         klass_data->layout_helper = klass->layout_helper();
         klass_data->klass_holder = (uint64_t) klass->klass_holder();
+		printf("KlassHolder: %lu\n",klass_data->klass_holder );
         OopMapBlock* field_array = NULL;
         if(klass->is_instance_klass()){
             klass_data->klasstype = instance;
