@@ -146,6 +146,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
         uint64_t iptr = (uint64_t)allocated;
         *((uint64_t*)(iptr - KLASS_OFFSET)) = msg->klass;
         *((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size;
+        *((uint32_t*)(iptr - 16)) = 0xdeadbeef;
     }
     std::free(msg);
     std::free(result);
@@ -216,8 +217,6 @@ void RemoteSpace::print_on(outputStream* st) const{
 }
 
 void RemoteSpace::collect() {
-	if(!collected){
-		collected = true;
 
     	char msg_tag = 'c';
     	fsync(fd_for_heap);
@@ -233,5 +232,4 @@ void RemoteSpace::collect() {
     	int* ack = (int*) malloc(sizeof(int));
     	read(sockfd, ack, sizeof(int));
     	lock.unlock();
-	}
 }
