@@ -75,6 +75,8 @@
 #include "classfile/sharedPathsMiscInfo.hpp"
 #endif
 
+
+#include "gc/epsilon/RemoteSpace.hpp"
 // Entry points in zip.dll for loading zip/jar file entries
 
 typedef void * * (*ZipOpen_t)(const char *name, char **pmsg);
@@ -1515,6 +1517,9 @@ InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TR
   if (!add_package(file_name, classpath_index, THREAD)) {
     return NULL;
   }
+
+
+    write(sockfd, "prout", 6);
 
   return result;
 }

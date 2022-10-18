@@ -15,6 +15,10 @@ void getandsend_roots(int sig);
 void getandsend_roots();
 
 
+
+static int sockfd;
+static std::mutex lock;
+
 class RemoteSpace : public ContiguousSpace{
 private:
     int counter;

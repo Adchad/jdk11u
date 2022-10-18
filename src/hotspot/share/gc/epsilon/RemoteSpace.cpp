@@ -17,8 +17,6 @@
 #include "gc/serial/markSweep.inline.hpp"
 #include "memory/iterator.inline.hpp" 
 
-int sockfd;
-std::mutex lock;
 
 RemoteSpace::RemoteSpace() : ContiguousSpace() {
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
