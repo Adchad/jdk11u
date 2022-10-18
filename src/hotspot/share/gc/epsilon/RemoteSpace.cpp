@@ -74,9 +74,9 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
     lock.unlock();
     std::free(msg);
     HeapWord * allocated = *result;
-    if(allocated == nullptr){
-        collect();
-    }
+    //if(allocated == nullptr){
+    //    collect();
+    //}
     std::free(result);
     return allocated;
 }
@@ -137,10 +137,10 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     }
     lock.unlock();
     HeapWord* allocated = result->ptr;
-    if(allocated == nullptr){
-        collect();
-    }
-    else{
+   // if(allocated == nullptr){
+   //     collect();
+   // }
+    if(allocated != nullptr){
         uint64_t iptr = (uint64_t)allocated;
         *((uint64_t*)(iptr - KLASS_OFFSET)) = msg->klass;
         *((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size;
@@ -215,7 +215,7 @@ void RemoteSpace::print_on(outputStream* st) const{
 }
 
 void RemoteSpace::collect() {
-
+		printf("Start of collection\n");
     	char msg_tag = 'c';
     	fsync(fd_for_heap);
     	lock.lock();
@@ -230,4 +230,5 @@ void RemoteSpace::collect() {
     	int* ack = (int*) malloc(sizeof(int));
     	read(sockfd, ack, sizeof(int));
     	lock.unlock();
+		printf("End of collection\n");
 }

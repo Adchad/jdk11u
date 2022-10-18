@@ -33,6 +33,7 @@
 #include "gc/epsilon/epsilonMonitoringSupport.hpp"
 #include "gc/epsilon/epsilonBarrierSet.hpp"
 #include "gc/epsilon/epsilon_globals.hpp"
+#include "runtime/vmThread.hpp"
 
 class EpsilonHeap : public CollectedHeap {
   friend class VMStructs;
@@ -157,6 +158,30 @@ private:
   void print_heap_info(size_t used) const;
   void print_metaspace_info() const;
 
+};
+
+
+
+
+class VM_Pause: public VM_Operation {
+private:
+  const GCCause::Cause _cause;
+  EpsilonHeap* const _heap;
+public:
+  VM_Pause(GCCause::Cause cause) : VM_Operation(),
+                                            _cause(cause),
+                                            _heap(EpsilonHeap::heap()) {};
+
+  VM_Operation::VMOp_Type type() const { return VMOp_Dummy; }
+  const char* name()             const { return "Epsilon Collection"; }
+
+  bool evaluate_at_safepoint() const {return true;}
+
+  virtual void doit(){
+	  printf("Start pause\n");
+	 _heap->collect(_cause);
+	  printf("End pause \n\n");
+  }
 };
 
 #endif // SHARE_VM_GC_EPSILON_COLLECTEDHEAP_HPP

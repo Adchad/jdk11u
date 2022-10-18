@@ -31,6 +31,9 @@
 #include "memory/resourceArea.hpp"
 #include "gc/epsilon/RemoteSpace.hpp"
 #include "gc/epsilon/roots.hpp"
+#include "code/codeCache.hpp"
+#include "prims/jvmtiExport.hpp"
+
 
 #define REMOTE_SPACE
 
@@ -145,6 +148,10 @@ HeapWord* EpsilonHeap::allocate_work(size_t size) {
     {
       MutexLockerEx ml(Heap_lock);
 
+	  // first attempt collection:
+	  do_full_collection(true);
+
+
       // Try to allocate under the lock, assume another thread was able to expand
       res = _space->par_allocate(size);
         if (res != NULL) {
@@ -201,7 +208,6 @@ HeapWord* EpsilonHeap::allocate_work(size_t size) {
 
 HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
     assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
-
     HeapWord* res = NULL;
     while (true) {
         // Try to allocate, assume space is available
@@ -214,6 +220,10 @@ HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
         // Allocation failed, attempt expansion, and retry:
         {
             MutexLockerEx ml(Heap_lock);
+
+			// first attempt collection:
+		  	do_full_collection(true);
+
 
             // Try to allocate under the lock, assume another thread was able to expand
             res = _space->par_allocate_klass(size, klass);
@@ -371,7 +381,6 @@ HeapWord* EpsilonHeap::mem_allocate_klass(size_t size, bool *gc_overhead_limit_w
 }
 
 void EpsilonHeap::collect(GCCause::Cause cause) {
-  ((RemoteSpace*)_space)->collect();
   switch (cause) {
     case GCCause::_metadata_GC_threshold:
     case GCCause::_metadata_GC_clear_soft_refs:
@@ -384,14 +393,23 @@ void EpsilonHeap::collect(GCCause::Cause cause) {
       MetaspaceGC::compute_new_size();
       print_metaspace_info();
       break;
-    default:
-      log_info(gc)("GC request for \"%s\" is ignored", GCCause::to_string(cause));
+      //log_info(gc)("GC request for \"%s\" is ignored", GCCause::to_string(cause));
   }
+  CodeCache::gc_prologue();
+
+#if COMPILER2_OR_JVMCI
+    DerivedPointerTable::clear();
+#endif
+  ((RemoteSpace*)_space)->collect();
+  CodeCache::gc_epilogue();
+  JvmtiExport::gc_epilogue();
+
   _monitoring_support->update_counters();
 }
 
 void EpsilonHeap::do_full_collection(bool clear_all_soft_refs) {
-  collect(gc_cause());
+  VM_Pause pause(gc_cause());
+  VMThread::execute(&pause);
 }
 
 void EpsilonHeap::safe_object_iterate(ObjectClosure *cl) {

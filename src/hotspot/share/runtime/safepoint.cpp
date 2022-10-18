@@ -743,12 +743,12 @@ void SafepointSynchronize::do_cleanup_tasks() {
     // Parallel cleanup using GC provided thread pool.
     uint num_cleanup_workers = cleanup_workers->active_workers();
     ParallelSPCleanupTask cleanup(num_cleanup_workers, &deflate_counters);
-    StrongRootsScope srs(num_cleanup_workers);
+    //StrongRootsScope srs(num_cleanup_workers);
     cleanup_workers->run_task(&cleanup);
   } else {
     // Serial cleanup using VMThread.
     ParallelSPCleanupTask cleanup(1, &deflate_counters);
-    StrongRootsScope srs(1);
+    //StrongRootsScope srs(1);
     cleanup.work(0);
   }
 
