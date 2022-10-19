@@ -50,6 +50,16 @@ struct msg_klass_data{
     int layout_helper;
 };
 
+struct msg_klass_data_2{
+    //TODO: Nettoyer cet autre struct de merde
+    unsigned long klass;
+    klass_type klasstype;
+    int name_length;
+    int length;
+    unsigned long base_klass = 0; //only for obj_array
+    BasicType basetype = T_ILLEGAL; //only for typearray
+    int layout_helper;
+};
 
 struct msg_collect{
 	uint64_t base;

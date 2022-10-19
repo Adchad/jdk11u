@@ -77,6 +77,8 @@
 
 
 #include "gc/epsilon/RemoteSpace.hpp"
+#include "gc/epsilon/rpcMessages.hpp"
+
 // Entry points in zip.dll for loading zip/jar file entries
 
 typedef void * * (*ZipOpen_t)(const char *name, char **pmsg);
@@ -1519,9 +1521,21 @@ InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TR
   }
 
 
-    write(sockfd, "prout", 6);
 
-  return result;
+  write(sockfd, 'l', 1);
+  auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
+  msg->name_length = strlen(result->external_name());
+  msg->length = result->nonstatic_oop_map_count();;
+  msg->layout_helper = result->layout_helper();
+  msg->klasstype = instance;
+  msg->length = result->nonstatic_oop_map_count();
+  field_array = result->start_of_nonstatic_oop_maps();
+
+  write(sockfd, msg, sizeof(struct msg_klass_data_2));
+  write(sockfd, field_array, msg->length*sizeof(OopMapBlock));
+
+
+    return result;
 }
 
 #if INCLUDE_CDS
