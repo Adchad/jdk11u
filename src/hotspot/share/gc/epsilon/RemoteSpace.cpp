@@ -28,7 +28,7 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
 
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = inet_addr("127.0.0.1");
-    server.sin_port = htons( 42069 );
+    server.sin_port = htons( RSPACE_PORT );
 
     if (connect(sockfd, (struct sockaddr *)&server , sizeof(server)) < 0)
     {
@@ -36,6 +36,10 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
     }
 
     signal(SIGUSR1, getandsend_roots);
+}
+
+RemoteSpace::~RemoteSpace(){
+    close(sockfd);
 }
 
 

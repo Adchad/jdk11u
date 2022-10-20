@@ -30,6 +30,7 @@
 #include "runtime/perfData.hpp"
 #include "utilities/exceptions.hpp"
 #include "utilities/macros.hpp"
+#include "remoteLoader.hpp"
 
 // The VM class loader.
 #include <sys/stat.h>
@@ -173,8 +174,9 @@ class ClassLoader: AllStatic {
     APP_LOADER  = 3       /* AppClassLoader */
   };
  protected:
+  static  RemoteLoader* remoteLoader;
 
-  // Performance counters
+    // Performance counters
   static PerfCounter* _perf_accumulated_time;
   static PerfCounter* _perf_classes_inited;
   static PerfCounter* _perf_class_init_time;
@@ -373,6 +375,8 @@ class ClassLoader: AllStatic {
                                                 const char* const class_name,
                                                 const char* const file_name, TRAPS);
 
+
+
   // Load individual .class file
   static InstanceKlass* load_class(Symbol* class_name, bool search_append_only, TRAPS);
 
@@ -545,5 +549,6 @@ class PerfClassTraceTime {
   ~PerfClassTraceTime();
   void initialize();
 };
+
 
 #endif // SHARE_VM_CLASSFILE_CLASSLOADER_HPP

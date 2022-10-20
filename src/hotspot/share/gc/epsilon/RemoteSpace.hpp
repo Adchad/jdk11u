@@ -10,14 +10,15 @@
 #include <netinet/in.h>
 #include <mutex>
 #include "utilities/globalDefinitions.hpp"
+#define RSPACE_PORT 42069
 
 void getandsend_roots(int sig);
 void getandsend_roots();
 
 
-
-static int sockfd;
 static std::mutex lock;
+static int sockfd;
+
 
 class RemoteSpace : public ContiguousSpace{
 private:
