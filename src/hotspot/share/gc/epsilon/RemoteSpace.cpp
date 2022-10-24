@@ -17,29 +17,34 @@
 #include "gc/serial/markSweep.inline.hpp"
 #include "memory/iterator.inline.hpp" 
 
+int sockfd_remote = 0;
+
+std::mutex lock;
 
 RemoteSpace::RemoteSpace() : ContiguousSpace() {
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
+    sockfd_remote = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd_remote < 0)
     {
         perror ("socket");
         exit (EXIT_FAILURE);
     }
 
+
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = inet_addr("127.0.0.1");
     server.sin_port = htons( RSPACE_PORT );
 
-    if (connect(sockfd, (struct sockaddr *)&server , sizeof(server)) < 0)
+    if (connect(sockfd_remote, (struct sockaddr *)&server , sizeof(server)) < 0)
     {
         puts("connect error");
     }
+	printf("Space fd: %d\n", sockfd_remote);
 
     signal(SIGUSR1, getandsend_roots);
 }
 
 RemoteSpace::~RemoteSpace(){
-    close(sockfd);
+    //close(sockfd_remote);
 }
 
 
@@ -56,8 +61,8 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
     msg->clear_space = clear_space;
     msg->mangle_space = mangle_space;
     lock.lock();
-    write(sockfd, &msg_tag, 1);
-    write(sockfd, msg, sizeof(struct msg_initialize));
+    write(sockfd_remote, &msg_tag, 1);
+    write(sockfd_remote, msg, sizeof(struct msg_initialize));
     lock.unlock();
 
     std::free(msg);
@@ -70,11 +75,11 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
     msg->word_size =  word_size;
 
     lock.lock();
-    write(sockfd, &msg_tag, 1);
-    write(sockfd, msg, sizeof(struct msg_par_allocate));
+    write(sockfd_remote, &msg_tag, 1);
+    write(sockfd_remote, msg, sizeof(struct msg_par_allocate));
 
     HeapWord** result = (HeapWord**) malloc(sizeof(HeapWord*));
-    read(sockfd, result, sizeof(HeapWord*));
+    read(sockfd_remote, result, sizeof(HeapWord*));
     lock.unlock();
     std::free(msg);
     HeapWord * allocated = *result;
@@ -105,11 +110,11 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     msg->word_size =  word_size;
     msg->klass = (unsigned long) klass;
     lock.lock();
-    write(sockfd, &msg_tag, 1);
-    write(sockfd, msg, sizeof(struct msg_par_allocate_klass));
+    write(sockfd_remote, &msg_tag, 1);
+    write(sockfd_remote, msg, sizeof(struct msg_par_allocate_klass));
 
     struct msg_alloc_response* result = (struct msg_alloc_response*) malloc(sizeof(struct msg_alloc_response));
-    read(sockfd, result, sizeof(msg_alloc_response));
+    read(sockfd_remote, result, sizeof(msg_alloc_response));
     if(result->send_metadata){
         struct msg_klass_data* klass_data = (struct msg_klass_data*) malloc(sizeof(struct msg_klass_data));
         klass_data->name_length = strlen(klass->external_name());
@@ -121,22 +126,22 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
             InstanceKlass* iklass = (InstanceKlass*) klass;
             klass_data->length = iklass->nonstatic_oop_map_count();
             field_array = iklass->start_of_nonstatic_oop_maps();
-            write(sockfd, klass_data, sizeof(struct msg_klass_data));
-            write(sockfd, field_array, klass_data->length*sizeof(OopMapBlock));
+            write(sockfd_remote, klass_data, sizeof(struct msg_klass_data));
+            write(sockfd_remote, field_array, klass_data->length*sizeof(OopMapBlock));
         }
         if(klass->is_objArray_klass()){
             klass_data->klasstype = objarray;
             ObjArrayKlass* oklass = (ObjArrayKlass*) klass;
             klass_data->base_klass = (unsigned long)oklass->element_klass();
-            write(sockfd, klass_data, sizeof(struct msg_klass_data));
+            write(sockfd_remote, klass_data, sizeof(struct msg_klass_data));
             }
         if(klass->is_typeArray_klass()){
             klass_data->klasstype = typearray;
             TypeArrayKlass* tklass = (TypeArrayKlass*) klass;
             klass_data->basetype = tklass->element_type();
-            write(sockfd, klass_data, sizeof(struct msg_klass_data));
+            write(sockfd_remote, klass_data, sizeof(struct msg_klass_data));
         }
-        write(sockfd, klass->external_name(), klass_data->name_length);
+        write(sockfd_remote, klass->external_name(), klass_data->name_length);
         std::free(klass_data);
     }
     lock.unlock();
@@ -163,8 +168,8 @@ void RemoteSpace::set_end(HeapWord* value){
     msg->value = value;
 
     lock.lock();
-    write(sockfd, &msg_tag, 1);
-    write(sockfd, msg, sizeof(struct msg_set_end));
+    write(sockfd_remote, &msg_tag, 1);
+    write(sockfd_remote, msg, sizeof(struct msg_set_end));
     lock.unlock();
 
     std::free(msg);
@@ -173,9 +178,9 @@ void RemoteSpace::set_end(HeapWord* value){
 size_t RemoteSpace::used() const{
     char msg_tag = 'u';
     lock.lock();
-    write(sockfd, &msg_tag, 1);
+    write(sockfd_remote, &msg_tag, 1);
     size_t *result = (size_t*) malloc(sizeof(size_t));
-    read(sockfd, result, sizeof(size_t));
+    read(sockfd_remote, result, sizeof(size_t));
     lock.unlock();
 
     return *result;
@@ -192,9 +197,9 @@ void getandsend_roots(int sig) {
     int array_length = rm.getArraySize();
     unsigned long *root_array= rm.rootArray();
     lock.lock();
-    write(sockfd, &msg_tag,1);
-    write(sockfd, &array_length, sizeof(int));
-    write(sockfd, root_array, sizeof(unsigned long)*array_length );
+    write(sockfd_remote, &msg_tag,1);
+    write(sockfd_remote, &array_length, sizeof(int));
+    write(sockfd_remote, root_array, sizeof(unsigned long)*array_length );
     lock.unlock();
 }
 
@@ -205,8 +210,8 @@ void getandsend_roots(){
     int array_length = rm.getArraySize();
     unsigned long *root_array= rm.rootArray();
 	first_root = *root_array;
-    write(sockfd, &array_length, sizeof(int));
-    write(sockfd, root_array, sizeof(unsigned long)*array_length );
+    write(sockfd_remote, &array_length, sizeof(int));
+    write(sockfd_remote, root_array, sizeof(unsigned long)*array_length );
 	printf("End of roots collection\n");
 }
 
@@ -223,16 +228,16 @@ void RemoteSpace::collect() {
     	char msg_tag = 'c';
     	fsync(fd_for_heap);
     	lock.lock();
-    	write(sockfd, &msg_tag, 1);
+    	write(sockfd_remote, &msg_tag, 1);
 
 		struct msg_collect* msg = (struct msg_collect*) malloc(sizeof(struct msg_collect));
 		msg->base =(uint64_t) Universe::narrow_oop_base();
 		msg->shift = Universe::narrow_oop_shift();
-		write(sockfd, msg, sizeof(struct msg_collect));  // on envoie la base et le shift pour la conversion narrowoop en oop
+		write(sockfd_remote, msg, sizeof(struct msg_collect));  // on envoie la base et le shift pour la conversion narrowoop en oop
 
     	getandsend_roots();
     	int* ack = (int*) malloc(sizeof(int));
-    	read(sockfd, ack, sizeof(int));
+    	read(sockfd_remote, ack, sizeof(int));
     	lock.unlock();
 		printf("End of collection\n");
 }

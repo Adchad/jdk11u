@@ -30,7 +30,6 @@
 #include "runtime/perfData.hpp"
 #include "utilities/exceptions.hpp"
 #include "utilities/macros.hpp"
-#include "remoteLoader.hpp"
 
 // The VM class loader.
 #include <sys/stat.h>
@@ -39,6 +38,7 @@
 #define  MODULES_IMAGE_NAME "modules"
 
 // Class path entry (directory or zip file)
+//extern int x_adam;
 
 class JImageFile;
 class ClassFileStream;
@@ -174,7 +174,6 @@ class ClassLoader: AllStatic {
     APP_LOADER  = 3       /* AppClassLoader */
   };
  protected:
-  static  RemoteLoader* remoteLoader;
 
     // Performance counters
   static PerfCounter* _perf_accumulated_time;

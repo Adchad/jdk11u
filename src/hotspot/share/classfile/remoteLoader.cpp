@@ -22,10 +22,12 @@ RemoteLoader::RemoteLoader() {
     {
         puts("connect error");
     }
+
+	printf("Loader fd: %d\n", sockfd);
 }
 
 RemoteLoader::~RemoteLoader() {
-    close(sockfd);
+    //close(sockfd);
 }
 
 void* RemoteLoader::operator new(size_t size) throw(){

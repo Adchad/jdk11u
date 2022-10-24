@@ -17,7 +17,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
- * or visit www.oracle.com if you need additional information or have any
+static * or visit www.oracle.com if you need additional information or have any
  * questions.
  *
  */
@@ -75,10 +75,12 @@
 #include "classfile/sharedPathsMiscInfo.hpp"
 #endif
 
-
+#include <cstring>
 #include "gc/epsilon/RemoteSpace.hpp"
 #include "gc/epsilon/rpcMessages.hpp"
 
+
+//int x_adam=0;
 // Entry points in zip.dll for loading zip/jar file entries
 
 typedef void * * (*ZipOpen_t)(const char *name, char **pmsg);
@@ -1521,8 +1523,6 @@ InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TR
   }
 
 
-  char msg_type = 'l';
-  remoteLoader->write(&msg_type, 1);
   auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
   msg->name_length = strlen(result->external_name());
   msg->length = result->nonstatic_oop_map_count();;
@@ -1531,8 +1531,9 @@ InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TR
   msg->length = result->nonstatic_oop_map_count();
   OopMapBlock* field_array = result->start_of_nonstatic_oop_maps();
 
-  remoteLoader->write(msg, sizeof(struct msg_klass_data_2));
-  remoteLoader->write(field_array, msg->length*sizeof(OopMapBlock));
+
+  write(sockfd_remote, msg, sizeof(msg_klass_data_2));
+  write(sockfd_remote, field_array, msg->length*sizeof(OopMapBlock));
 
 
     return result;
@@ -1675,12 +1676,12 @@ void ClassLoader::record_result(InstanceKlass* ik, const ClassFileStream* stream
 // process the boot classpath into a list ClassPathEntry objects.  Once
 // this list has been created, it must not change order (see class PackageInfo)
 // it can be appended to and is by jvmti and the kernel vm.
-RemoteLoader* ClassLoader::remoteLoader;
+//RemoteLoader* ClassLoader::remoteLoader;
 
 void ClassLoader::initialize() {
   EXCEPTION_MARK;
 
-  remoteLoader = new RemoteLoader();
+ // remoteLoader = new RemoteLoader();
 
   if (UsePerfData) {
     // jvmstat performance counters

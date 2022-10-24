@@ -6,6 +6,10 @@
 #define JDK11U_RPCMESSAGES_HPP
 
 #include <stdlib.h>
+#include "oops/objArrayKlass.hpp"
+#include "oops/arrayOop.inline.hpp"
+#include "oops/oop.hpp"
+#include "oops/oop.inline.hpp"
 
 #define HEADER_OFFSET 16
 #define SIZE_OFFSET 12
@@ -14,6 +18,7 @@
 enum klass_type {instance = 1, objarray = 2, typearray = 3};
 
 struct msg_initialize{
+	char msg_type = 'i';
     HeapWord* mr_start;
     size_t mr_word_size;
     uint32_t obj_array_base;
@@ -23,15 +28,18 @@ struct msg_initialize{
 };
 
 struct msg_par_allocate{
+	char msg_type = 'a';
     size_t word_size;
 };
 
 struct msg_par_allocate_klass{
+	char msg_type = 'k';
     size_t word_size;
     unsigned long klass;
 };
 
 struct msg_set_end{
+	char msg_type = 'e';
     HeapWord* value;
 };
 
@@ -52,6 +60,7 @@ struct msg_klass_data{
 
 struct msg_klass_data_2{
     //TODO: Nettoyer cet autre struct de merde
+	char msg_type = 'l';
     unsigned long klass;
     klass_type klasstype;
     int name_length;
@@ -61,7 +70,9 @@ struct msg_klass_data_2{
     int layout_helper;
 };
 
+
 struct msg_collect{
+	char msg_type = 'c';
 	uint64_t base;
 	int32_t shift;
 };
