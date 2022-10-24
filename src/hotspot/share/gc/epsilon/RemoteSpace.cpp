@@ -19,7 +19,7 @@
 
 int sockfd_remote = 0;
 
-std::mutex lock;
+std::mutex lock_remote;
 
 RemoteSpace::RemoteSpace() : ContiguousSpace() {
     sockfd_remote = socket(AF_INET, SOCK_STREAM, 0);
@@ -60,10 +60,10 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	msg->obj_array_length = arrayOopDesc::length_offset_in_bytes();
     msg->clear_space = clear_space;
     msg->mangle_space = mangle_space;
-    lock.lock();
+    lock_remote.lock();
     write(sockfd_remote, &msg_tag, 1);
     write(sockfd_remote, msg, sizeof(struct msg_initialize));
-    lock.unlock();
+    lock_remote.unlock();
 
     std::free(msg);
 }
@@ -74,13 +74,13 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
     char msg_tag = 'a';
     msg->word_size =  word_size;
 
-    lock.lock();
+    lock_remote.lock();
     write(sockfd_remote, &msg_tag, 1);
     write(sockfd_remote, msg, sizeof(struct msg_par_allocate));
 
     HeapWord** result = (HeapWord**) malloc(sizeof(HeapWord*));
     read(sockfd_remote, result, sizeof(HeapWord*));
-    lock.unlock();
+    lock_remote.unlock();
     std::free(msg);
     HeapWord * allocated = *result;
     //if(allocated == nullptr){
@@ -109,7 +109,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     char msg_tag = 'k';
     msg->word_size =  word_size;
     msg->klass = (unsigned long) klass;
-    lock.lock();
+    lock_remote.lock();
     write(sockfd_remote, &msg_tag, 1);
     write(sockfd_remote, msg, sizeof(struct msg_par_allocate_klass));
 
@@ -117,7 +117,6 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     read(sockfd_remote, result, sizeof(msg_alloc_response));
     if(result->send_metadata){
         struct msg_klass_data* klass_data = (struct msg_klass_data*) malloc(sizeof(struct msg_klass_data));
-        klass_data->name_length = strlen(klass->external_name());
 		klass_data->length = 0;
         klass_data->layout_helper = klass->layout_helper();
         OopMapBlock* field_array = NULL;
@@ -141,10 +140,9 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
             klass_data->basetype = tklass->element_type();
             write(sockfd_remote, klass_data, sizeof(struct msg_klass_data));
         }
-        write(sockfd_remote, klass->external_name(), klass_data->name_length);
         std::free(klass_data);
     }
-    lock.unlock();
+    lock_remote.unlock();
     HeapWord* allocated = result->ptr;
    // if(allocated == nullptr){
    //     collect();
@@ -167,21 +165,21 @@ void RemoteSpace::set_end(HeapWord* value){
     char msg_tag = 'e';
     msg->value = value;
 
-    lock.lock();
+    lock_remote.lock();
     write(sockfd_remote, &msg_tag, 1);
     write(sockfd_remote, msg, sizeof(struct msg_set_end));
-    lock.unlock();
+    lock_remote.unlock();
 
     std::free(msg);
 }
 
 size_t RemoteSpace::used() const{
     char msg_tag = 'u';
-    lock.lock();
+    lock_remote.lock();
     write(sockfd_remote, &msg_tag, 1);
     size_t *result = (size_t*) malloc(sizeof(size_t));
     read(sockfd_remote, result, sizeof(size_t));
-    lock.unlock();
+    lock_remote.unlock();
 
     return *result;
 }
@@ -196,11 +194,11 @@ void getandsend_roots(int sig) {
     rm.do_it();
     int array_length = rm.getArraySize();
     unsigned long *root_array= rm.rootArray();
-    lock.lock();
+    lock_remote.lock();
     write(sockfd_remote, &msg_tag,1);
     write(sockfd_remote, &array_length, sizeof(int));
     write(sockfd_remote, root_array, sizeof(unsigned long)*array_length );
-    lock.unlock();
+    lock_remote.unlock();
 }
 
 void getandsend_roots(){
@@ -227,7 +225,7 @@ void RemoteSpace::collect() {
 		printf("Start of collection\n");
     	char msg_tag = 'c';
     	fsync(fd_for_heap);
-    	lock.lock();
+    	lock_remote.lock();
     	write(sockfd_remote, &msg_tag, 1);
 
 		struct msg_collect* msg = (struct msg_collect*) malloc(sizeof(struct msg_collect));
@@ -238,6 +236,6 @@ void RemoteSpace::collect() {
     	getandsend_roots();
     	int* ack = (int*) malloc(sizeof(int));
     	read(sockfd_remote, ack, sizeof(int));
-    	lock.unlock();
+    	lock_remote.unlock();
 		printf("End of collection\n");
 }

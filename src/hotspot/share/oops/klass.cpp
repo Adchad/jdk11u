@@ -54,7 +54,6 @@ void Klass::set_java_mirror(Handle m) {
 }
 
 oop Klass::java_mirror() const {
-  x_adam = 42;	
   return _java_mirror.resolve();
 }
 

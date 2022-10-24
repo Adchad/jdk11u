@@ -1532,9 +1532,10 @@ InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TR
   OopMapBlock* field_array = result->start_of_nonstatic_oop_maps();
 
 
+  lock_remote.lock();
   write(sockfd_remote, msg, sizeof(msg_klass_data_2));
   write(sockfd_remote, field_array, msg->length*sizeof(OopMapBlock));
-
+  lock_remote.unlock();
 
     return result;
 }

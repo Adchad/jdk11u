@@ -16,7 +16,7 @@ void getandsend_roots(int sig);
 void getandsend_roots();
 
 
-extern std::mutex lock;
+extern std::mutex lock_remote;
 extern int sockfd_remote;
 
 
