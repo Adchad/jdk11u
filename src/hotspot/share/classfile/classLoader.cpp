@@ -75,6 +75,11 @@ static * or visit www.oracle.com if you need additional information or have any
 #include "classfile/sharedPathsMiscInfo.hpp"
 #endif
 
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include <cstring>
 #include "gc/epsilon/RemoteSpace.hpp"
 #include "gc/epsilon/rpcMessages.hpp"
@@ -1522,20 +1527,37 @@ InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TR
     return NULL;
   }
 
+  if(sockfd_remote < 0 ){
+    sockfd_remote = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd_remote < 0)
+    {
+        perror ("socket");
+        exit (EXIT_FAILURE);
+    }
 
-  auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
-  msg->name_length = strlen(result->external_name());
-  msg->length = result->nonstatic_oop_map_count();;
-  msg->layout_helper = result->layout_helper();
-  msg->klasstype = instance;
-  msg->length = result->nonstatic_oop_map_count();
-  OopMapBlock* field_array = result->start_of_nonstatic_oop_maps();
+    struct sockaddr_in server;
 
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server.sin_port = htons( RSPACE_PORT );
 
-  lock_remote.lock();
-  write(sockfd_remote, msg, sizeof(msg_klass_data_2));
-  write(sockfd_remote, field_array, msg->length*sizeof(OopMapBlock));
-  lock_remote.unlock();
+    if (connect(sockfd_remote, (struct sockaddr *)&server , sizeof(server)) < 0)
+    {
+        puts("connect error");
+    }
+  }
+  if(sockfd_remote > 0){
+    auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
+	msg->msg_type.type = 'l';
+    msg->layout_helper = result->layout_helper();
+    msg->klasstype = instance;
+    msg->length = result->nonstatic_oop_map_count();
+    OopMapBlock* field_array = result->start_of_nonstatic_oop_maps();
+    lock_remote.lock();
+    write(sockfd_remote, msg, sizeof(msg_klass_data_2));
+    write(sockfd_remote, field_array, msg->length*sizeof(OopMapBlock));
+    lock_remote.unlock();
+  }
 
     return result;
 }
