@@ -23,6 +23,7 @@ std::mutex lock_remote;
 
 RemoteSpace::RemoteSpace() : ContiguousSpace() {
 	if(sockfd_remote < 0){
+		printf("space socket\n");
 	    sockfd_remote = socket(AF_INET, SOCK_STREAM, 0);
 	    if (sockfd_remote < 0)
 	    {
@@ -40,7 +41,12 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
 	        puts("connect error");
 	    }
 	}
+	int one = 1;
+	setsockopt(sockfd_remote, SOL_TCP, TCP_NODELAY, &one, sizeof(one));
 
+    int newsize = 131072;
+	setsockopt(sockfd_remote, SOL_SOCKET, SO_SNDBUF, &newsize, sizeof(newsize));
+	setsockopt(sockfd_remote, SOL_SOCKET, SO_RCVBUF, &newsize, sizeof(newsize));
     signal(SIGUSR1, getandsend_roots);
 }
 
@@ -50,7 +56,7 @@ RemoteSpace::~RemoteSpace(){
 
 
 void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) {
-    struct msg_initialize * msg = (struct msg_initialize*) malloc(sizeof(struct msg_initialize));
+    struct msg_initialize * msg = (struct msg_initialize*) calloc(1,sizeof(struct msg_initialize));
     HeapWord* mr_start = mr.start();
 	printf("Start: %p\n",  mr_start);
     size_t  mr_word_size = mr.word_size();
@@ -68,7 +74,7 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 
 HeapWord *RemoteSpace::par_allocate(size_t word_size) {
     counter++;
-    struct msg_par_allocate * msg = (struct msg_par_allocate*) malloc(sizeof(struct msg_par_allocate));
+    struct msg_par_allocate * msg = (struct msg_par_allocate*) calloc(1,sizeof(struct msg_par_allocate));
 
 	msg->msg_type.type = 'a';
     msg->word_size =  word_size;
@@ -104,12 +110,11 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 
     //printf("Avant\n");
 
-    struct msg_par_allocate_klass* msg = (struct msg_par_allocate_klass*) malloc(sizeof(struct msg_par_allocate_klass));
+    struct msg_par_allocate_klass* msg = (struct msg_par_allocate_klass*) calloc(1,sizeof(struct msg_par_allocate_klass));
 	msg->msg_type.type = 'k';
     msg->word_size =  word_size;
     msg->klass = (unsigned long) klass;
     lock_remote.lock();
-
     write(sockfd_remote, msg, sizeof(struct msg_par_allocate_klass));
 
     struct msg_alloc_response* result = (struct msg_alloc_response*) malloc(sizeof(struct msg_alloc_response));
@@ -160,7 +165,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 
 
 void RemoteSpace::set_end(HeapWord* value){
-    struct msg_set_end * msg = (struct msg_set_end*) malloc(sizeof(struct msg_set_end));
+    struct msg_set_end * msg = (struct msg_set_end*) calloc(1,sizeof(struct msg_set_end));
 	msg->msg_type.type = 'e';
     msg->value = value;
     write(sockfd_remote, msg, sizeof(struct msg_set_end));
@@ -168,6 +173,7 @@ void RemoteSpace::set_end(HeapWord* value){
 }
 
 size_t RemoteSpace::used() const{
+	//printf("Start used\n");
 	opcode tag;
     tag.type = 'u';
     lock_remote.lock();
@@ -175,6 +181,7 @@ size_t RemoteSpace::used() const{
     size_t *result = (size_t*) malloc(sizeof(size_t));
     read(sockfd_remote, result, sizeof(size_t));
     lock_remote.unlock();
+	//printf("End used: %lu\n", *result);
 
     return *result;
 }
@@ -193,7 +200,10 @@ void getandsend_roots(int sig) {
     lock_remote.lock();
     write(sockfd_remote, &tag,8);
     write(sockfd_remote, &array_length, sizeof(int));
+	int flag = 1;
+	setsockopt(sockfd_remote, IPPROTO_TCP, O_NDELAY, (char *) &flag, sizeof(int));
     write(sockfd_remote, root_array, sizeof(unsigned long)*array_length );
+	setsockopt(sockfd_remote, IPPROTO_TCP, O_NDELAY, (char *) &flag, sizeof(int));
     lock_remote.unlock();
 }
 
@@ -201,12 +211,13 @@ void getandsend_roots(){
     RootMark rm;
 	printf("Starting to collect roots\n");
     rm.do_it();
-    int array_length = rm.getArraySize();
-    unsigned long *root_array= rm.rootArray();
+    uint64_t array_length = (uint64_t) rm.getArraySize();
+	printf("Length: %lu\n", array_length);
+    uint64_t*root_array= rm.rootArray();
 	first_root = *root_array;
-    write(sockfd_remote, &array_length, sizeof(int));
-    write(sockfd_remote, root_array, sizeof(unsigned long)*array_length );
-	printf("End of roots collection\n");
+    write(sockfd_remote, &array_length, sizeof(uint64_t));
+    int res = write(sockfd_remote, root_array, sizeof(uint64_t)*array_length );
+	printf("End of roots collection ; res: %d\n", res);
 }
 
 void RemoteSpace::safe_object_iterate(ObjectClosure* blk){
@@ -221,15 +232,16 @@ void RemoteSpace::collect() {
 		printf("Start of collection\n");
     	fsync(fd_for_heap);
 
-		struct msg_collect* msg = (struct msg_collect*) malloc(sizeof(struct msg_collect));
+		struct msg_collect* msg = (struct msg_collect*) calloc(1, sizeof(struct msg_collect));
 		msg->msg_type.type = 'c';
 		msg->base =(uint64_t) Universe::narrow_oop_base();
 		msg->shift = Universe::narrow_oop_shift();
     	lock_remote.lock();
 		write(sockfd_remote, msg, sizeof(struct msg_collect));  // on envoie la base et le shift pour la conversion narrowoop en oop
     	getandsend_roots();
-    	int* ack = (int*) malloc(sizeof(int));
-    	read(sockfd_remote, ack, sizeof(int));
+    	uint64_t* ack = (uint64_t*) malloc(sizeof(uint64_t));
+    	int res = read(sockfd_remote, ack, sizeof(uint64_t));
+		printf("Ack: %lu\n", *ack);
     	lock_remote.unlock();
 		printf("End of collection\n");
 }

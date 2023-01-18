@@ -37,6 +37,74 @@
 
 #define REMOTE_SPACE
 
+class VM_Pause: public VM_Operation {
+private:
+  const GCCause::Cause _cause;
+  EpsilonHeap* const _heap;
+  static size_t _req_id;
+public:
+  VM_Pause(GCCause::Cause cause) : VM_Operation(),
+                                            _cause(cause),
+                                            _heap(EpsilonHeap::heap()) {};
+
+  VM_Operation::VMOp_Type type() const { return VMOp_Dummy; }
+  const char* name()             const { return "Epsilon Collection"; }
+
+  bool evaluate_at_safepoint() const {return true;}
+
+  bool evaluate_concurrently() const {return false;}
+
+
+  virtual bool doit_prologue() {
+    //size_t id = OrderAccess::load_acquire(&_req_id);
+
+    // Need to take the Heap lock before managing backing storage.
+	//printf("before lock\n");
+    //Heap_lock->lock();
+	//printf("after lock\n");
+
+    //// Heap lock also naturally serializes GC requests, and allows us to coalesce
+    //// back-to-back GC requests from many threads. Avoid the consecutive GCs
+    //// if we started waiting when other GC request was being handled.
+    //if (id < OrderAccess::load_acquire(&_req_id)) {
+	//  printf("Don't need to do collection\n");
+    //  Heap_lock->unlock();
+    //  return false;
+    //}
+
+    //// No contenders. Start handling a new GC request.
+    //Atomic::inc(&_req_id);
+    //return true;
+	return true;
+  }
+
+  virtual void doit() {
+      size_t id = OrderAccess::load_acquire(&_req_id);
+      //Heap_lock->lock();
+
+      if (id < OrderAccess::load_acquire(&_req_id)) {
+        //Heap_lock->unlock();
+        return;
+      }
+      Atomic::inc(&_req_id);
+
+
+	  printf("Start pause\n");
+	  _heap->collect_impl();
+	  printf("End pause \n\n");
+
+
+	  //Heap_lock->unlock();
+  }
+
+  virtual void doit_epilogue() {
+    //Heap_lock->unlock();
+  }
+};
+
+size_t VM_Pause::_req_id = 0;
+
+
 jint EpsilonHeap::initialize() {
   counter=0;
   size_t align = _policy->heap_alignment();
@@ -133,6 +201,27 @@ EpsilonHeap* EpsilonHeap::heap() {
 }
 
 HeapWord* EpsilonHeap::allocate_work(size_t size) {
+  HeapWord* res = allocate_work_impl(size);
+  if (res == NULL) {
+	vm_collect_impl();
+    res = allocate_work_impl(size);
+  }
+  return res;
+}	
+
+HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
+  HeapWord* res = allocate_work_klass_impl(size, klass);
+  if (res == nullptr) {
+	printf("Je commence\n");
+	vm_collect_impl();
+	printf("Coucou, ça va ?\n");
+    res = allocate_work_klass_impl(size, klass);
+	printf("Res: %p\n", res);
+  }
+  return res;
+}	
+
+HeapWord* EpsilonHeap::allocate_work_impl(size_t size) {
     assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
 
     HeapWord* res = NULL;
@@ -141,15 +230,14 @@ HeapWord* EpsilonHeap::allocate_work(size_t size) {
     res = _space->par_allocate(size);
     //printf("Pointeur: %p\n", (void*) res);
       if (res != NULL) {
-      break;
-    }
+		break;
+     }
 
       // Allocation failed, attempt expansion, and retry:
     {
       MutexLockerEx ml(Heap_lock);
 
 	  // first attempt collection:
-	  do_full_collection(true);
 
 
       // Try to allocate under the lock, assume another thread was able to expand
@@ -181,6 +269,7 @@ HeapWord* EpsilonHeap::allocate_work(size_t size) {
   }
 
   size_t used = _space->used();
+ // printf("Used: %lu\n", used);
 
   // Allocation successful, update counters
   {
@@ -206,7 +295,7 @@ HeapWord* EpsilonHeap::allocate_work(size_t size) {
 
 
 
-HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
+HeapWord* EpsilonHeap::allocate_work_klass_impl(size_t size, Klass* klass) {
     assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
     HeapWord* res = NULL;
     while (true) {
@@ -219,17 +308,15 @@ HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
 
         // Allocation failed, attempt expansion, and retry:
         {
+			//grab lock
             MutexLockerEx ml(Heap_lock);
-
-			// first attempt collection:
-		  	do_full_collection(true);
-
 
             // Try to allocate under the lock, assume another thread was able to expand
             res = _space->par_allocate_klass(size, klass);
             if (res != NULL) {
                 break;
             }
+
 
             // Expand and loop back if space is available
             size_t space_left = max_capacity() - capacity();
@@ -254,6 +341,7 @@ HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
     }
 
     size_t used = _space->used();
+	//printf("Used: %lu\n", used);
 
     // Allocation successful, update counters
     {
@@ -273,6 +361,7 @@ HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
     }
 
     assert(is_object_aligned(res), "Object should be aligned: " PTR_FORMAT, p2i(res));
+	//printf("Allocated ptr: %p, klasss: %s\n", res, klass->external_name() );
     return res;
 }
 
@@ -395,21 +484,42 @@ void EpsilonHeap::collect(GCCause::Cause cause) {
       break;
       //log_info(gc)("GC request for \"%s\" is ignored", GCCause::to_string(cause));
   }
-  CodeCache::gc_prologue();
+
+  if (SafepointSynchronize::is_at_safepoint()) {
+		  printf("safepoint\n");
+		  collect_impl();
+        } else {
+		  printf("no safepoint\n");
+		  vm_collect_impl();
+        }
 
 #if COMPILER2_OR_JVMCI
     DerivedPointerTable::clear();
 #endif
+}
+
+
+void EpsilonHeap::collect_impl(){
+  CodeCache::gc_prologue();
+  BiasedLocking::preserve_marks();
+  DerivedPointerTable::set_active(false);
+  //DerivedPointerTable::update_pointers();
   ((RemoteSpace*)_space)->collect();
+  //DerivedPointerTable::update_pointers();
+  BiasedLocking::restore_marks();
   CodeCache::gc_epilogue();
   JvmtiExport::gc_epilogue();
+  //_monitoring_support->update_counters();
+}
 
-  _monitoring_support->update_counters();
+void EpsilonHeap::vm_collect_impl(){
+  VM_Pause pause(gc_cause());
+  VMThread::execute(&pause);
 }
 
 void EpsilonHeap::do_full_collection(bool clear_all_soft_refs) {
-  VM_Pause pause(gc_cause());
-  VMThread::execute(&pause);
+	vm_collect_impl();
+	printf("Coucou bg\n");
 }
 
 void EpsilonHeap::safe_object_iterate(ObjectClosure *cl) {
@@ -468,3 +578,8 @@ void EpsilonHeap::print_metaspace_info() const {
     log_info(gc, metaspace)("Metaspace: no reliable data");
   }
 }
+
+
+
+
+

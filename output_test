@@ -1,0 +1,128 @@
+[0.002s][warning][gc] Consider setting -Xms equal to -Xmx to avoid resizing hiccups
+[0.002s][warning][gc] Consider enabling -XX:+AlwaysPreTouch to avoid memory commit hiccups
+space socket
+[0.005s][info   ][gc] Resizeable heap; starting at 24M, max: 16384M, step: 128M
+[0.005s][info   ][gc] Not using TLAB allocation
+[0.005s][info   ][gc] Using Epsilon
+Start pause
+Start of collection
+Starting to collect roots
+Roots: 
+CodeCache:
+Universe:
+	(nil)
+	(nil)
+	(nil)
+JNI:
+Threads:
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+Object Synchronizer:
+Management:
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+	(nil)
+Jvmti Export:
+SystemDictionary:
+	(nil)
+	(nil)
+	(nil)
+WeakProcessor:
+ClassLoader:
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x0000000000000000, pid=311803, tid=311804
+#
+# JRE version: OpenJDK Runtime Environment (11.0.16) (build 11.0.16-internal+0-adhoc.adam.jdk11u)
+# Java VM: OpenJDK 64-Bit Server VM (11.0.16-internal+0-adhoc.adam.jdk11u, mixed mode, tiered, compressed oops, epsilon gc, linux-amd64)
+# Problematic frame:
+# C  0x0000000000000000
+#
+# No core dump will be written. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# An error report file with more information is saved as:
+# /home/adam/jdk11u/hs_err_pid311803.log
+Compiled method (c1)   49179 1289       3       java.lang.invoke.MemberName::<init> (131 bytes)
+ total in heap  [0x00007fa5e5029010,0x00007fa5e502ac80] = 7280
+ relocation     [0x00007fa5e5029188,0x00007fa5e5029360] = 472
+ main code      [0x00007fa5e5029360,0x00007fa5e502a5e0] = 4736
+ stub code      [0x00007fa5e502a5e0,0x00007fa5e502a6f0] = 272
+ oops           [0x00007fa5e502a6f0,0x00007fa5e502a710] = 32
+ metadata       [0x00007fa5e502a710,0x00007fa5e502a770] = 96
+ scopes data    [0x00007fa5e502a770,0x00007fa5e502a9c8] = 600
+ scopes pcs     [0x00007fa5e502a9c8,0x00007fa5e502ac78] = 688
+ dependencies   [0x00007fa5e502ac78,0x00007fa5e502ac80] = 8
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugreport.java.com/bugreport/crash.jsp
+#
+Aot:
+Length: 7217
+End of roots collection ; res: 57736
+Ack: 1
+End of collection
+End pause 
+
+Coucou bg

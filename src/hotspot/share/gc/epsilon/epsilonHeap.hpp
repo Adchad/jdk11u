@@ -34,6 +34,7 @@
 #include "gc/epsilon/epsilonBarrierSet.hpp"
 #include "gc/epsilon/epsilon_globals.hpp"
 #include "runtime/vmThread.hpp"
+#include "runtime/orderAccess.hpp"
 
 class EpsilonHeap : public CollectedHeap {
   friend class VMStructs;
@@ -105,6 +106,8 @@ public:
   // Allocation
   HeapWord* allocate_work(size_t size);
   HeapWord* allocate_work_klass(size_t size, Klass* klass);
+  HeapWord* allocate_work_impl(size_t size);
+  HeapWord* allocate_work_klass_impl(size_t size, Klass* klass);
   virtual HeapWord* mem_allocate(size_t size, bool* gc_overhead_limit_was_exceeded);
   HeapWord* mem_allocate_klass(size_t size, bool* gc_overhead_limit_was_exceeded, Klass *klass);
 
@@ -120,6 +123,8 @@ public:
   virtual size_t unsafe_max_tlab_alloc(Thread* thr) const;
 
   virtual void collect(GCCause::Cause cause);
+  virtual void collect_impl();
+  virtual void vm_collect_impl();
   virtual void do_full_collection(bool clear_all_soft_refs);
 
   // Heap walking support
@@ -160,28 +165,5 @@ private:
 
 };
 
-
-
-
-class VM_Pause: public VM_Operation {
-private:
-  const GCCause::Cause _cause;
-  EpsilonHeap* const _heap;
-public:
-  VM_Pause(GCCause::Cause cause) : VM_Operation(),
-                                            _cause(cause),
-                                            _heap(EpsilonHeap::heap()) {};
-
-  VM_Operation::VMOp_Type type() const { return VMOp_Dummy; }
-  const char* name()             const { return "Epsilon Collection"; }
-
-  bool evaluate_at_safepoint() const {return true;}
-
-  virtual void doit(){
-	  printf("Start pause\n");
-	 _heap->collect(_cause);
-	  printf("End pause \n\n");
-  }
-};
 
 #endif // SHARE_VM_GC_EPSILON_COLLECTEDHEAP_HPP

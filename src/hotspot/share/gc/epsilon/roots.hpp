@@ -24,13 +24,14 @@ public:
     int list_length = 0;
 
 public:
-
+	// print les racines, et print d'où elles viennent avant
     void do_oop(oop* o){
         struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
         //lock.lock();
         list_length++;
         struct linked_list* curr = head;
         new_node->value = (HeapWord*) *o;
+		//printf("\t%p\n",(HeapWord*) *o);
         new_node->next = curr;
         head = new_node;
         //lock.unlock();
@@ -43,6 +44,7 @@ public:
         list_length++;
         struct linked_list* curr = head;
         new_node->value = (HeapWord*) (unsigned long) *o;
+		//printf("\t%p\n", (HeapWord*)(unsigned long)  *o);
         new_node->next = curr;
         head = new_node;
         //lock.unlock();
@@ -100,4 +102,4 @@ public:
     }
 };
 
-#endif //JDK11U_ROOTS_HPP
+#endif //JDK11U_ROOTS_HPP ")

@@ -8,6 +8,7 @@
 #include "gc/shared/space.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <mutex>
 #include "utilities/globalDefinitions.hpp"
 #define RSPACE_PORT 42069

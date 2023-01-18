@@ -1420,6 +1420,7 @@ ClassFileStream* ClassLoader::search_module_entries(const GrowableArray<ModuleCl
   return NULL;
 }
 
+#define REMOTE_LOADING 1
 // Called by the boot classloader to load classes
 InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TRAPS) {
   assert(name != NULL, "invariant");
@@ -1526,8 +1527,9 @@ InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TR
   if (!add_package(file_name, classpath_index, THREAD)) {
     return NULL;
   }
-
+#if REMOTE_LOADING
   if(sockfd_remote < 0 ){
+	printf("loader socket\n");
     sockfd_remote = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd_remote < 0)
     {
@@ -1546,7 +1548,8 @@ InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TR
         puts("connect error");
     }
   }
-  if(sockfd_remote > 0){
+  if(sockfd_remote > 2){
+	//printf("la klass à dallas\n");
     auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
 	msg->msg_type.type = 'l';
     msg->layout_helper = result->layout_helper();
@@ -1557,7 +1560,9 @@ InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TR
     write(sockfd_remote, msg, sizeof(msg_klass_data_2));
     write(sockfd_remote, field_array, msg->length*sizeof(OopMapBlock));
     lock_remote.unlock();
+	//printf("Received klass\n");
   }
+#endif
 
     return result;
 }
