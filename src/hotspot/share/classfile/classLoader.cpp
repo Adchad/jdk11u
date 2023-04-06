@@ -1420,7 +1420,7 @@ ClassFileStream* ClassLoader::search_module_entries(const GrowableArray<ModuleCl
   return NULL;
 }
 
-#define REMOTE_LOADING 1
+#define REMOTE_LOADING 0
 // Called by the boot classloader to load classes
 InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TRAPS) {
   assert(name != NULL, "invariant");

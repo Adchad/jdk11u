@@ -257,6 +257,10 @@ class java_lang_Class : AllStatic {
   static void initialize_mirror_fields(Klass* k, Handle mirror, Handle protection_domain, TRAPS);
   static void set_mirror_module_field(Klass* K, Handle mirror, Handle module, TRAPS);
  public:
+
+  static int static_oop_field_count_offset(){   //rajouté par Adam
+	return _static_oop_field_count_offset;
+  }
   static void allocate_fixup_lists();
   static void compute_offsets();
 

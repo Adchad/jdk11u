@@ -13,6 +13,11 @@
 #include "utilities/globalDefinitions.hpp"
 #define RSPACE_PORT 42069
 
+struct range_t {
+	char* base;
+	size_t size;
+};
+
 void getandsend_roots(int sig);
 void getandsend_roots();
 
@@ -28,6 +33,7 @@ private:
     struct sockaddr_in server;
     int fd_for_heap;
 	bool collected = false;
+	struct range_t* heap_range;
 
 public:
     RemoteSpace();
@@ -45,6 +51,13 @@ public:
 
     void set_fd(int fd){ fd_for_heap = fd;}
 
+	void deadbeef_area(uint64_t addr, int size, int type);
+
+    void set_range(char* base, size_t size){
+		heap_range = (struct range_t*) malloc(sizeof(struct range_t));
+		heap_range->base = base; 
+		heap_range->size = size; 
+	};
 };
 
 

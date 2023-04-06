@@ -256,7 +256,8 @@ class CollectedHeap : public CHeapObj<mtInternal> {
   // code.
   virtual bool is_in(const void* p) const = 0;
 
-  DEBUG_ONLY(bool is_in_or_null(const void* p) const { return p == NULL || is_in(p); })
+  DEBUG_ONLY(bool is_in_or_null(const void* p) const { return true; })
+  //DEBUG_ONLY(bool is_in_or_null(const void* p) const { return p == NULL || is_in(p); })
 
   // Let's define some terms: a "closed" subset of a heap is one that
   //

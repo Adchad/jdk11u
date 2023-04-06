@@ -719,6 +719,7 @@ void CodeCache::blobs_do(CodeBlobClosure* f) {
 // Walk the list of methods which might contain oops to the java heap.
 void CodeCache::scavenge_root_nmethods_do(CodeBlobToOopClosure* f) {
   assert_locked_or_safepoint(CodeCache_lock);
+
   const bool fix_relocations = f->fix_relocations();
   debug_only(mark_scavenge_root_nmethods());
 

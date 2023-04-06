@@ -23,6 +23,7 @@
  */
 
 #include "precompiled.hpp"
+//#include "gc/epsilon/epsilonBarrierSet.inline.hpp"
 #include "runtime/thread.hpp"
 #include "gc/epsilon/epsilonBarrierSet.hpp"
 #include "gc/epsilon/epsilonThreadLocalData.hpp"
@@ -35,6 +36,12 @@
 #ifdef COMPILER2
 #include "gc/shared/c2/barrierSetC2.hpp"
 #endif
+#include "gc/shared/accessBarrierSupport.inline.hpp"
+#include "oops/compressedOops.inline.hpp"
+#include "oops/oop.hpp"
+#include "oops/access.inline.hpp"
+
+
 
 EpsilonBarrierSet::EpsilonBarrierSet() : BarrierSet(
           make_barrier_set_assembler<BarrierSetAssembler>(),

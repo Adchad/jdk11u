@@ -123,6 +123,7 @@ jint EpsilonHeap::initialize() {
 #ifdef REMOTE_SPACE
   _space = new RemoteSpace();
   ((RemoteSpace*) _space)->set_fd(heap_rs.fd_for_heap());
+  ((RemoteSpace*) _space)->set_range(heap_rs.base(), heap_rs.size());
 #else
   _space = new ContiguousSpace();
 #endif
@@ -210,11 +211,11 @@ HeapWord* EpsilonHeap::allocate_work(size_t size) {
 }	
 
 HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
+  //FIXME j'augmente la taille des objects pour tester
+  //size += 32;
   HeapWord* res = allocate_work_klass_impl(size, klass);
   if (res == nullptr) {
-	printf("Je commence\n");
 	vm_collect_impl();
-	printf("Coucou, ça va ?\n");
     res = allocate_work_klass_impl(size, klass);
 	printf("Res: %p\n", res);
   }
@@ -519,7 +520,6 @@ void EpsilonHeap::vm_collect_impl(){
 
 void EpsilonHeap::do_full_collection(bool clear_all_soft_refs) {
 	vm_collect_impl();
-	printf("Coucou bg\n");
 }
 
 void EpsilonHeap::safe_object_iterate(ObjectClosure *cl) {

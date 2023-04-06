@@ -23,19 +23,20 @@
 #include "utilities/stack.inline.hpp"
 #include "gc/shared/referenceProcessor.hpp"
 #include "gc/shared/weakProcessor.hpp"
+#include "gc/shared/oopStorage.inline.hpp"
+
 
 void RootMark::do_it(){
 	StrongRootsScope scope(1);
-	CLDToOopClosure clds(&rc,false);
-	MarkingCodeBlobClosure blobs(&rc, CodeBlobToOopClosure::FixRelocations);
+	CLDToOopClosure clds(&rc, true);
+	MarkingCodeBlobClosure blobs(&rc, true);
 
 	//printf("Roots: \n");
 	{
 		MutexLockerEx lock(CodeCache_lock, Mutex::_no_safepoint_check_flag);
-
-		//printf("CodeCache:\n");
 		CodeCache::blobs_do(&blobs);
 	}
+	//Oop
     Universe::oops_do(&rc);
     JNIHandles::oops_do(&rc);
     //MarkingCodeBlobClosure each_active_code_blob(&rc, !CodeBlobToOopClosure::FixRelocations);
@@ -45,7 +46,7 @@ void RootMark::do_it(){
     JvmtiExport::oops_do(&rc);
     SystemDictionary::oops_do(&rc);
 	WeakProcessor::oops_do(&rc);
-    ClassLoaderDataGraph::always_strong_oops_do(&rc, true);
-	//ClassLoaderDataGraph::cld_do(&clds);
+    //ClassLoaderDataGraph::always_strong_oops_do(&rc, true);
+	ClassLoaderDataGraph::cld_do(&clds);
     AOTLoader::oops_do(&rc);
 }

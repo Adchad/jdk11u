@@ -763,7 +763,7 @@ intptr_t ObjectSynchronizer::FastHashCode(Thread * Self, oop obj) {
     // for fast path, but it does not worth the complexity.
   } else if (mark->has_monitor()) {
     monitor = mark->monitor();
-    printf("monitor :%p\n", monitor);
+	//printf("monitor :%p\n", monitor);
     temp = monitor->header();
     assert(temp->is_neutral(), "invariant");
     hash = temp->hash();
@@ -1410,6 +1410,7 @@ ObjectMonitor* ObjectSynchronizer::inflate(Thread * Self,
     // CASE: inflated
     if (mark->has_monitor()) {
       ObjectMonitor * inf = mark->monitor();
+		//printf("Object: %p, mark(header) %p, monitor: %p\n", object, mark, inf); //TODO remove ça
       assert(inf->header()->is_neutral(), "invariant");
       assert(inf->object() == object, "invariant");
       assert(ObjectSynchronizer::verify_objmon_isinpool(inf), "monitor is invalid");

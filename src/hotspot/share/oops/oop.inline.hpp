@@ -87,12 +87,24 @@ void oopDesc::init_mark_raw() {
   set_mark_raw(markOopDesc::prototype_for_object(this));
 }
 
+//Klass* oopDesc::klass() const {
+//  if (UseCompressedClassPointers) {
+//    return Klass::decode_klass_not_null(_metadata._compressed_klass);
+//  } else {
+//    return _metadata._klass;
+//  }
+//}
+
 Klass* oopDesc::klass() const {
+  Klass *ret;
   if (UseCompressedClassPointers) {
-    return Klass::decode_klass_not_null(_metadata._compressed_klass);
+    ret =  Klass::decode_klass_not_null(_metadata._compressed_klass);
   } else {
-    return _metadata._klass;
+    ret = _metadata._klass;
   }
+  if((uint64_t)ret >> 4 == 0x8dead)
+	  printf("PROUT: %p\n", this);
+  return ret;
 }
 
 Klass* oopDesc::klass_or_null() const volatile {

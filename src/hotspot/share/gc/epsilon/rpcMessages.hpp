@@ -15,7 +15,7 @@
 #define SIZE_OFFSET 12
 #define KLASS_OFFSET 8
 
-enum klass_type {instance = 1, objarray = 2, typearray = 3};
+enum klass_type {instance = 1, objarray = 2, typearray = 3, instanceref = 4, instancemirror = 5, instanceclassloader = 6};
 
 typedef struct opcode_t{
 	char type;
@@ -51,13 +51,14 @@ struct msg_set_end{
 
 struct msg_alloc_response{
     HeapWord* ptr;
-    bool send_metadata = false;
+	uint64_t send_metadata;
 };
 
 struct msg_klass_data{
     //TODO: Nettoyer ce struct de merde
     klass_type klasstype;
-	int length;
+	int64_t name_length;
+	uint32_t length;
     uint64_t base_klass = 0; //only for obj_array
     BasicType basetype = T_ILLEGAL; //only for typearray
     int layout_helper;
@@ -68,6 +69,7 @@ struct msg_klass_data_2{
 	opcode msg_type;
     uint64_t klass;
     klass_type klasstype;
+	//char name[32];
     int length;
     uint64_t base_klass = 0; //only for obj_array
     BasicType basetype = T_ILLEGAL; //only for typearray
@@ -79,6 +81,8 @@ struct msg_collect{
 	opcode msg_type;
 	uint64_t base;
 	int32_t shift;
+    uint32_t static_base;
+    uint32_t static_length;
 };
 
 

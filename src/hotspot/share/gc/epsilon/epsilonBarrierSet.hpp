@@ -41,7 +41,53 @@ public:
   virtual void on_thread_destroy(Thread* thread);
 
   template <DecoratorSet decorators, typename BarrierSetT = EpsilonBarrierSet>
-  class AccessBarrier: public BarrierSet::AccessBarrier<decorators, BarrierSetT> {};
+  class AccessBarrier: public BarrierSet::AccessBarrier<decorators, BarrierSetT> {
+    typedef BarrierSet::AccessBarrier<decorators, BarrierSetT> Raw;
+
+  public:
+    // Needed for loads on non-heap weak references
+//    template <typename T>
+//    static oop oop_load_not_in_heap(T* addr){
+//		uint32_t *array = (uint32_t*)(&addr);
+//		if(( array[0] == 0xdeadbeef ) || ( array[1] == 0xdeadbeef) ){
+//			printf("prout, addr: %p \n", addr);
+//		}
+//
+//		oop value = Raw::template oop_load_not_in_heap<T>(addr);
+//  		return value;
+//	};
+//
+//
+//    // Needed for weak references
+//    static oop oop_load_in_heap_at(oop base, ptrdiff_t offset){
+//		uint64_t addr = (uint64_t) base + (uint64_t) offset;
+//		uint32_t *array = (uint32_t*)(&addr);
+//		if(( array[0] == 0xdeadbeef ) || ( array[1] == 0xdeadbeef) ){
+//			printf("prout, addr: %p \n",(void*) addr);
+//		}
+//
+//		oop value = Raw::oop_load_in_heap_at(base, offset);
+//		//printf("%p\n", value);
+//		
+//		//Klass* k = ((uint64_t)value>=0x600000000) ? value->klass_or_null() : nullptr;
+//
+//		//printf("In heap at, addr %p, klass: %s \n", (void*) value,   (k!=nullptr) ? k->external_name() : "NULL"  );
+//		return value;
+//	}
+
+    // Defensive: will catch weak oops at addresses in heap
+//    template <typename T>
+//    static oop oop_load_in_heap(T* addr){
+//		uint32_t *array = (uint32_t*) (&addr);
+//		if(( array[0] == 0xdeadbeef ) || ( array[1] == 0xdeadbeef) ){
+//			printf("prout, addr: %p \n", addr);
+//		}
+//
+//		printf("In heap, addr: %p \n", addr);
+//		oop value = Raw::template oop_load_in_heap<T>(addr);
+//  		return value;
+//	};
+  };
 };
 
 template<>
