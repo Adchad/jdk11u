@@ -26,27 +26,32 @@ public:
 public:
 	// print les racines, et print d'où elles viennent avant
     void do_oop(oop* o){
-        struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
-        //lock.lock();
-        list_length++;
-        struct linked_list* curr = head;
-        new_node->value = (HeapWord*) *o;
-		//printf("\t%p\n",(HeapWord*) *o);
-        new_node->next = curr;
-        head = new_node;
+		if(*o != nullptr){
+			struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
+        	//lock.lock();
+        	list_length++;
+        	struct linked_list* curr = head;
+        	new_node->value = (HeapWord*) *o;
+			//printf("\t%p\n",(HeapWord*) *o);
+        	new_node->next = curr;
+        	head = new_node;
+		}
         //lock.unlock();
 
     };
 
     void do_oop(narrowOop* o){
-        struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
-        //lock.lock();
-        list_length++;
-        struct linked_list* curr = head;
-        new_node->value = (HeapWord*) (unsigned long) *o;
-		//printf("\t%p\n", (HeapWord*)(unsigned long)  *o);
-        new_node->next = curr;
-        head = new_node;
+		printf("narrow root: %d\n", *o);
+		if(*o != 0){
+			struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
+        	//lock.lock();
+        	list_length++;
+        	struct linked_list* curr = head;
+        	new_node->value = (HeapWord*) (uint64_t) *o;
+			//printf("\t%p\n", (HeapWord*)(uint64_t)  *o);
+        	new_node->next = curr;
+        	head = new_node;
+		}
         //lock.unlock();
     };
 
@@ -54,18 +59,18 @@ public:
         return list_length;
     }
 
-    unsigned long* getArray(){
+    uint64_t* getArray(){
         //lock.lock();
-        unsigned long *array = (unsigned long *) malloc(list_length*sizeof(unsigned long));
+        uint64_t *array = (uint64_t *) calloc(1,list_length*sizeof(uint64_t));
         linked_list * curr = head;
         int i = 0;
-        while(curr!=NULL){
+        while(curr!=NULL && i<list_length){
             HeapWord* val = (HeapWord*) curr->value;
-           // printf("Root: %lu\n", (unsigned long) val);
-            *(array + i) = (unsigned long) val;
+			array[i] = (uint64_t) val;
             i++;
             curr=curr->next;
         }
+		list_length = i;
         return array;
         //lock.unlock();
     }
@@ -97,7 +102,7 @@ public:
     int getArraySize(){
         return rc.getSize();
     }
-    unsigned long* rootArray(){
+    uint64_t* rootArray(){
         return rc.getArray();
     }
 };

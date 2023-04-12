@@ -31,22 +31,33 @@ void RootMark::do_it(){
 	CLDToOopClosure clds(&rc, true);
 	MarkingCodeBlobClosure blobs(&rc, true);
 
-	//printf("Roots: \n");
 	{
 		MutexLockerEx lock(CodeCache_lock, Mutex::_no_safepoint_check_flag);
+		//printf("CodeCache\n");
 		CodeCache::blobs_do(&blobs);
 	}
 	//Oop
+	
+	//printf("Universe\n");
     Universe::oops_do(&rc);
+	//printf("JNI\n");
     JNIHandles::oops_do(&rc);
     //MarkingCodeBlobClosure each_active_code_blob(&rc, !CodeBlobToOopClosure::FixRelocations);
+	//printf("Threads\n");
     Threads::oops_do(&rc, &blobs);
+	//printf("ObjectSync\n");
     ObjectSynchronizer::oops_do(&rc);
+	//printf("Management\n");
     Management::oops_do(&rc);
+	//printf("Jvmti\n");
     JvmtiExport::oops_do(&rc);
+	//printf("SystemDictionary\n");
     SystemDictionary::oops_do(&rc);
+	//printf("WeakProcessor\n");
 	WeakProcessor::oops_do(&rc);
     //ClassLoaderDataGraph::always_strong_oops_do(&rc, true);
+	//printf("ClassLoader\n");
 	ClassLoaderDataGraph::cld_do(&clds);
+	//printf("AOTLoader\n");
     AOTLoader::oops_do(&rc);
 }

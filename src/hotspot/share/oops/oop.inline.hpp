@@ -102,8 +102,7 @@ Klass* oopDesc::klass() const {
   } else {
     ret = _metadata._klass;
   }
-  if((uint64_t)ret >> 4 == 0x8dead)
-	  printf("PROUT: %p\n", this);
+  //printf("PROUT: %p\n", this);
   return ret;
 }
 

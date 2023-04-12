@@ -167,7 +167,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
         if(klass->is_objArray_klass()){
             klass_data.klasstype = objarray;
             ObjArrayKlass* oklass = (ObjArrayKlass*) klass;
-            klass_data.base_klass = (unsigned long)oklass->element_klass();
+            klass_data.base_klass = (uint64_t)oklass->element_klass();
             write(sockfd_remote, &klass_data, sizeof(struct msg_klass_data));
             }
         if(klass->is_typeArray_klass()){
@@ -224,7 +224,7 @@ size_t RemoteSpace::used() const{
 }
 
 
-unsigned long first_root;
+uint64_t first_root;
 
 void getandsend_roots(int sig) {
 	opcode tag;
@@ -233,13 +233,13 @@ void getandsend_roots(int sig) {
     RootMark rm;
     rm.do_it();
     int array_length = rm.getArraySize();
-    unsigned long *root_array= rm.rootArray();
+    uint64_t *root_array= rm.rootArray();
     lock_remote.lock();
     write(sockfd_remote, &tag,8);
     write(sockfd_remote, &array_length, sizeof(int));
 	int flag = 1;
 	setsockopt(sockfd_remote, IPPROTO_TCP, O_NDELAY, (char *) &flag, sizeof(int));
-    write(sockfd_remote, root_array, sizeof(unsigned long)*array_length );
+    write(sockfd_remote, root_array, sizeof(uint64_t)*array_length );
 	setsockopt(sockfd_remote, IPPROTO_TCP, O_NDELAY, (char *) &flag, sizeof(int));
     lock_remote.unlock();
 }
