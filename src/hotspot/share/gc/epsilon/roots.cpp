@@ -24,6 +24,7 @@
 #include "gc/shared/referenceProcessor.hpp"
 #include "gc/shared/weakProcessor.hpp"
 #include "gc/shared/oopStorage.inline.hpp"
+#include "gc/epsilon/RemoteSpace.hpp"
 
 
 void RootMark::do_it(){
@@ -60,4 +61,16 @@ void RootMark::do_it(){
 	ClassLoaderDataGraph::cld_do(&clds);
 	//printf("AOTLoader\n");
     AOTLoader::oops_do(&rc);
+
+    ObjectSynchronizer::oops_do(&rc);
+
+	CodeBlobToOopClosure cbtoc((OopClosure*)&rc, false);
+	CodeCache::scavenge_root_nmethods_do(&cbtoc);
+
+	
+	struct hw_list* curr_poule = RemoteSpace::poule;
+	while(curr_poule !=nullptr){
+		rc.do_oop(&curr_poule->hw);
+		curr_poule = curr_poule->next;
+	}
 }

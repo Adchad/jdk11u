@@ -53,6 +53,9 @@
 #include "runtime/signature.hpp"
 #include "runtime/vframe.inline.hpp"
 #include "utilities/copy.hpp"
+#include "gc/epsilon/RemoteSpace.hpp"
+struct hw_list* RemoteSpace::poule;
+
 
 constantTag ConstantPool::tag_at(int which) const { return (constantTag)tags()->at_acquire(which); }
 
@@ -180,6 +183,7 @@ void ConstantPool::initialize_resolved_references(ClassLoaderData* loader_data,
     // Create Java array for holding resolved strings, methodHandles,
     // methodTypes, invokedynamic and invokehandle appendix objects, etc.
     objArrayOop stom = oopFactory::new_objArray(SystemDictionary::Object_klass(), map_length, CHECK);
+	RemoteSpace::add_poule((oop)stom);
     Handle refs_handle (THREAD, (oop)stom);  // must handleize.
     set_resolved_references(loader_data->add_handle(refs_handle));
   }

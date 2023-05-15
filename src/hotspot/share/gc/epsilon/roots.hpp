@@ -6,6 +6,7 @@
 #define JDK11U_ROOTS_HPP
 
 #include "memory/iterator.hpp"
+#include "oops/oop.inline.hpp"
 #include <mutex>
 #include <stdio.h>
 
@@ -47,7 +48,7 @@ public:
         	//lock.lock();
         	list_length++;
         	struct linked_list* curr = head;
-        	new_node->value = (HeapWord*) (uint64_t) *o;
+        	new_node->value = (HeapWord*) oopDesc::decode_oop_raw(*o);
 			//printf("\t%p\n", (HeapWord*)(uint64_t)  *o);
         	new_node->next = curr;
         	head = new_node;

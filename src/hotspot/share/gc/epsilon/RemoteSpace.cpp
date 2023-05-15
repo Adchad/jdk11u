@@ -18,6 +18,8 @@
 #include "gc/serial/markSweep.hpp"
 #include "gc/serial/markSweep.inline.hpp"
 #include "memory/iterator.inline.hpp"
+#include "gc/shared/referenceProcessor.inline.hpp"
+#include "gc/epsilon/gc_helper.hpp"
 #include <fcntl.h>
 
 #include <unistd.h>
@@ -25,6 +27,7 @@
 int sockfd_remote = -1;
 
 std::mutex lock_remote;
+
 
 RemoteSpace::RemoteSpace() : ContiguousSpace() {
 	if(sockfd_remote < 0){
@@ -53,6 +56,8 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
 	setsockopt(sockfd_remote, SOL_SOCKET, SO_SNDBUF, &newsize, sizeof(newsize));
 	setsockopt(sockfd_remote, SOL_SOCKET, SO_RCVBUF, &newsize, sizeof(newsize));
     signal(SIGUSR1, getandsend_roots);
+	
+	gchelper.initialize();
 }
 
 RemoteSpace::~RemoteSpace(){
@@ -61,6 +66,7 @@ RemoteSpace::~RemoteSpace(){
 
 
 void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) {
+	_mr = mr;
     struct msg_initialize msg;
     HeapWord* mr_start = mr.start();
 	printf("Start: %p\n",  mr_start);
@@ -73,10 +79,17 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
     msg.clear_space = clear_space;
     msg.mangle_space = mangle_space;
     write(sockfd_remote, &msg, sizeof(struct msg_initialize));
-
-	
 	//printf("\nPID: %d\n", getpid());
 	//sleep(5);
+	//
+	RemoteSpace::poule = nullptr;
+	
+}
+
+void RemoteSpace::post_initialize(){
+	_span_based_discoverer.set_span(_mr);
+	rp = new ReferenceProcessor(&_span_based_discoverer);
+	gchelper.set_rp(rp);
 }
 
 HeapWord *RemoteSpace::par_allocate(size_t word_size) {
@@ -116,6 +129,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 
     //printf("Avant\n");
 
+
     struct msg_par_allocate_klass msg ;
 	msg.msg_type.type = 'k';
     msg.word_size = (uint64_t) word_size;
@@ -143,18 +157,14 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 
 			if(iklass->is_reference_instance_klass()){ //REF INSTANCE
 				klass_data.klasstype = instanceref;
-			//printf("Coucou1\n");
 
 			}
 			else if(iklass->is_mirror_instance_klass()){ //CLASS INSTANCE
 				klass_data.klasstype = instancemirror;
-			//printf("Coucou2\n");
 
 			}
 			else if(iklass->is_class_loader_instance_klass()){ //CLASSLOADER INSTANCE
 				klass_data.klasstype = instanceclassloader;
-			//printf("Coucou3\n");
-
 			}
 			else{
 				klass_data.klasstype = instance;
@@ -176,13 +186,19 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
             klass_data.basetype = tklass->element_type();
             write(sockfd_remote, &klass_data, sizeof(struct msg_klass_data));
         }
-#define KLASSNAME 1
 #if KLASSNAME
 		write(sockfd_remote, klass->external_name(), strlen(klass->external_name()));
 #endif
     }
 
-
+#if GCHELPER
+	if(klass->is_instance_klass() && !((InstanceKlass*)klass)->is_other_instance_klass()){
+//	if(klass->is_instance_klass()){
+//		InstanceKlass* iklass2 = (InstanceKlass*)klass;
+//		if(iklass2->is_mirror_instance_klass() || iklass2->is_class_loader_instance_klass())
+		gchelper.add_root(result.ptr);
+	}
+#endif
 
     lock_remote.unlock();
     HeapWord* allocated = result.ptr;
@@ -218,13 +234,24 @@ size_t RemoteSpace::used() const{
     size_t result ;
     read(sockfd_remote, &result, sizeof(size_t));
     lock_remote.unlock();
-	//printf("End used: %lu\n", *result);
+	//printf("Used: %lu\n", result);
+    return result;
+}
+
+size_t RemoteSpace::capacity() const{
+	//printf("Start capacity\n");
+	opcode tag;
+    tag.type = 'z';
+    lock_remote.lock();
+    write(sockfd_remote, &tag, 8);
+    size_t result ;
+    read(sockfd_remote, &result, sizeof(size_t));
+    lock_remote.unlock();
+	//printf("End capacity: %lu\n", *result);
 
     return result;
 }
 
-
-uint64_t first_root;
 
 void getandsend_roots(int sig) {
 	opcode tag;
@@ -251,18 +278,38 @@ void getandsend_roots(){
     uint64_t array_length = (uint64_t) rm.getArraySize();
 	printf("Length: %lu\n", array_length);
     uint64_t*root_array= rm.rootArray();
-	first_root = *root_array;
     write(sockfd_remote, &array_length, sizeof(uint64_t));
     int res = write(sockfd_remote, root_array, sizeof(uint64_t)*array_length );
 	printf("End of roots collection ; res: %d\n", res);
 }
+
+#if GCHELPER
+void RemoteSpace::getandsend_helper(){
+	printf("Start of helper collection\n");
+    gchelper.do_it();
+    uint64_t array_length = (uint64_t) gchelper.getArraySize();
+	printf("Length: %lu\n", array_length);
+    uint64_t*helper_array = gchelper.helperArray();
+    write(sockfd_remote, &array_length, sizeof(uint64_t));
+    int res = write(sockfd_remote, helper_array, sizeof(uint64_t)*array_length );
+	printf("End of helper collection ; res: %d\n", res);
+}
+#endif
+
 
 void RemoteSpace::safe_object_iterate(ObjectClosure* blk){return;};
 
 void RemoteSpace::print_on(outputStream* st) const{return;}
 
 void RemoteSpace::collect() {
+
+	if(!rp_init){
+		rp_init = true;
+		post_initialize();
+	}
+
 	printf("Start of collection\n");
+	printf("Used: %lu\n",used());
 	fsync(fd_for_heap);
 
 	struct msg_collect msg;
@@ -276,13 +323,15 @@ void RemoteSpace::collect() {
 	///// DUMP OF MEMORY
 	//printf("Dumping mem\n");
 	//int heap_fd = open("pre_collection_heap_dump", O_RDWR | O_CREAT);
-
 	//int resw = write(heap_fd, heap_range->base, heap_range->size );
 	//close(heap_fd);
 	//printf("End of dumping mem\n");
 
 	write(sockfd_remote, &msg, sizeof(struct msg_collect));  // on envoie la base et le shift pour la conversion narrowoop en oop
 	getandsend_roots();
+#if GCHELPER
+	getandsend_helper();
+#endif
 
 	uint32_t deadbeef_type;
 	read(sockfd_remote, &deadbeef_type, 4);
@@ -301,12 +350,12 @@ void RemoteSpace::collect() {
 	///// DUMP OF MEMORY
 	//printf("Dumping mem\n");
 	//heap_fd = open("post_collection_heap_dump", O_RDWR | O_CREAT);
-
 	//resw = write(heap_fd, heap_range->base, heap_range->size );
 	//close(heap_fd);
 	//printf("End of dumping mem\n");
 
 	lock_remote.unlock();
+	printf("Used: %lu\n",used());
 	printf("End of collection\n");
 }
 

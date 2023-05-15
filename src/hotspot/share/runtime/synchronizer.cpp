@@ -1393,7 +1393,7 @@ ObjectMonitor* ObjectSynchronizer::inflate(Thread * Self,
   // Relaxing assertion for bug 6320749.
   assert(Universe::verify_in_progress() ||
          !SafepointSynchronize::is_at_safepoint(), "invariant");
-
+  //printf("Inflate: %p\n", object);
   EventJavaMonitorInflate event;
 
   for (;;) {

@@ -67,7 +67,7 @@ public:
     //// back-to-back GC requests from many threads. Avoid the consecutive GCs
     //// if we started waiting when other GC request was being handled.
     //if (id < OrderAccess::load_acquire(&_req_id)) {
-	//  printf("Don't need to do collection\n");
+	//  printf("Don't need to do c ollection\n");
     //  Heap_lock->unlock();
     //  return false;
     //}
@@ -169,6 +169,7 @@ jint EpsilonHeap::initialize() {
 
 void EpsilonHeap::post_initialize() {
   CollectedHeap::post_initialize();
+  ((RemoteSpace*) _space)->post_initialize();
 }
 
 void EpsilonHeap::initialize_serviceability() {
@@ -215,6 +216,7 @@ HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
   //size += 32;
   HeapWord* res = allocate_work_klass_impl(size, klass);
   if (res == nullptr) {
+	printf("La collection vient d'ici");
 	vm_collect_impl();
     res = allocate_work_klass_impl(size, klass);
 	printf("Res: %p\n", res);
@@ -506,7 +508,6 @@ void EpsilonHeap::collect_impl(){
   DerivedPointerTable::set_active(false);
   //DerivedPointerTable::update_pointers();
   ((RemoteSpace*)_space)->collect();
-  //DerivedPointerTable::update_pointers();
   BiasedLocking::restore_marks();
   CodeCache::gc_epilogue();
   JvmtiExport::gc_epilogue();

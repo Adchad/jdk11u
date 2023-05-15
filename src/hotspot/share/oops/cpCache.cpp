@@ -473,6 +473,7 @@ bool ConstantPoolCacheEntry::save_and_throw_indy_exc(
   objArrayHandle resolved_references(Thread::current(), cpool->resolved_references());
   assert(resolved_references() != NULL,
          "a resolved_references array should have been created for this class");
+  printf("Resolved Ref: %p\n", resolved_references());
   ObjectLocker ol(resolved_references, THREAD);
 
   // if f1 is not null or the indy_resolution_failed flag is set then another

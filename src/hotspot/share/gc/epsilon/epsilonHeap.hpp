@@ -35,6 +35,7 @@
 #include "gc/epsilon/epsilon_globals.hpp"
 #include "runtime/vmThread.hpp"
 #include "runtime/orderAccess.hpp"
+#include "gc/epsilon/RemoteSpace.hpp"
 
 class EpsilonHeap : public CollectedHeap {
   friend class VMStructs;
@@ -86,7 +87,7 @@ public:
   virtual GrowableArray<MemoryPool*> memory_pools();
 
   virtual size_t max_capacity() const { return _virtual_space.reserved_size();  }
-  virtual size_t capacity()     const { return _virtual_space.committed_size(); }
+  virtual size_t capacity()     const { return 	((RemoteSpace*)_space)->capacity(); }
   virtual size_t used()         const { return _space->used(); }
 
   virtual bool is_in(const void* p) const {

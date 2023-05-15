@@ -112,7 +112,6 @@ jint init_globals() {
                                   // stubRoutines_init1 and metaspace_init.
   if (status != JNI_OK)
     return status;
-
   gc_barrier_stubs_init();   // depends on universe_init, must be before interpreter_init
   interpreter_init();        // before any methods loaded
   invocationCounter_init();  // before any methods loaded

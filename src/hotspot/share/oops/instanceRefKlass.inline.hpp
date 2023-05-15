@@ -37,6 +37,8 @@
 #include "utilities/globalDefinitions.hpp"
 #include "utilities/macros.hpp"
 
+#include <stdio.h>
+
 template <typename T, class OopClosureType, class Contains>
 void InstanceRefKlass::do_referent(oop obj, OopClosureType* closure, Contains& contains) {
   T* referent_addr = (T*)java_lang_ref_Reference::referent_addr_raw(obj);
