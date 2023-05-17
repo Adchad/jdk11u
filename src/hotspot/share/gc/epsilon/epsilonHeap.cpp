@@ -130,6 +130,8 @@ jint EpsilonHeap::initialize() {
 
   _space->initialize(committed_region, /* clear_space = */ true, /* mangle_space = */ true);
 
+  cap = committed_region.word_size()*8;
+
   // Precompute hot fields
   _max_tlab_size = MIN2(CollectedHeap::max_tlab_size(), align_object_size(EpsilonMaxTLABSize / HeapWordSize));
   _step_counter_update = MIN2<size_t>(max_byte_size / 16, EpsilonUpdateCountersStep);
@@ -489,11 +491,11 @@ void EpsilonHeap::collect(GCCause::Cause cause) {
   }
 
   if (SafepointSynchronize::is_at_safepoint()) {
-		  printf("safepoint\n");
-		  collect_impl();
+    	  printf("safepoint\n");
+    	  collect_impl();
         } else {
-		  printf("no safepoint\n");
-		  vm_collect_impl();
+    	  printf("no safepoint\n");
+    	  vm_collect_impl();
         }
 
 #if COMPILER2_OR_JVMCI

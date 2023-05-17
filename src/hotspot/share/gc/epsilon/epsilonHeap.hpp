@@ -40,6 +40,7 @@
 class EpsilonHeap : public CollectedHeap {
   friend class VMStructs;
 private:
+  size_t cap;
   int counter;
   bool roots = true;
   EpsilonCollectorPolicy* _policy;
@@ -87,7 +88,7 @@ public:
   virtual GrowableArray<MemoryPool*> memory_pools();
 
   virtual size_t max_capacity() const { return _virtual_space.reserved_size();  }
-  virtual size_t capacity()     const { return 	((RemoteSpace*)_space)->capacity(); }
+  virtual size_t capacity()     const { return 	cap;}
   virtual size_t used()         const { return _space->used(); }
 
   virtual bool is_in(const void* p) const {

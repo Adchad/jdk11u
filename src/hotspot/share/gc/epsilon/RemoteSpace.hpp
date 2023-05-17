@@ -10,12 +10,10 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <mutex>
+#include "rpcMessages.hpp"
 #include "utilities/globalDefinitions.hpp"
 #include "gc/epsilon/gc_helper.hpp"
-#define RSPACE_PORT 42069
 
-#define KLASSNAME 1
-#define GCHELPER 1
 
 struct range_t {
 	char* base;

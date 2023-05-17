@@ -42,7 +42,6 @@ public:
     };
 
     void do_oop(narrowOop* o){
-		printf("narrow root: %d\n", *o);
 		if(*o != 0){
 			struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
         	//lock.lock();

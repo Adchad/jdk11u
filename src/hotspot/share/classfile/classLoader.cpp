@@ -1420,7 +1420,6 @@ ClassFileStream* ClassLoader::search_module_entries(const GrowableArray<ModuleCl
   return NULL;
 }
 
-#define REMOTE_LOADING 0
 // Called by the boot classloader to load classes
 InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TRAPS) {
   assert(name != NULL, "invariant");
@@ -1555,6 +1554,10 @@ InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TR
     msg->layout_helper = result->layout_helper();
     msg->klasstype = instance;
     msg->length = result->nonstatic_oop_map_count();
+	msg->special = 0;
+	if(strstr(result->external_name(), "java.lang.String") !=nullptr){
+		msg->special = 1;
+	}
     OopMapBlock* field_array = result->start_of_nonstatic_oop_maps();
     lock_remote.lock();
     write(sockfd_remote, msg, sizeof(msg_klass_data_2));

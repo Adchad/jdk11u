@@ -15,6 +15,13 @@
 #define SIZE_OFFSET 12
 #define KLASS_OFFSET 8
 
+#define RSPACE_PORT 42069
+
+#define KLASSNAME 0
+#define GCHELPER 1
+#define DEADBEEF 0
+#define REMOTE_LOADING 1
+
 enum klass_type {instance = 1, objarray = 2, typearray = 3, instanceref = 4, instancemirror = 5, instanceclassloader = 6};
 
 typedef struct opcode_t{
@@ -58,6 +65,7 @@ struct msg_klass_data{
     //TODO: Nettoyer ce struct de merde
     klass_type klasstype;
 	int64_t name_length;
+	uint32_t special;
 	uint32_t length;
     uint64_t base_klass = 0; //only for obj_array
     BasicType basetype = T_ILLEGAL; //only for typearray
@@ -69,8 +77,8 @@ struct msg_klass_data_2{
 	opcode msg_type;
     uint64_t klass;
     klass_type klasstype;
-	//char name[32];
-    int length;
+	uint32_t special;
+    uint32_t length;
     uint64_t base_klass = 0; //only for obj_array
     BasicType basetype = T_ILLEGAL; //only for typearray
     int layout_helper;

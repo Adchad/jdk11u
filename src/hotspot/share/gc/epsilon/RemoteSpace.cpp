@@ -144,10 +144,11 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 		klass_data.length = 0;
         klass_data.layout_helper = klass->layout_helper();
 		klass_data.name_length = (int64_t) strlen(klass->external_name());
+		klass_data.special = 0;
 
-		//if(strcmp(klass->external_name(),"java.util.IdentityHashMap") == 0){
-		//	klass_data.name = 1;
-		//}
+		if(strstr(klass->external_name(),"java.lang.String") != nullptr){
+			klass_data.special = 1;
+		}
         OopMapBlock* field_array = NULL;
         if(klass->is_instance_klass()){
 			
@@ -276,23 +277,18 @@ void getandsend_roots(){
 	printf("Starting to collect roots\n");
     rm.do_it();
     uint64_t array_length = (uint64_t) rm.getArraySize();
-	printf("Length: %lu\n", array_length);
     uint64_t*root_array= rm.rootArray();
     write(sockfd_remote, &array_length, sizeof(uint64_t));
     int res = write(sockfd_remote, root_array, sizeof(uint64_t)*array_length );
-	printf("End of roots collection ; res: %d\n", res);
 }
 
 #if GCHELPER
 void RemoteSpace::getandsend_helper(){
-	printf("Start of helper collection\n");
     gchelper.do_it();
     uint64_t array_length = (uint64_t) gchelper.getArraySize();
-	printf("Length: %lu\n", array_length);
     uint64_t*helper_array = gchelper.helperArray();
     write(sockfd_remote, &array_length, sizeof(uint64_t));
     int res = write(sockfd_remote, helper_array, sizeof(uint64_t)*array_length );
-	printf("End of helper collection ; res: %d\n", res);
 }
 #endif
 
@@ -333,6 +329,7 @@ void RemoteSpace::collect() {
 	getandsend_helper();
 #endif
 
+#if DEADBEEF
 	uint32_t deadbeef_type;
 	read(sockfd_remote, &deadbeef_type, 4);
 	while(deadbeef_type == 42 | deadbeef_type == 69){
@@ -343,6 +340,7 @@ void RemoteSpace::collect() {
 		deadbeef_area(addr, (int)size, deadbeef_type);
 		read(sockfd_remote, &deadbeef_type, 4);
 	}
+#endif
 	uint64_t* ack = (uint64_t*) malloc(sizeof(uint64_t));
 	int res = read(sockfd_remote, ack, sizeof(uint64_t));
 	printf("Ack: %lu\n", *ack);
@@ -359,6 +357,7 @@ void RemoteSpace::collect() {
 	printf("End of collection\n");
 }
 
+#if DEADBEEF
 void RemoteSpace::deadbeef_area(uint64_t addr, int size, int type){
 	uint64_t lorem;
 	if(type == 42){
@@ -370,3 +369,4 @@ void RemoteSpace::deadbeef_area(uint64_t addr, int size, int type){
 		*((uint64_t*) (addr + i)) = lorem;
 	}
 }
+#endif

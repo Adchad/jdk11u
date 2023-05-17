@@ -48,28 +48,78 @@ public:
 
 	void do_cld(ClassLoaderData* k){}
 
+    //void do_oop(oop* o){
+	//	if(*o != nullptr){
+	//		struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
+    //    	list_length++;
+    //    	struct linked_list* curr = head;
+    //    	new_node->value = (HeapWord*) *o;
+    //    	new_node->next = curr;
+    //    	head = new_node;
+	//	}
+    //};
+
+    //void do_oop(narrowOop* o){
+	//	if(*o != 0){
+	//		//printf("narrow root: 0x%x\n", *o);
+	//		struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
+    //    	list_length++;
+    //    	struct linked_list* curr = head;
+    //    	new_node->value = (HeapWord*) oopDesc::decode_oop_raw(*o);
+    //    	new_node->next = curr;
+    //    	head = new_node;
+	//	}
+    //};
+
     void do_oop(oop* o){
 		if(*o != nullptr){
-			struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
-        	list_length++;
+			if(head == nullptr){
+				struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
+				new_node->value = (HeapWord*) *o;
+        		new_node->next = nullptr;
+        		head = new_node;
+				list_length++;
+				return;
+			}
         	struct linked_list* curr = head;
+			while(curr->next !=nullptr){
+				if(curr->next->value == (HeapWord*) *o){return;}
+				curr = curr->next;
+			}
+		
+			struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
         	new_node->value = (HeapWord*) *o;
-        	new_node->next = curr;
-        	head = new_node;
+        	new_node->next = nullptr;
+        	curr->next = new_node;
+			list_length++;
 		}
     };
 
     void do_oop(narrowOop* o){
 		if(*o != 0){
-			//printf("narrow root: 0x%x\n", *o);
-			struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
-        	list_length++;
+			HeapWord* word = (HeapWord*) oopDesc::decode_oop_raw(*o);
+			if(head == nullptr){
+				struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
+				new_node->value = word;
+        		new_node->next = nullptr;
+        		head = new_node;
+				list_length++;
+				return;
+			}
         	struct linked_list* curr = head;
-        	new_node->value = (HeapWord*) oopDesc::decode_oop_raw(*o);
-        	new_node->next = curr;
-        	head = new_node;
+			while(curr->next !=nullptr){
+				if(curr->next->value == word){return;}
+				curr = curr->next;
+			}
+		
+			struct linked_list* new_node = (struct linked_list*) malloc(sizeof(struct linked_list));
+        	new_node->value = word;
+        	new_node->next = nullptr;
+        	curr->next = new_node;
+			list_length++;
 		}
     };
+
 
     int getSize(){
         return list_length;
