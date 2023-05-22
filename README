@@ -1,6 +1,19 @@
 You should always run the JVM with max heap = start Heap ( Xmx = Xms )
 
 
+Run command: 
+sudo systemd-run --scope -p MemoryLimit=1536M \
+							numactl--preferred=0
+							$JAVA_HOME/bin/java\
+							-XX:AllocateHeapAt=/dev/fakeblk\
+							-Xlog:gc=debug \
+							-XX:+UnlockExperimentalVMOptions\
+							-XX:-UseTLAB\
+							-XX:+UseEpsilonGC\
+							-Xnoclassgc\ 
+							-XX:+AlwaysPreTouch\
+							-Xms"$size"g -Xmx"$size"g  <reste de votre commande>
+
 Welcome to the JDK!
 ===================
 
