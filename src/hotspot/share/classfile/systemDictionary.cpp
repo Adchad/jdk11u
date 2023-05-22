@@ -90,6 +90,14 @@
 #include "jvmci/jvmciRuntime.hpp"
 #endif
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include <cstring>
+#include "gc/epsilon/RemoteSpace.hpp"
+#include "gc/epsilon/rpcMessages.hpp"
+
 PlaceholderTable*      SystemDictionary::_placeholders        = NULL;
 Dictionary*            SystemDictionary::_shared_dictionary   = NULL;
 LoaderConstraintTable* SystemDictionary::_loader_constraints  = NULL;
@@ -1029,9 +1037,53 @@ InstanceKlass* SystemDictionary::parse_stream(Symbol* class_name,
     if (class_load_start_event.should_commit()) {
       post_class_load_event(&class_load_start_event, k, loader_data);
     }
+
+#if REMOTE_LOADING
+  if(sockfd_remote < 0 ){
+	printf("loader socket\n");
+    sockfd_remote = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd_remote < 0)
+    {
+        perror ("socket");
+        exit (EXIT_FAILURE);
+    }
+
+    struct sockaddr_in server;
+
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server.sin_port = htons( RSPACE_PORT );
+
+    if (connect(sockfd_remote, (struct sockaddr *)&server , sizeof(server)) < 0)
+    {
+        puts("connect error");
+    }
+  }
+  if(sockfd_remote > 2){
+	//printf("la klass à dallas\n");
+    auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
+	msg->msg_type.type = 'l';
+	msg->klass = (uint64_t)k;
+    msg->layout_helper = k->layout_helper();
+    msg->klasstype = instance;
+    msg->length = k->nonstatic_oop_map_count();
+	msg->special = 0;
+	//if(strstr(result->external_name(), "java.lang.String") !=nullptr){
+	//	msg->special = 1;
+	//}
+    OopMapBlock* field_array = k->start_of_nonstatic_oop_maps();
+    lock_remote.lock();
+    write(sockfd_remote, msg, sizeof(msg_klass_data_2));
+    write(sockfd_remote, field_array, msg->length*sizeof(OopMapBlock));
+    lock_remote.unlock();
+	//printf("Received klass\n");
+  }
+#endif
+
   }
   assert(host_klass != NULL || NULL == cp_patches,
          "cp_patches only found with host_klass");
+
 
   return k;
 }
@@ -1092,6 +1144,47 @@ InstanceKlass* SystemDictionary::resolve_from_stream(Symbol* class_name,
                                          NULL, // host_klass
                                          NULL, // cp_patches
                                          CHECK_NULL);
+#if REMOTE_LOADING
+	  if(sockfd_remote < 0 ){
+		printf("loader socket\n");
+	    sockfd_remote = socket(AF_INET, SOCK_STREAM, 0);
+	    if (sockfd_remote < 0)
+	    {
+	        perror ("socket");
+	        exit (EXIT_FAILURE);
+	    }
+	
+	    struct sockaddr_in server;
+	
+	    server.sin_family = AF_INET;
+	    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+	    server.sin_port = htons( RSPACE_PORT );
+	
+	    if (connect(sockfd_remote, (struct sockaddr *)&server , sizeof(server)) < 0)
+	    {
+	        puts("connect error");
+	    }
+	  }
+	  if(sockfd_remote > 2){
+		//printf("la klass à dallas\n");
+	    auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
+		msg->msg_type.type = 'l';
+		msg->klass = (uint64_t)k;
+	    msg->layout_helper = k->layout_helper();
+	    msg->klasstype = instance;
+	    msg->length = k->nonstatic_oop_map_count();
+		msg->special = 0;
+		//if(strstr(result->external_name(), "java.lang.String") !=nullptr){
+		//	msg->special = 1;
+		//}
+	    OopMapBlock* field_array = k->start_of_nonstatic_oop_maps();
+	    lock_remote.lock();
+	    write(sockfd_remote, msg, sizeof(msg_klass_data_2));
+	    write(sockfd_remote, field_array, msg->length*sizeof(OopMapBlock));
+	    lock_remote.unlock();
+		//printf("Received klass\n");
+	  }
+#endif
   }
 
   assert(k != NULL, "no klass created");

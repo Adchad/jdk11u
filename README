@@ -1,3 +1,5 @@
+You should always run the JVM with max heap = start Heap ( Xmx = Xms )
+
 
 Welcome to the JDK!
 ===================

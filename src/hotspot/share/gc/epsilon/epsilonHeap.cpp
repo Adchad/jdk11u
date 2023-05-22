@@ -89,9 +89,9 @@ public:
       Atomic::inc(&_req_id);
 
 
-	  printf("Start pause\n");
+	  //printf("Start pause\n");
 	  _heap->collect_impl();
-	  printf("End pause \n\n");
+	  //printf("End pause \n\n");
 
 
 	  //Heap_lock->unlock();

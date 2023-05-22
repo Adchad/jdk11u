@@ -6,6 +6,7 @@
 #include "precompiled.hpp"
 #include "aot/aotLoader.hpp"
 #include "classfile/systemDictionary.hpp"
+#include "classfile/stringTable.hpp"
 #include "code/codeCache.hpp"
 #include "gc/shared/collectedHeap.hpp"
 #include "gc/shared/gcTimer.hpp"
@@ -63,6 +64,8 @@ void RootMark::do_it(){
     AOTLoader::oops_do(&rc);
 
     ObjectSynchronizer::oops_do(&rc);
+
+	StringTable::oops_do(&rc);
 
 	CodeBlobToOopClosure cbtoc((OopClosure*)&rc, false);
 	CodeCache::scavenge_root_nmethods_do(&cbtoc);

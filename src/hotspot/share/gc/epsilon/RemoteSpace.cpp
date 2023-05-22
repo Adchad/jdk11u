@@ -82,7 +82,11 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	//printf("\nPID: %d\n", getpid());
 	//sleep(5);
 	//
+	
 	RemoteSpace::poule = nullptr;
+	cap = mr_word_size*8;
+	free_space = 0;
+	used_ = 0;
 	
 }
 
@@ -207,6 +211,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
    //     collect();
    // }
     if(allocated != nullptr){
+		used_ += word_size*8 + 16; //le 16 c'est mon header
         uint64_t iptr = (uint64_t)allocated;
         *((uint64_t*)(iptr - KLASS_OFFSET)) = msg.klass;
         *((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size;
@@ -227,30 +232,32 @@ void RemoteSpace::set_end(HeapWord* value){
 }
 
 size_t RemoteSpace::used() const{
-	//printf("Start used\n");
-	opcode tag;
-    tag.type = 'u';
-    lock_remote.lock();
-    write(sockfd_remote, &tag, 8);
-    size_t result ;
-    read(sockfd_remote, &result, sizeof(size_t));
-    lock_remote.unlock();
-	//printf("Used: %lu\n", result);
-    return result;
+	////printf("Start used\n");
+	//opcode tag;
+    //tag.type = 'u';
+    //lock_remote.lock();
+    //write(sockfd_remote, &tag, 8);
+    //size_t result ;
+    //read(sockfd_remote, &result, sizeof(size_t));
+    //lock_remote.unlock();
+	////printf("Used: %lu\n", result);
+    //return result;
+
+	return cap - free_space + used_;
 }
 
 size_t RemoteSpace::capacity() const{
-	//printf("Start capacity\n");
-	opcode tag;
-    tag.type = 'z';
-    lock_remote.lock();
-    write(sockfd_remote, &tag, 8);
-    size_t result ;
-    read(sockfd_remote, &result, sizeof(size_t));
-    lock_remote.unlock();
-	//printf("End capacity: %lu\n", *result);
+	////printf("Start capacity\n");
+	//opcode tag;
+    //tag.type = 'z';
+    //lock_remote.lock();
+    //write(sockfd_remote, &tag, 8);
+    //size_t result ;
+    //read(sockfd_remote, &result, sizeof(size_t));
+    //lock_remote.unlock();
+	////printf("End capacity: %lu\n", *result);
 
-    return result;
+    return cap;
 }
 
 
@@ -274,7 +281,7 @@ void getandsend_roots(int sig) {
 
 void getandsend_roots(){
     RootMark rm;
-	printf("Starting to collect roots\n");
+	//printf("Starting to collect roots\n");
     rm.do_it();
     uint64_t array_length = (uint64_t) rm.getArraySize();
     uint64_t*root_array= rm.rootArray();
@@ -304,8 +311,12 @@ void RemoteSpace::collect() {
 		post_initialize();
 	}
 
-	printf("Start of collection\n");
-	printf("Used: %lu\n",used());
+	//printf("Start of collection\n");
+	size_t start_used  = used();
+	//printf("Used: %lu\n",used());
+
+	struct timeval start, end;
+	gettimeofday(&start, NULL);
 	fsync(fd_for_heap);
 
 	struct msg_collect msg;
@@ -341,9 +352,10 @@ void RemoteSpace::collect() {
 		read(sockfd_remote, &deadbeef_type, 4);
 	}
 #endif
-	uint64_t* ack = (uint64_t*) malloc(sizeof(uint64_t));
-	int res = read(sockfd_remote, ack, sizeof(uint64_t));
-	printf("Ack: %lu\n", *ack);
+
+	free_space = 0;
+	used_ = 0;
+	read(sockfd_remote, &free_space, sizeof(uint64_t));
 
 	///// DUMP OF MEMORY
 	//printf("Dumping mem\n");
@@ -353,8 +365,12 @@ void RemoteSpace::collect() {
 	//printf("End of dumping mem\n");
 
 	lock_remote.unlock();
-	printf("Used: %lu\n",used());
-	printf("End of collection\n");
+
+	gettimeofday(&end, NULL);
+
+	printf("[téléGC] Collection:  Time: %lds;  Used before: %lu; Used after: %lu\n", end.tv_sec - start.tv_sec, start_used, used() );
+	//printf("Used: %lu\n",used());
+	//printf("End of collection\n");
 }
 
 #if DEADBEEF

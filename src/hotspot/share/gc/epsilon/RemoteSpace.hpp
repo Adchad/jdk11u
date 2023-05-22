@@ -13,7 +13,7 @@
 #include "rpcMessages.hpp"
 #include "utilities/globalDefinitions.hpp"
 #include "gc/epsilon/gc_helper.hpp"
-
+#include <sys/time.h>
 
 struct range_t {
 	char* base;
@@ -53,6 +53,9 @@ private:
 	bool collected = false;
 	struct range_t* heap_range;
 	bool rp_init = false;
+    uint64_t free_space;
+	uint64_t cap;
+	uint64_t used_;
 #if GCHELPER
 	GCHelper gchelper;
 	SpanSubjectToDiscoveryClosure _span_based_discoverer;
