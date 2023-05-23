@@ -1063,9 +1063,17 @@ InstanceKlass* SystemDictionary::parse_stream(Symbol* class_name,
 	//printf("la klass à dallas\n");
     auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
 	msg->msg_type.type = 'l';
-	msg->klass = (uint64_t)k;
+	msg->klass = static_cast<uint32_t>((uint64_t)k);
     msg->layout_helper = k->layout_helper();
-    msg->klasstype = instance;
+	if(k->is_reference_instance_klass()){ //REF INSTANCE
+		msg->klasstype = instanceref;
+	} else if(k->is_mirror_instance_klass()){ //CLASS INSTANCE
+		msg->klasstype = instancemirror;
+	} else if(k->is_class_loader_instance_klass()){ //CLASSLOADER INSTANCE
+		msg->klasstype = instanceclassloader;
+	} else{
+		msg->klasstype = instance;
+	}
     msg->length = k->nonstatic_oop_map_count();
 	msg->special = 0;
 	//if(strstr(result->external_name(), "java.lang.String") !=nullptr){
@@ -1169,9 +1177,17 @@ InstanceKlass* SystemDictionary::resolve_from_stream(Symbol* class_name,
 		//printf("la klass à dallas\n");
 	    auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
 		msg->msg_type.type = 'l';
-		msg->klass = (uint64_t)k;
+		msg->klass = static_cast<uint32_t>((uint64_t)k);
 	    msg->layout_helper = k->layout_helper();
-	    msg->klasstype = instance;
+		if(k->is_reference_instance_klass()){ //REF INSTANCE
+			msg->klasstype = instanceref;
+		} else if(k->is_mirror_instance_klass()){ //CLASS INSTANCE
+			msg->klasstype = instancemirror;
+		} else if(k->is_class_loader_instance_klass()){ //CLASSLOADER INSTANCE
+			msg->klasstype = instanceclassloader;
+		} else{
+			msg->klasstype = instance;
+		}
 	    msg->length = k->nonstatic_oop_map_count();
 		msg->special = 0;
 		//if(strstr(result->external_name(), "java.lang.String") !=nullptr){

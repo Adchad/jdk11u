@@ -11,9 +11,9 @@
 #include "oops/oop.hpp"
 #include "oops/oop.inline.hpp"
 
-#define HEADER_OFFSET 16
-#define SIZE_OFFSET 12
-#define KLASS_OFFSET 8
+#define HEADER_OFFSET 8
+#define SIZE_OFFSET 8
+#define KLASS_OFFSET 4
 
 #define RSPACE_PORT 42069
 
@@ -47,8 +47,8 @@ struct msg_par_allocate{
 
 struct msg_par_allocate_klass{
 	opcode msg_type;
-    uint64_t word_size;
-    uint64_t klass;
+    uint32_t word_size;
+	uint32_t klass;
 };
 
 struct msg_set_end{
@@ -75,7 +75,7 @@ struct msg_klass_data{
 struct msg_klass_data_2{
     //TODO: Nettoyer cet autre struct de merde
 	opcode msg_type;
-    uint64_t klass;
+    uint32_t klass;
     klass_type klasstype;
 	uint32_t special;
     uint32_t length;

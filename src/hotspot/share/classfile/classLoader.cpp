@@ -1551,9 +1551,17 @@ InstanceKlass* ClassLoader::load_class(Symbol* name, bool search_append_only, TR
 	//printf("la klass à dallas\n");
     auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
 	msg->msg_type.type = 'l';
-	msg->klass = (uint64_t)result;
+	msg->klass = static_cast<uint32_t>((uint64_t)result);
     msg->layout_helper = result->layout_helper();
-    msg->klasstype = instance;
+	if(result->is_reference_instance_klass()){ //REF INSTANCE
+		msg->klasstype = instanceref;
+	} else if(result->is_mirror_instance_klass()){ //CLASS INSTANCE
+		msg->klasstype = instancemirror;
+	} else if(result->is_class_loader_instance_klass()){ //CLASSLOADER INSTANCE
+		msg->klasstype = instanceclassloader;
+	} else{
+		msg->klasstype = instance;
+	}
     msg->length = result->nonstatic_oop_map_count();
 	msg->special = 0;
 	//if(strstr(result->external_name(), "java.lang.String") !=nullptr){
