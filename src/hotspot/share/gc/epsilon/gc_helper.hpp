@@ -125,6 +125,17 @@ public:
         return list_length;
     }
 
+	void free_all(){
+        linked_list * curr = head;
+		while(curr!= nullptr){
+			linked_list* next_curr = curr->next;
+			free(curr);
+			curr = next_curr;
+		}
+		head = nullptr;
+		list_length = 0;
+	}
+
     uint64_t* getArray(){
         uint64_t *array = (uint64_t *) calloc(1,list_length*sizeof(uint64_t));
         linked_list * curr = head;
@@ -136,8 +147,10 @@ public:
             curr=curr->next;
         }
 		list_length = i;
+		free_all();
         return array;
     }
+
 };
 
 

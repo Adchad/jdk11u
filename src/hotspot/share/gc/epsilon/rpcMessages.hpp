@@ -11,16 +11,23 @@
 #include "oops/oop.hpp"
 #include "oops/oop.inline.hpp"
 
-#define HEADER_OFFSET 8
-#define SIZE_OFFSET 8
-#define KLASS_OFFSET 4
+// Header Params
+#define HEADER_OFFSET 8  // size of HEADER
+#define SIZE_OFFSET 8 // offset of size (the offset are negative)
+#define KLASS_OFFSET 4 // offset of klass ID
 
-#define RSPACE_PORT 42069
 
-#define KLASSNAME 0
-#define GCHELPER 1
-#define DEADBEEF 0
-#define REMOTE_LOADING 1
+// Global parameters
+#define RSPACE_PORT 42069 // port of socket btwn GC and JVM
+#define KLASSNAME 0 // give the class name to gc ?
+#define GCHELPER 1 // help from JVM for some complicated objects in the GC
+#define DEADBEEF 0 // mark collected objects by replacing data with deadbeef
+#define REMOTE_LOADING 1 // instrumentate classloader to send data to GC
+#define ALLOC_BUFFER 1
+
+// Allocation buffer parameters
+#define BUFFER_SIZE 20 // amount of pointers stored in the allocation buffer in the JVM side
+#define BUFFER_MAX_SIZE 200 // max size of object that can be allocated from the buffer
 
 enum klass_type {instance = 1, objarray = 2, typearray = 3, instanceref = 4, instancemirror = 5, instanceclassloader = 6};
 
@@ -49,6 +56,11 @@ struct msg_par_allocate_klass{
 	opcode msg_type;
     uint32_t word_size;
 	uint32_t klass;
+};
+
+struct msg_request_buffer{
+	opcode msg_type;
+    uint32_t word_size;
 };
 
 struct msg_set_end{

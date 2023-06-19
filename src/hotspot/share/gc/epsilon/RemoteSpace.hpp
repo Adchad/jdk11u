@@ -10,10 +10,11 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <mutex>
-#include "rpcMessages.hpp"
+#include "gc/epsilon/rpcMessages.hpp"
 #include "utilities/globalDefinitions.hpp"
 #include "gc/epsilon/gc_helper.hpp"
 #include <sys/time.h>
+#include "gc/epsilon/AllocationBuffer.hpp"
 
 struct range_t {
 	char* base;
@@ -56,6 +57,7 @@ private:
     uint64_t free_space;
 	uint64_t cap;
 	uint64_t used_;
+	AllocationBuffer alloc_buffer;
 #if GCHELPER
 	GCHelper gchelper;
 	SpanSubjectToDiscoveryClosure _span_based_discoverer;
