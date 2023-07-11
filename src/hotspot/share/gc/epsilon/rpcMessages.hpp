@@ -21,7 +21,7 @@
 #define RSPACE_PORT 42069 // port of socket btwn GC and JVM
 #define KLASSNAME 0 // give the class name to gc ?
 #define GCHELPER 1 // help from JVM for some complicated objects in the GC
-#define DEADBEEF 0 // mark collected objects by replacing data with deadbeef
+#define DEADBEEF 1 // mark collected objects by replacing data with deadbeef
 #define REMOTE_LOADING 1 // instrumentate classloader to send data to GC
 #define ALLOC_BUFFER 1
 
