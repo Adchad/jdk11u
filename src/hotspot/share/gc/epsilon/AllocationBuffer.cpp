@@ -24,7 +24,7 @@ HeapWord* AllocationBuffer::allocate(size_t size){
 		table[size] = nullptr;
 		return nullptr;
 	}
-
+	//printf("Result: %p,  bump_pointer: %d\n", result, curr->bump_pointer - 1);
 	return result;
 }
 

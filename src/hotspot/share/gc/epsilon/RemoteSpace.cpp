@@ -124,7 +124,7 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
 HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 	HeapWord* allocated;
     lock_remote.lock();
-
+	//printf("Tentative d'alloc\n");
 #if ALLOC_BUFFER
 	if(alloc_buffer.is_candidate(word_size) && !klass->is_typeArray_klass() ){
 		allocated = alloc_buffer.allocate(word_size);
@@ -171,6 +171,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     }
 
     lock_remote.unlock();
+	//printf("Alloc: %p\n", allocated);
     return allocated;
 }
 
@@ -238,13 +239,16 @@ void RemoteSpace::safe_object_iterate(ObjectClosure* blk){return;};
 void RemoteSpace::print_on(outputStream* st) const{return;}
 
 void RemoteSpace::collect() {
+	
 
+	printf("Start of collection\n");
 	if(!rp_init){
 		rp_init = true;
 		post_initialize();
 	}
 
 	size_t start_used  = used();
+	printf("cap: %lu, used: %lu\n", cap, used_);
 
 	struct timeval start, end;
 	gettimeofday(&start, NULL);
@@ -286,7 +290,9 @@ void RemoteSpace::collect() {
 
 	free_space = 0;
 	used_ = 0;
+	printf("free_space B: %lu\n", free_space);
 	read(sockfd_remote, &free_space, sizeof(uint64_t));
+	printf("free_space A: %lu\n", free_space);
 
 	alloc_buffer.free_all();
 

@@ -21,13 +21,13 @@
 #define RSPACE_PORT 42069 // port of socket btwn GC and JVM
 #define KLASSNAME 0 // give the class name to gc ?
 #define GCHELPER 1 // help from JVM for some complicated objects in the GC
-#define DEADBEEF 1 // mark collected objects by replacing data with deadbeef
+#define DEADBEEF 0 // mark collected objects by replacing data with deadbeef
 #define REMOTE_LOADING 1 // instrumentate classloader to send data to GC
 #define ALLOC_BUFFER 1
 
 // Allocation buffer parameters
-#define BUFFER_SIZE 20 // amount of pointers stored in the allocation buffer in the JVM side
-#define BUFFER_MAX_SIZE 200 // max size of object that can be allocated from the buffer
+#define BUFFER_SIZE 32 // amount of pointers stored in the allocation buffer in the JVM side
+#define BUFFER_MAX_SIZE 256 // max size of object that can be allocated from the buffer
 
 enum klass_type {instance = 1, objarray = 2, typearray = 3, instanceref = 4, instancemirror = 5, instanceclassloader = 6};
 

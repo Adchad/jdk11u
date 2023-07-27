@@ -28,13 +28,9 @@ public:
 	}
 	
 	HeapWord* allocate(size_t size);
-
 	void add_bucket(size_t size);
-
 	HeapWord* add_bucket_and_allocate(size_t size);
-
 	bool is_candidate(size_t size);
-
 	void free_all(); // pour le faire après la collection, c'est atroce il faut pas faire ça
 };
 
