@@ -10,6 +10,7 @@
 #include "oops/arrayOop.inline.hpp"
 #include "oops/oop.hpp"
 #include "oops/oop.inline.hpp"
+#include <unistd.h>
 
 // Header Params
 #define HEADER_OFFSET 8  // size of HEADER
@@ -43,6 +44,7 @@ struct msg_initialize{
     size_t mr_word_size;
     uint32_t obj_array_base;
 	uint32_t obj_array_length;
+	pid_t pid;
     bool clear_space;
     bool mangle_space;
 };

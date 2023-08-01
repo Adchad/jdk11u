@@ -27,7 +27,11 @@
 int sockfd_remote = -1;
 
 std::mutex lock_remote;
-
+AllocationBuffer* alloc_buffer;
+uint64_t free_space;
+uint64_t cap;
+uint64_t used_;
+int fd_for_heap;
 
 RemoteSpace::RemoteSpace() : ContiguousSpace() {
 	if(sockfd_remote < 0){
@@ -56,6 +60,7 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
 	setsockopt(sockfd_remote, SOL_SOCKET, SO_SNDBUF, &newsize, sizeof(newsize));
 	setsockopt(sockfd_remote, SOL_SOCKET, SO_RCVBUF, &newsize, sizeof(newsize));
     signal(SIGUSR1, getandsend_roots);
+    signal(SIGUSR2, collect_sig);
 	
 	gchelper.initialize();
 }
@@ -78,6 +83,7 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	msg.obj_array_length = arrayOopDesc::length_offset_in_bytes();
     msg.clear_space = clear_space;
     msg.mangle_space = mangle_space;
+	msg.pid = getpid();
     write(sockfd_remote, &msg, sizeof(struct msg_initialize));
 	//printf("\nPID: %d\n", getpid());
 	//sleep(5);
@@ -87,8 +93,9 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	cap = mr_word_size*8;
 	free_space = cap;
 	used_ = 0;
-
-	alloc_buffer.initialize(sockfd_remote);
+	
+	alloc_buffer = (AllocationBuffer*) malloc(sizeof(AllocationBuffer));
+	alloc_buffer->initialize(sockfd_remote);
 	
 }
 
@@ -123,13 +130,14 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
 
 HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 	HeapWord* allocated;
+	printf("Test alloc wait lock\n");
     lock_remote.lock();
 	//printf("Tentative d'alloc\n");
 #if ALLOC_BUFFER
-	if(alloc_buffer.is_candidate(word_size) && !klass->is_typeArray_klass() ){
-		allocated = alloc_buffer.allocate(word_size);
+	if(alloc_buffer->is_candidate(word_size) && !klass->is_typeArray_klass() ){
+		allocated = alloc_buffer->allocate(word_size);
 		if(allocated == nullptr){
-			allocated = alloc_buffer.add_bucket_and_allocate(word_size);
+			allocated = alloc_buffer->add_bucket_and_allocate(word_size);
 		}
 		//printf("Allocated: %p \n", allocated);
 	}
@@ -189,6 +197,10 @@ size_t RemoteSpace::used() const{
 	return cap - free_space + used_;
 }
 
+size_t used_glob(){
+	return cap - free_space + used_;
+}
+
 size_t RemoteSpace::capacity() const{
     return cap;
 }
@@ -238,8 +250,7 @@ void RemoteSpace::safe_object_iterate(ObjectClosure* blk){return;};
 
 void RemoteSpace::print_on(outputStream* st) const{return;}
 
-void RemoteSpace::collect() {
-	
+void RemoteSpace::stw_pre_collect() {
 
 	printf("Start of collection\n");
 	if(!rp_init){
@@ -250,9 +261,11 @@ void RemoteSpace::collect() {
 	size_t start_used  = used();
 	printf("cap: %lu, used: %lu\n", cap, used_);
 
-	struct timeval start, end;
-	gettimeofday(&start, NULL);
+	//struct timeval start, end;
+	//gettimeofday(&start, NULL);
 	fsync(fd_for_heap);
+
+	ioctl(fd_for_heap, 0, 1);
 
 	struct msg_collect msg;
 	msg.msg_type.type = 'c';
@@ -260,14 +273,8 @@ void RemoteSpace::collect() {
 	msg.shift = Universe::narrow_oop_shift();
 	msg.static_base = (uint32_t) InstanceMirrorKlass::offset_of_static_fields();
 	msg.static_length = java_lang_Class::static_oop_field_count_offset();
-	lock_remote.lock();
 
-	///// DUMP OF MEMORY
-	//printf("Dumping mem\n");
-	//int heap_fd = open("pre_collection_heap_dump", O_RDWR | O_CREAT);
-	//int resw = write(heap_fd, heap_range->base, heap_range->size );
-	//close(heap_fd);
-	//printf("End of dumping mem\n");
+	lock_remote.lock();
 
 	write(sockfd_remote, &msg, sizeof(struct msg_collect));  // on envoie la base et le shift pour la conversion narrowoop en oop
 	getandsend_roots();
@@ -275,42 +282,22 @@ void RemoteSpace::collect() {
 	getandsend_helper();
 #endif
 
-#if DEADBEEF
-	uint32_t deadbeef_type;
-	read(sockfd_remote, &deadbeef_type, 4);
-	while(deadbeef_type == 42 || deadbeef_type == 69){
-		uint64_t addr;
-		uint32_t size;
-		read(sockfd_remote, &size, sizeof(uint32_t));
-		read(sockfd_remote, &addr, sizeof(uint64_t));
-		deadbeef_area(addr, (int)size, deadbeef_type);
-		read(sockfd_remote, &deadbeef_type, 4);
-	}
-#endif
+}
 
+void collect_sig(int sig) {
 	free_space = 0;
 	used_ = 0;
-	printf("free_space B: %lu\n", free_space);
 	read(sockfd_remote, &free_space, sizeof(uint64_t));
-	printf("free_space A: %lu\n", free_space);
-
-	alloc_buffer.free_all();
-
-	///// DUMP OF MEMORY
-	//printf("Dumping mem\n");
-	//heap_fd = open("post_collection_heap_dump", O_RDWR | O_CREAT);
-	//resw = write(heap_fd, heap_range->base, heap_range->size );
-	//close(heap_fd);
-	//printf("End of dumping mem\n");
-
+	alloc_buffer->free_all();
+	ioctl(fd_for_heap, 0, 0);
 	lock_remote.unlock();
-
-	gettimeofday(&end, NULL);
-
-	printf("[téléGC] Collection:  Time: %lds;  Used before: %lu; Used after: %lu\n", end.tv_sec - start.tv_sec, start_used, used() );
-	//printf("Used: %lu\n",used());
-	//printf("End of collection\n");
+	//gettimeofday(&end, NULL);
+	//printf("[téléGC] Collection:  Time: %lds;  Used before: %lu; Used after: %lu\n", end.tv_sec - start.tv_sec, start_used, used() );
+	printf("[téléGC] Collection: Used after: %lu\n",  used_glob() );
 }
+
+
+
 
 #if DEADBEEF
 void RemoteSpace::deadbeef_area(uint64_t addr, int size, int type){
@@ -329,98 +316,3 @@ void RemoteSpace::deadbeef_area(uint64_t addr, int size, int type){
 
 
 
-
-
-
-
-//HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
-//
-//    /*----------------*/
-//    /* Ce bout de code sert à trouver et  afficher les racines du tas pour le gc*/
-//    /*à terme, la fonction getandsend_roots est appelée par le RemoteSpace via des sockets ou un signal*/
-//    /*counter++;
-//    if(counter >= 2000 && roots){
-//        getandsend_roots(0);
-//        roots = false;
-//    }*/
-//    /*-------------*/
-//
-//    //printf("Avant\n");
-//
-//
-//    struct msg_par_allocate_klass msg ;
-//	msg.msg_type.type = 'k';
-//    msg.word_size = static_cast<uint32_t>(word_size);
-//    msg.klass = static_cast<uint32_t>((uint64_t) klass);
-//    lock_remote.lock();
-//    write(sockfd_remote, &msg, sizeof(struct msg_par_allocate_klass));
-//
-//    struct msg_alloc_response result ;
-//    read(sockfd_remote, &result, sizeof(msg_alloc_response));
-//    if(result.send_metadata){
-//        struct msg_klass_data klass_data;
-//		klass_data.length = 0;
-//        klass_data.layout_helper = klass->layout_helper();
-//		klass_data.name_length = (int64_t) strlen(klass->external_name());
-//		klass_data.special = 0;
-//
-//        OopMapBlock* field_array = NULL;
-//        if(klass->is_instance_klass()){
-//			printf("On est pas censé être là !!");
-//            InstanceKlass* iklass = (InstanceKlass*) klass;
-//            klass_data.length = iklass->nonstatic_oop_map_count();
-//            field_array = iklass->start_of_nonstatic_oop_maps();
-//			if(iklass->is_reference_instance_klass()){ //REF INSTANCE
-//				klass_data.klasstype = instanceref;
-//			} else if(iklass->is_mirror_instance_klass()){ //CLASS INSTANCE
-//				klass_data.klasstype = instancemirror;
-//			} else if(iklass->is_class_loader_instance_klass()){ //CLASSLOADER INSTANCE
-//				klass_data.klasstype = instanceclassloader;
-//			} else{
-//				klass_data.klasstype = instance;
-//			}
-//            write(sockfd_remote, &klass_data, sizeof(struct msg_klass_data));
-//            write(sockfd_remote, field_array, klass_data.length*sizeof(OopMapBlock));
-//        }
-//        //if(klass->is_objArray_klass()){
-//        //    klass_data.klasstype = objarray;
-//        //    ObjArrayKlass* oklass = (ObjArrayKlass*) klass;
-//        //    klass_data.base_klass = (uint64_t)oklass->element_klass();
-//        //    write(sockfd_remote, &klass_data, sizeof(struct msg_klass_data));
-//        //    }
-//        //if(klass->is_typeArray_klass()){
-//        //    klass_data.klasstype = typearray;
-//        //    TypeArrayKlass* tklass = (TypeArrayKlass*) klass;
-//        //    klass_data.basetype = tklass->element_type();
-//        //    write(sockfd_remote, &klass_data, sizeof(struct msg_klass_data));
-//        //}
-//#if KLASSNAME
-//		write(sockfd_remote, klass->external_name(), strlen(klass->external_name()));
-//#endif
-//    }
-//#if GCHELPER
-//	if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
-//		gchelper.add_root(result.ptr);
-//	}
-//#endif
-//
-//    lock_remote.unlock();
-//    HeapWord* allocated = result.ptr;
-//
-//    if(allocated != nullptr){
-//		used_ += word_size*8 + HEADER_OFFSET;
-//        uint64_t iptr = (uint64_t)allocated;
-//		uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
-//		if(klass->is_objArray_klass()){
-//			*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass + 1;
-//		}else if(klass->is_typeArray_klass()){
-//			*((uint32_t*)(iptr - KLASS_OFFSET)) = 42;
-//		}else if(klass->is_instance_klass()){
-//			*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass;
-//		}
-//        *((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size;
-//        //*((uint32_t*)(iptr - 16)) = 0xdeadbeef;
-//    }
-//
-//    return allocated;
-//}

@@ -6,7 +6,9 @@
 #define JDK11U_REMOTESPACE_HPP
 
 #include "gc/shared/space.hpp"
+#include <sys/ioctl.h>
 #include <sys/socket.h>
+#include <unistd.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <mutex>
@@ -28,10 +30,18 @@ struct hw_list{
 
 void getandsend_roots(int sig);
 void getandsend_roots();
+void collect_sig(int sig);
 
+size_t used_glob();
 
 extern std::mutex lock_remote;
 extern int sockfd_remote;
+extern AllocationBuffer* alloc_buffer;
+extern uint64_t free_space;
+extern uint64_t cap;
+extern uint64_t used_;
+
+extern int fd_for_heap;
 
 class RemoteSpace : public ContiguousSpace{
 
@@ -50,14 +60,9 @@ private:
     int counter;
     bool roots = true;
     struct sockaddr_in server;
-    int fd_for_heap;
 	bool collected = false;
 	struct range_t* heap_range;
 	bool rp_init = false;
-    uint64_t free_space;
-	uint64_t cap;
-	uint64_t used_;
-	AllocationBuffer alloc_buffer;
 #if GCHELPER
 	GCHelper gchelper;
 	SpanSubjectToDiscoveryClosure _span_based_discoverer;
@@ -80,7 +85,8 @@ public:
     void safe_object_iterate(ObjectClosure* blk);
     void print_on(outputStream* st) const;
 
-    void collect();
+    void stw_pre_collect();
+    //void collect();
 
     void set_fd(int fd){ fd_for_heap = fd;}
 

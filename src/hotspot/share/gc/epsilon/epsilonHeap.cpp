@@ -80,21 +80,21 @@ public:
 
   virtual void doit() {
       size_t id = OrderAccess::load_acquire(&_req_id);
-      //Heap_lock->lock();
+      Heap_lock->lock();
 
       if (id < OrderAccess::load_acquire(&_req_id)) {
-        //Heap_lock->unlock();
+        Heap_lock->unlock();
         return;
       }
       Atomic::inc(&_req_id);
 
 
-	  //printf("Start pause\n");
+	  printf("Start pause\n");
 	  _heap->collect_impl();
-	  //printf("End pause \n\n");
+	  printf("End pause \n\n");
 
 
-	  //Heap_lock->unlock();
+	  Heap_lock->unlock();
   }
 
   virtual void doit_epilogue() {
@@ -214,87 +214,17 @@ HeapWord* EpsilonHeap::allocate_work(size_t size) {
 }	
 
 HeapWord* EpsilonHeap::allocate_work_klass(size_t size, Klass* klass) {
-  //FIXME j'augmente la taille des objects pour tester
-  //size += 32;
   HeapWord* res = allocate_work_klass_impl(size, klass);
   if (res == nullptr) {
-	printf("La collection vient d'ici");
 	vm_collect_impl();
     res = allocate_work_klass_impl(size, klass);
-	printf("Res: %p\n", res);
   }
   return res;
 }	
 
 HeapWord* EpsilonHeap::allocate_work_impl(size_t size) {
     assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
-
-    HeapWord* res = NULL;
-  while (true) {
-    // Try to allocate, assume space is available
-    res = _space->par_allocate(size);
-    //printf("Pointeur: %p\n", (void*) res);
-      if (res != NULL) {
-		break;
-     }
-
-      // Allocation failed, attempt expansion, and retry:
-    {
-      MutexLockerEx ml(Heap_lock);
-
-	  // first attempt collection:
-
-
-      // Try to allocate under the lock, assume another thread was able to expand
-      res = _space->par_allocate(size);
-        if (res != NULL) {
-        break;
-      }
-
-        // Expand and loop back if space is available
-      size_t space_left = max_capacity() - capacity();
-      size_t want_space = MAX2(size, EpsilonMinHeapExpand);
-
-      if (want_space < space_left) {
-        // Enough space to expand in bulk:
-        bool expand = _virtual_space.expand_by(want_space);
-        assert(expand, "Should be able to expand");
-      } else if (size < space_left) {
-        // No space to expand in bulk, and this allocation is still possible,
-        // take all the remaining space:
-        bool expand = _virtual_space.expand_by(space_left);
-        assert(expand, "Should be able to expand");
-      } else {
-        // No space left:
-        return NULL;
-      }
-
-      _space->set_end((HeapWord *) _virtual_space.high());
-    }
-  }
-
-  size_t used = _space->used();
- // printf("Used: %lu\n", used);
-
-  // Allocation successful, update counters
-  {
-    size_t last = _last_counter_update;
-    if ((used - last >= _step_counter_update) && Atomic::cmpxchg(used, &_last_counter_update, last) == last) {
-      _monitoring_support->update_counters();
-    }
-  }
-
-  // ...and print the occupancy line, if needed
-  {
-    size_t last = _last_heap_print;
-    if ((used - last >= _step_heap_print) && Atomic::cmpxchg(used, &_last_heap_print, last) == last) {
-      print_heap_info(used);
-      print_metaspace_info();
-    }
-  }
-
-  assert(is_object_aligned(res), "Object should be aligned: " PTR_FORMAT, p2i(res));
-  return res;
+	return _space->par_allocate(size);
 }
 
 
@@ -302,76 +232,8 @@ HeapWord* EpsilonHeap::allocate_work_impl(size_t size) {
 
 HeapWord* EpsilonHeap::allocate_work_klass_impl(size_t size, Klass* klass) {
     assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
-    HeapWord* res = NULL;
-    while (true) {
-        // Try to allocate, assume space is available
-        res = _space->par_allocate_klass(size, klass);
-        //printf("Pointeur: %p\n", (void*) res);
-        if (res != NULL) {
-            break;
-        }
-
-        // Allocation failed, attempt expansion, and retry:
-        {
-			//grab lock
-            MutexLockerEx ml(Heap_lock);
-
-            // Try to allocate under the lock, assume another thread was able to expand
-            res = _space->par_allocate_klass(size, klass);
-            if (res != NULL) {
-                break;
-            }
-
-
-            // Expand and loop back if space is available
-            size_t space_left = max_capacity() - capacity();
-            size_t want_space = MAX2(size, EpsilonMinHeapExpand);
-
-            if (want_space < space_left) {
-                // Enough space to expand in bulk:
-                bool expand = _virtual_space.expand_by(want_space);
-                assert(expand, "Should be able to expand");
-            } else if (size < space_left) {
-                // No space to expand in bulk, and this allocation is still possible,
-                // take all the remaining space:
-                bool expand = _virtual_space.expand_by(space_left);
-                assert(expand, "Should be able to expand");
-            } else {
-                // No space left:
-                return NULL;
-            }
-
-            _space->set_end((HeapWord *) _virtual_space.high());
-        }
-    }
-
-    size_t used = _space->used();
-	//printf("Used: %lu\n", used);
-
-    // Allocation successful, update counters
-    {
-        size_t last = _last_counter_update;
-        if ((used - last >= _step_counter_update) && Atomic::cmpxchg(used, &_last_counter_update, last) == last) {
-            _monitoring_support->update_counters();
-        }
-    }
-
-    // ...and print the occupancy line, if needed
-    {
-        size_t last = _last_heap_print;
-        if ((used - last >= _step_heap_print) && Atomic::cmpxchg(used, &_last_heap_print, last) == last) {
-            print_heap_info(used);
-            print_metaspace_info();
-        }
-    }
-
-    assert(is_object_aligned(res), "Object should be aligned: " PTR_FORMAT, p2i(res));
-	//printf("Allocated ptr: %p, klasss: %s\n", res, klass->external_name() );
-    return res;
+    return _space->par_allocate_klass(size, klass);
 }
-
-
-
 
 
 
@@ -509,10 +371,11 @@ void EpsilonHeap::collect_impl(){
   BiasedLocking::preserve_marks();
   DerivedPointerTable::set_active(false);
   //DerivedPointerTable::update_pointers();
-  ((RemoteSpace*)_space)->collect();
-  BiasedLocking::restore_marks();
-  CodeCache::gc_epilogue();
-  JvmtiExport::gc_epilogue();
+  ((RemoteSpace*)_space)->stw_pre_collect();
+  //((RemoteSpace*)_space)->collect();
+  //BiasedLocking::restore_marks();
+  //CodeCache::gc_epilogue();
+  //JvmtiExport::gc_epilogue();
   //_monitoring_support->update_counters();
 }
 
