@@ -89,9 +89,11 @@ public:
       Atomic::inc(&_req_id);
 
 
+	  Heap_lock->lock();
 	  printf("Start pause\n");
 	  _heap->collect_impl();
 	  printf("End pause \n\n");
+	  Heap_lock->unlock();
 
 
 	  Heap_lock->unlock();
@@ -385,7 +387,13 @@ void EpsilonHeap::vm_collect_impl(){
 }
 
 void EpsilonHeap::do_full_collection(bool clear_all_soft_refs) {
-	vm_collect_impl();
+	if (SafepointSynchronize::is_at_safepoint()) {
+    	  printf("safepoint\n");
+    	  collect_impl();
+        } else {
+    	  printf("no safepoint\n");
+    	  vm_collect_impl();
+    }
 }
 
 void EpsilonHeap::safe_object_iterate(ObjectClosure *cl) {

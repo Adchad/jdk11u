@@ -30,7 +30,7 @@ HeapWord* AllocationBuffer::allocate(size_t size){
 
 void AllocationBuffer::add_bucket(size_t size){
 	if(size + HEADER_OFFSET/sizeof(HeapWord)>= BUFFER_MAX_SIZE || table[size] != nullptr){
-		printf("Tried adding a buffer bucket with wrong parameters\n");
+		printf("Tried adding a buffer bucket with wrong parameters, size: %lu\n", size);
 		exit(0);
 	}
 

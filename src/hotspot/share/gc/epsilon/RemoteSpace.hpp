@@ -35,6 +35,7 @@ void collect_sig(int sig);
 size_t used_glob();
 
 extern std::mutex lock_remote;
+extern std::mutex lock_collect;
 extern int sockfd_remote;
 extern AllocationBuffer* alloc_buffer;
 extern uint64_t free_space;
