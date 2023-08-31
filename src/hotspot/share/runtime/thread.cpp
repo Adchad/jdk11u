@@ -220,6 +220,10 @@ void JavaThread::smr_delete() {
 
 
 Thread::Thread() {
+
+#if PSEUDO_TLAB
+  pseudo_tlab_ = NULL;
+#endif
   // stack and get_thread
   set_stack_base(NULL);
   set_stack_size(0);

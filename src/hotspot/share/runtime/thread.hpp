@@ -58,7 +58,7 @@
 #include "jfr/support/jfrThreadExtension.hpp"
 #endif
 
-
+#define PSEUDO_TLAB 1
 
 class SafeThreadsListPtr;
 class ThreadSafepointState;
@@ -347,6 +347,20 @@ class Thread: public ThreadShadow {
   volatile void* _polling_page;                 // Thread local polling page
 
   ThreadLocalAllocBuffer _tlab;                 // Thread-local eden
+
+#if PSEUDO_TLAB
+private:
+	void* pseudo_tlab_;
+public:
+	void* pseudo_tlab(){
+		return pseudo_tlab_;
+	}
+
+	void set_pseudo_tlab(void* val){
+		pseudo_tlab_ = val;
+	}
+#endif
+
   jlong _allocated_bytes;                       // Cumulative number of bytes allocated on
                                                 // the Java heap
   ThreadHeapSampler _heap_sampler;              // For use when sampling the memory.

@@ -34,8 +34,8 @@
 #include "code/codeCache.hpp"
 #include "prims/jvmtiExport.hpp"
 
-
 #define REMOTE_SPACE
+
 
 class VM_Pause: public VM_Operation {
 private:
@@ -89,11 +89,9 @@ public:
       Atomic::inc(&_req_id);
 
 
-	  Heap_lock->lock();
 	  printf("Start pause\n");
 	  _heap->collect_impl();
-	  printf("End pause \n\n");
-	  Heap_lock->unlock();
+	  printf("End pause \n");
 
 
 	  Heap_lock->unlock();
@@ -355,10 +353,10 @@ void EpsilonHeap::collect(GCCause::Cause cause) {
   }
 
   if (SafepointSynchronize::is_at_safepoint()) {
-    	  printf("safepoint\n");
+    	  //printf("safepoint\n");
     	  collect_impl();
         } else {
-    	  printf("no safepoint\n");
+    	  //printf("no safepoint\n");
     	  vm_collect_impl();
         }
 
@@ -387,13 +385,13 @@ void EpsilonHeap::vm_collect_impl(){
 }
 
 void EpsilonHeap::do_full_collection(bool clear_all_soft_refs) {
-	if (SafepointSynchronize::is_at_safepoint()) {
-    	  printf("safepoint\n");
-    	  collect_impl();
-        } else {
-    	  printf("no safepoint\n");
-    	  vm_collect_impl();
-    }
+	//if (SafepointSynchronize::is_at_safepoint()) {
+    //	  //printf("safepoint\n");
+    //	  collect_impl();
+    //    } else {
+    //	  //printf("no safepoint\n");
+    //	  vm_collect_impl();
+    //}
 }
 
 void EpsilonHeap::safe_object_iterate(ObjectClosure *cl) {

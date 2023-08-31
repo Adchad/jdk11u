@@ -1,0 +1,87 @@
+//
+// Created by adam on 8/31/23.
+//
+
+#ifndef SPACESERVER_SHARED_MEM_HPP
+#define SPACESERVER_SHARED_MEM_HPP
+
+#include <cstdint>
+#include <cstddef>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <atomic>
+#include "gc/epsilon/rpcMessages.hpp"
+
+enum entry_state {
+	UNUSED = 0,
+	USED = 1
+};
+
+
+typedef struct batch{
+	uint64_t array[BUFFER_SIZE];
+	uint64_t bump;
+	struct batch* next;
+} batch_t;
+
+struct entry{
+	enum entry_state state;
+	std::atomic<batch_t*> batch;
+	char padding[64 - sizeof(enum entry_state) - sizeof(char*)];
+};
+
+struct batch_queue{
+	batch_t* head;
+	batch_t* tail;
+};
+
+struct batch_stack{
+	std::atomic<batch_t*> head;
+	char padding[64 - sizeof(head)];
+};
+
+#define PRE_FREE_SIZE sizeof(struct batch_stack)
+#define ENTRIES_SIZE (sizeof(struct entry)*BUFFER_MAX_SIZE)
+#define NBR_OF_ENTRIES BUFFER_MAX_SIZE
+#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
+#define NBR_OF_BATCHES (BATCH_SPACE_SIZE/sizeof(batch_t))
+
+
+class SharedMem {
+private:
+	void* start_addr;
+	struct batch_stack* prefree_list;
+	struct entry* entry_tab;
+	batch_t* start_of_batches;
+
+//	struct batch_queue* free_list;
+//	struct batch_queue* in_use_list;
+	
+public:
+	void initialize(void* addr_);
+	
+
+	void queue_push(batch_queue* list, batch_t* batch);
+	batch_t* queue_pop(batch_queue*);
+
+	void stack_push(batch_stack* list, batch_t* batch);
+	batch_t* stack_pop(batch_stack*);
+
+	batch_t* get_new_batch(size_t word_size); 
+
+};
+
+
+class PseudoTLAB {
+private:
+	SharedMemory* shm;
+	batch_t* batch_tab[NBR_OF_ENTRIES];
+public:
+	void initialize();
+	HeapWord* allocate(size_t word_size);
+
+};
+
+
+#endif //SPACESERVER_SHARED_MEM_HPP

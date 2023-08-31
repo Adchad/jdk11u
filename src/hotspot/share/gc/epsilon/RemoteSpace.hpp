@@ -12,10 +12,14 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <mutex>
+#include "gc/epsilon/epsilonHeap.hpp"
 #include "gc/epsilon/rpcMessages.hpp"
 #include "utilities/globalDefinitions.hpp"
 #include "gc/epsilon/gc_helper.hpp"
 #include <sys/time.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "gc/epsilon/AllocationBuffer.hpp"
 
 struct range_t {
@@ -28,26 +32,30 @@ struct hw_list{
 	struct hw_list* next;
 };
 
-void getandsend_roots(int sig);
 void getandsend_roots();
-void collect_sig(int sig);
-
+void start_collect_sig(int sig);
+void end_collect_sig(int sig);
+void* setup_shm(); 
 size_t used_glob();
 
 extern std::mutex lock_remote;
 extern std::mutex lock_collect;
+extern std::mutex lock_allocbuffer;
 extern int sockfd_remote;
 extern AllocationBuffer* alloc_buffer;
 extern uint64_t free_space;
 extern uint64_t cap;
 extern uint64_t used_;
-
+extern int shm_fd;
 extern int fd_for_heap;
+extern void* epsilon_sh_mem;
+
 
 class RemoteSpace : public ContiguousSpace{
 
 
 public:
+
 	static struct hw_list* poule;
 	
 	static void add_poule(oop hw){

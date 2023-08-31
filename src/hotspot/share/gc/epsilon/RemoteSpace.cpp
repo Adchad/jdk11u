@@ -28,11 +28,16 @@ int sockfd_remote = -1;
 
 std::mutex lock_remote;
 std::mutex lock_collect;
+std::mutex lock_allocbuffer;
 AllocationBuffer* alloc_buffer;
 uint64_t free_space;
 uint64_t cap;
 uint64_t used_;
 int fd_for_heap;
+int shm_fd;
+void* epsilon_sh_mem;
+
+
 
 RemoteSpace::RemoteSpace() : ContiguousSpace() {
 	if(sockfd_remote < 0){
@@ -56,8 +61,10 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
     int newsize = 131072;
 	setsockopt(sockfd_remote, SOL_SOCKET, SO_SNDBUF, &newsize, sizeof(newsize));
 	setsockopt(sockfd_remote, SOL_SOCKET, SO_RCVBUF, &newsize, sizeof(newsize));
-    signal(SIGUSR1, getandsend_roots);
-    signal(SIGUSR2, collect_sig);
+    signal(SIGUSR1, start_collect_sig);
+    signal(SIGUSR2, end_collect_sig);
+
+	epsilon_sh_mem = setup_shm();
 	
 	gchelper.initialize();
 }
@@ -129,16 +136,23 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 	HeapWord* allocated;
 	//printf("Test alloc wait lock");
 	//printf("Tentative d'alloc\n");
+	Thread* thread = Thread::current();
+	
+	if(thread->pseudo_tlab() != nullptr){
+		//PseudoTLAB* ptlab = (PseudoTLAB) thread->pseudo_tlab();
+		//ptlab()
+	}
+
+	lock_collect.lock();
 	lock_remote.lock();
 #if ALLOC_BUFFER
-	if(alloc_buffer->is_candidate(word_size) && !klass->is_typeArray_klass() ){
+	if(alloc_buffer->is_candidate(word_size)  ){
+		lock_allocbuffer.lock();
 		allocated = alloc_buffer->allocate(word_size);
 		if(allocated == nullptr){
-			//lock_remote.lock();
 			allocated = alloc_buffer->add_bucket_and_allocate(word_size);
-			//lock_remote.unlock();
 		}
-		//printf("Allocated: %p \n", allocated);
+		lock_allocbuffer.unlock();
 	}
 	else{
 #endif
@@ -179,6 +193,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 		//return allocated;
     }
 	lock_remote.unlock();
+	lock_collect.unlock();
 
 	//printf("Alloc: %p\n", allocated);
     return allocated;
@@ -207,23 +222,6 @@ size_t RemoteSpace::capacity() const{
 }
 
 
-void getandsend_roots(int sig) {
-	opcode tag;
-    tag.type = 'r';
-
-    RootMark rm;
-    rm.do_it();
-    int array_length = rm.getArraySize();
-    uint64_t *root_array= rm.rootArray();
-    lock_remote.lock();
-    write(sockfd_remote, &tag,8);
-    write(sockfd_remote, &array_length, sizeof(int));
-	int flag = 1;
-	setsockopt(sockfd_remote, IPPROTO_TCP, O_NDELAY, (char *) &flag, sizeof(int));
-    write(sockfd_remote, root_array, sizeof(uint64_t)*array_length );
-	setsockopt(sockfd_remote, IPPROTO_TCP, O_NDELAY, (char *) &flag, sizeof(int));
-    lock_remote.unlock();
-}
 
 void getandsend_roots(){
     RootMark rm;
@@ -287,11 +285,17 @@ void RemoteSpace::stw_pre_collect() {
 
 }
 
-void collect_sig(int sig) {
+void start_collect_sig(int sig) {
+		EpsilonHeap::heap()->vm_collect_impl();
+}
+
+void end_collect_sig(int sig) {
 	free_space = 0;
 	used_ = 0;
 	//read(sockfd_collect, &free_space, sizeof(uint64_t));
+	lock_allocbuffer.lock();
 	alloc_buffer->free_all();
+	lock_allocbuffer.unlock();
 	ioctl(fd_for_heap, 0, 0);
 	opcode msg;
 	msg.type = 'f';
@@ -327,3 +331,21 @@ void RemoteSpace::deadbeef_area(uint64_t addr, int size, int type){
 
 
 
+void* setup_shm(){
+	void* ret_addr;
+	shm_fd = shm_open(SHM_NAME, O_RDWR, 0600);
+
+ 	if (shm_fd == -1)
+ 	    exit(-1);
+
+ 	if (ftruncate(shm_fd, SHM_SIZE) == -1)
+ 	    exit(-1);
+
+ 	/* Map the object into the caller's address space. */
+
+ 	ret_addr = mmap(NULL, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+ 	if (ret_addr == MAP_FAILED)
+		exit(-1);
+
+	return ret_addr;
+}
