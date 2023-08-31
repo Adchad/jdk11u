@@ -65,17 +65,23 @@ batch_t* SharedMem::get_new_batch(size_t word_size){
 	return batch;
 }
 
-void PseudoTLAB::initialize(SharedMemory* shm_){
+void PseudoTLAB::initialize(SharedMem* shm_){
 	shm = shm_;
 	memset(batch_tab, 0, NBR_OF_ENTRIES*sizeof(batch_t*));
 }
 
 HeapWord* PseudoTLAB::allocate(size_t word_size){
 	HeapWord* ret;
-	if(batch_tab[word_size] == NULL){
-		batch_tab[word_size] = shm->get_new_batch()
+	if(batch_tab[word_size] == NULL){ // if there is no batch
+		batch_tab[word_size] = shm->get_new_batch(word_size); //get new batch
 	}
-	ret = batch_tab[word_size]->array[batch_tab[word_size]->bump];
+	if(batch_tab[word_size]->bump >= BUFFER_SIZE){ // if batch is finished
+		shm->stack_push(shm->prefree_list, batch_tab[word_size]); //push finished batch to prefree list
+		batch_tab[word_size] = NULL;
+		batch_tab[word_size] = shm->get_new_batch(word_size); //get new batch
+	}
+
+	ret = (HeapWord*) batch_tab[word_size]->array[batch_tab[word_size]->bump]; // allocate from inside the batch
 	batch_tab[word_size]->bump++;
 
 	return ret;

@@ -49,7 +49,7 @@ struct batch_stack{
 
 
 class SharedMem {
-private:
+public:
 	void* start_addr;
 	struct batch_stack* prefree_list;
 	struct entry* entry_tab;
@@ -75,10 +75,10 @@ public:
 
 class PseudoTLAB {
 private:
-	SharedMemory* shm;
+	SharedMem* shm;
 	batch_t* batch_tab[NBR_OF_ENTRIES];
 public:
-	void initialize();
+	void initialize(SharedMem* shm_);
 	HeapWord* allocate(size_t word_size);
 
 };
