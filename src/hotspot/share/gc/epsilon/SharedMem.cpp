@@ -5,48 +5,28 @@
 
 void SharedMem::initialize( void* addr_){
 	start_addr = addr_;
-	memset(start_addr, 0, PRE_FREE_SIZE + ENTRIES_SIZE);
+	printf("Shared memory addr: %p\n", start_addr);
+	//memset(start_addr, 0, PRE_FREE_SIZE + ENTRIES_SIZE);
 	prefree_list = (struct batch_stack*) start_addr;
-	entry_tab = (struct entry*) start_addr + PRE_FREE_SIZE;
-	start_of_batches = (batch_t*) entry_tab + ENTRIES_SIZE;
+	entry_tab = (struct entry*) ((uint64_t)start_addr + PRE_FREE_SIZE);
+	start_of_batches = (batch_t*) ((uint64_t)entry_tab + ENTRIES_SIZE);
 }
 
-void SharedMem::queue_push(batch_queue *list, batch_t* batch){
-	if(list->tail == NULL){
-		list->head = list->tail = batch;
-		return;
-	}
-	list->tail->next = batch;
-	list->tail = batch;
-}
-
-batch_t* SharedMem::queue_pop(batch_queue *list){
-	if(list->head == NULL)
-		return NULL;
-	batch_t* temp = list->head;
-	list->head = list->head->next;
-
-	if(list->head == NULL)
-		list->tail = NULL;
-	
-	return temp;
-}
-
-void SharedMem::stack_push(struct batch_stack* list, batch_t* batch){
-	batch_t* orig = list->head.load();
+void SharedMem::stack_push(struct batch_stack* list, uint64_t batch){
+	uint64_t orig = list->head.load();
 	do{
-		batch->next = orig;
+		abs_addr(batch)->next = orig;
 	}while(!list->head.compare_exchange_strong(orig, batch));
 
 }
 
-batch_t* SharedMem::stack_pop(batch_stack *list){
-	batch_t* orig = list->head.load();
-	batch_t* next;
+uint64_t SharedMem::stack_pop(batch_stack *list){
+	uint64_t orig = list->head.load();
+	uint64_t next;
 	do{
-		if(orig == NULL)
-			return NULL;
-		next = orig->next;
+		if(orig == 0)
+			return 0;
+		next = abs_addr(orig)->next;
 	}while(!list->head.compare_exchange_strong(orig, next));
 
 	return orig;
@@ -54,15 +34,17 @@ batch_t* SharedMem::stack_pop(batch_stack *list){
 
 
 batch_t* SharedMem::get_new_batch(size_t word_size){
-	batch_t* batch = NULL;
+	uint64_t offset;
 
 	entry_tab[word_size].state = USED;
+	printf("Waiting for batch number: %ld\n", word_size);
 	do{
-		batch = entry_tab[word_size].batch.exchange(NULL);
+		offset = entry_tab[word_size].batch.exchange(0);
 		asm volatile("pause");
-	}while(batch == NULL);
+	}while(offset==0);
+	printf("batchedd : %lu\n", offset);
 	
-	return batch;
+	return abs_addr(offset);
 }
 
 void PseudoTLAB::initialize(SharedMem* shm_){
@@ -76,13 +58,14 @@ HeapWord* PseudoTLAB::allocate(size_t word_size){
 		batch_tab[word_size] = shm->get_new_batch(word_size); //get new batch
 	}
 	if(batch_tab[word_size]->bump >= BUFFER_SIZE){ // if batch is finished
-		shm->stack_push(shm->prefree_list, batch_tab[word_size]); //push finished batch to prefree list
+		shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr); //push finished batch to prefree list
 		batch_tab[word_size] = NULL;
 		batch_tab[word_size] = shm->get_new_batch(word_size); //get new batch
 	}
 
 	ret = (HeapWord*) batch_tab[word_size]->array[batch_tab[word_size]->bump]; // allocate from inside the batch
 	batch_tab[word_size]->bump++;
+	printf("TLAB Allocated: %p\n", ret);
 
 	return ret;
 

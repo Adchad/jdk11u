@@ -124,6 +124,7 @@ jint EpsilonHeap::initialize() {
   _space = new RemoteSpace();
   ((RemoteSpace*) _space)->set_fd(heap_rs.fd_for_heap());
   ((RemoteSpace*) _space)->set_range(heap_rs.base(), heap_rs.size());
+  shm = ((RemoteSpace*) _space)->shm;
 #else
   _space = new ContiguousSpace();
 #endif

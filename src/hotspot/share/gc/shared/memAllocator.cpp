@@ -38,7 +38,9 @@
 #include "services/lowMemoryDetector.hpp"
 #include "utilities/align.hpp"
 #include "utilities/copy.hpp"
+#include "gc/epsilon/rpcMessages.hpp"
 #include "gc/epsilon/epsilonHeap.hpp"
+#include "gc/epsilon/SharedMem.hpp"
 
 
 class MemAllocator::Allocation: StackObj {
@@ -285,9 +287,23 @@ HeapWord* MemAllocator::allocate_outside_tlab(Allocation& allocation) const {
 
 HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {
   assert(UseTLAB, "should use UseTLAB");
-
+  HeapWord* mem = NULL;
+  if(UseEpsilonGC){
+	  if(_word_size > 0 && (_word_size + HEADER_OFFSET/sizeof(HeapWord)) < BUFFER_MAX_SIZE){
+		if(_thread->pseudo_tlab() == NULL){
+			 SharedMem* shm = ((EpsilonHeap*)_heap)->shm;
+			 PseudoTLAB* ptlab = (PseudoTLAB*) malloc(sizeof(PseudoTLAB));
+			 ptlab->initialize(shm);
+			 _thread->set_pseudo_tlab((void*)ptlab);
+		}
+		mem = ((PseudoTLAB*)_thread->pseudo_tlab())->allocate(_word_size);
+		return mem;
+	  } else {
+		return allocate_outside_tlab(allocation);
+	  }
+  }
   // Try allocating from an existing TLAB.
-  HeapWord* mem = _thread->tlab().allocate(_word_size);
+  mem = _thread->tlab().allocate(_word_size);
   if (mem != NULL) {
     return mem;
   }

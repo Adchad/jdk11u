@@ -36,6 +36,7 @@
 #include "runtime/vmThread.hpp"
 #include "runtime/orderAccess.hpp"
 #include "gc/epsilon/RemoteSpace.hpp"
+#include "gc/epsilon/SharedMem.hpp"
 
 class EpsilonHeap : public CollectedHeap {
   friend class VMStructs;
@@ -58,6 +59,7 @@ private:
   volatile size_t _last_heap_print;
 
 public:
+  SharedMem* shm;
   static EpsilonHeap* heap();
 
   EpsilonHeap(EpsilonCollectorPolicy* p) :

@@ -22,12 +22,12 @@ enum entry_state {
 typedef struct batch{
 	uint64_t array[BUFFER_SIZE];
 	uint64_t bump;
-	struct batch* next;
+	uint64_t next;
 } batch_t;
 
 struct entry{
 	enum entry_state state;
-	std::atomic<batch_t*> batch;
+	std::atomic<uint64_t> batch;
 	char padding[64 - sizeof(enum entry_state) - sizeof(char*)];
 };
 
@@ -37,14 +37,15 @@ struct batch_queue{
 };
 
 struct batch_stack{
-	std::atomic<batch_t*> head;
+	std::atomic<uint64_t> head;
 	char padding[64 - sizeof(head)];
 };
 
 #define PRE_FREE_SIZE sizeof(struct batch_stack)
 #define ENTRIES_SIZE (sizeof(struct entry)*BUFFER_MAX_SIZE)
 #define NBR_OF_ENTRIES BUFFER_MAX_SIZE
-#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
+//#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
+#define BATCH_SPACE_SIZE 65536
 #define NBR_OF_BATCHES (BATCH_SPACE_SIZE/sizeof(batch_t))
 
 
@@ -61,12 +62,12 @@ public:
 public:
 	void initialize(void* addr_);
 	
+	batch_t* abs_addr(uint64_t offset){
+		return (batch_t*)(offset + (uint64_t)start_addr);
+	}
 
-	void queue_push(batch_queue* list, batch_t* batch);
-	batch_t* queue_pop(batch_queue*);
-
-	void stack_push(batch_stack* list, batch_t* batch);
-	batch_t* stack_pop(batch_stack*);
+	void stack_push(batch_stack* list, uint64_t batch);
+	uint64_t stack_pop(batch_stack*);
 
 	batch_t* get_new_batch(size_t word_size); 
 

@@ -64,9 +64,12 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
     signal(SIGUSR1, start_collect_sig);
     signal(SIGUSR2, end_collect_sig);
 
-	epsilon_sh_mem = setup_shm();
 	
 	gchelper.initialize();
+
+	epsilon_sh_mem = setup_shm();
+	shm = (SharedMem*) malloc(sizeof(SharedMem));
+	shm->initialize(epsilon_sh_mem);
 }
 
 RemoteSpace::~RemoteSpace(){
@@ -100,6 +103,7 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	
 	alloc_buffer = (AllocationBuffer*) malloc(sizeof(AllocationBuffer));
 	alloc_buffer->initialize(sockfd_remote);
+
 	
 }
 

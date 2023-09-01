@@ -12,8 +12,10 @@
 #include "oops/oop.inline.hpp"
 #include <unistd.h>
 
+#define GB 262144L
+
 #define SHM_NAME "prout"
-#define SHM_SIZE (16*1024)
+#define SHM_SIZE GB
 
 // Header Params
 #define HEADER_OFFSET 8  // size of HEADER

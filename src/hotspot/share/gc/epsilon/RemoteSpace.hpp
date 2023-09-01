@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "gc/epsilon/AllocationBuffer.hpp"
+#include "gc/epsilon/SharedMem.hpp"
 
 struct range_t {
 	char* base;
@@ -55,6 +56,8 @@ class RemoteSpace : public ContiguousSpace{
 
 
 public:
+
+	SharedMem* shm;
 
 	static struct hw_list* poule;
 	
