@@ -12,7 +12,8 @@
 #include "oops/oop.inline.hpp"
 #include <unistd.h>
 
-#define GB 262144L
+#define PAGE_SIZE 4096L 
+#define GB 262144 * PAGE_SIZE
 
 #define SHM_NAME "prout"
 #define SHM_SIZE GB
@@ -30,7 +31,7 @@
 #define GCHELPER 1 // help from JVM for some complicated objects in the GC
 #define DEADBEEF 0 // mark collected objects by replacing data with deadbeef
 #define REMOTE_LOADING 1 // instrumentate classloader to send data to GC
-#define ALLOC_BUFFER 1
+#define ALLOC_BUFFER 0
 
 // Allocation buffer parameters
 #define BUFFER_SIZE 30 // amount of pointers stored in the allocation buffer in the JVM side

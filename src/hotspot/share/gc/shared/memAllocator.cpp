@@ -296,7 +296,9 @@ HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {
 			 ptlab->initialize(shm);
 			 _thread->set_pseudo_tlab((void*)ptlab);
 		}
-		mem = ((PseudoTLAB*)_thread->pseudo_tlab())->allocate(_word_size);
+		mem = ((PseudoTLAB*)_thread->pseudo_tlab())->allocate(_word_size + HEADER_OFFSET/sizeof(HeapWord));
+		if(mem != NULL)
+			((EpsilonHeap*)_heap)->concurrent_post_allocate(mem, _word_size, _klass);
 		return mem;
 	  } else {
 		return allocate_outside_tlab(allocation);

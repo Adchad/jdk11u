@@ -237,6 +237,9 @@ HeapWord* EpsilonHeap::allocate_work_klass_impl(size_t size, Klass* klass) {
 }
 
 
+void EpsilonHeap::concurrent_post_allocate(HeapWord* allocated, size_t size, Klass* klass){
+	((RemoteSpace*)_space)->concurrent_post_allocate(allocated, size, klass);
+}
 
 
 HeapWord* EpsilonHeap::allocate_new_tlab(size_t min_size,

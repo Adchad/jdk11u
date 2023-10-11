@@ -112,6 +112,8 @@ public:
   HeapWord* allocate_work_klass(size_t size, Klass* klass);
   HeapWord* allocate_work_impl(size_t size);
   HeapWord* allocate_work_klass_impl(size_t size, Klass* klass);
+  void concurrent_post_allocate(HeapWord* allocated, size_t size, Klass* klass);
+
   virtual HeapWord* mem_allocate(size_t size, bool* gc_overhead_limit_was_exceeded);
   HeapWord* mem_allocate_klass(size_t size, bool* gc_overhead_limit_was_exceeded, Klass *klass);
 

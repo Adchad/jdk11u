@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <cstring>
 #include <atomic>
+#include <semaphore.h>
 #include "gc/epsilon/rpcMessages.hpp"
 
 enum entry_state {
@@ -21,8 +22,10 @@ enum entry_state {
 
 typedef struct batch{
 	uint64_t array[BUFFER_SIZE];
-	uint64_t bump;
-	uint64_t next;
+	uint32_t bump;
+	uint32_t next1;
+	uint32_t next2;
+	uint32_t size;
 } batch_t;
 
 struct entry{
@@ -42,10 +45,11 @@ struct batch_stack{
 };
 
 #define PRE_FREE_SIZE sizeof(struct batch_stack)
+#define SEM_SIZE sizeof(sem_t)
 #define ENTRIES_SIZE (sizeof(struct entry)*BUFFER_MAX_SIZE)
 #define NBR_OF_ENTRIES BUFFER_MAX_SIZE
 //#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
-#define BATCH_SPACE_SIZE 65536
+#define BATCH_SPACE_SIZE (1024*1024*512)
 #define NBR_OF_BATCHES (BATCH_SPACE_SIZE/sizeof(batch_t))
 
 
@@ -55,6 +59,7 @@ public:
 	struct batch_stack* prefree_list;
 	struct entry* entry_tab;
 	batch_t* start_of_batches;
+	sem_t* mutex;
 
 //	struct batch_queue* free_list;
 //	struct batch_queue* in_use_list;
