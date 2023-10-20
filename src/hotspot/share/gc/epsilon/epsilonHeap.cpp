@@ -356,13 +356,13 @@ void EpsilonHeap::collect(GCCause::Cause cause) {
       //log_info(gc)("GC request for \"%s\" is ignored", GCCause::to_string(cause));
   }
 
-  if (SafepointSynchronize::is_at_safepoint()) {
-    	  //printf("safepoint\n");
-    	  collect_impl();
-        } else {
-    	  //printf("no safepoint\n");
-    	  vm_collect_impl();
-        }
+  //if (SafepointSynchronize::is_at_safepoint()) {
+  //  	  //printf("safepoint\n");
+  //  	  collect_impl();
+  //      } else {
+  //  	  //printf("no safepoint\n");
+  //  	  vm_collect_impl();
+  //      }
 
 #if COMPILER2_OR_JVMCI
     DerivedPointerTable::clear();

@@ -34,7 +34,7 @@
 #define ALLOC_BUFFER 0
 
 // Allocation buffer parameters
-#define BUFFER_SIZE 30 // amount of pointers stored in the allocation buffer in the JVM side
+#define BUFFER_SIZE 61 // amount of pointers stored in the allocation buffer in the JVM side
 #define BUFFER_MAX_SIZE 256 // max size of object that can be allocated from the buffer
 
 enum klass_type {instance = 1, objarray = 2, typearray = 3, instanceref = 4, instancemirror = 5, instanceclassloader = 6};

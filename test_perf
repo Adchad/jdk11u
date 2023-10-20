@@ -1,0 +1,16 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 134K of event 'cycles'
+# Event count (approx.): 1472795953286
+#
+# Children      Self       Samples  Command  Shared Object  Symbol
+# ........  ........  ............  .......  .............  ......
+#
+
+
+#
+# (Tip: To count events in every 1000 msec: perf stat -I 1000)
+#

@@ -26,12 +26,16 @@ typedef struct batch{
 	uint32_t next1;
 	uint32_t next2;
 	uint32_t size;
+	uint32_t count;
+	uint32_t next_batch;
 } batch_t;
 
 struct entry{
-	enum entry_state state;
+	//enum entry_state state;
 	std::atomic<uint64_t> batch;
-	char padding[64 - sizeof(enum entry_state) - sizeof(char*)];
+	std::atomic<uint64_t> count;
+
+	char padding[64 - 16 ];
 };
 
 struct batch_queue{

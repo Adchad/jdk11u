@@ -49,7 +49,8 @@ uint64_t SharedMem::stack_pop(batch_stack *list){
 batch_t* SharedMem::get_new_batch(size_t word_size){
 	uint64_t offset;
 
-	entry_tab[word_size].state = USED;
+	//entry_tab[word_size].state = USED;
+	entry_tab[word_size].count++;
 	do{
 		offset = entry_tab[word_size].batch.exchange(0);
 		asm volatile("pause");
@@ -69,13 +70,21 @@ HeapWord* PseudoTLAB::allocate(size_t word_size){
 		batch_tab[word_size] = shm->get_new_batch(word_size); //get new batch
 	}
 	else if(batch_tab[word_size]->bump >= BUFFER_SIZE){ // if batch is finished
-		shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr); //push finished batch to prefree list
 		//printf("What was pushed: %lu, for size: %ld\n", (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr, word_size);
-		batch_tab[word_size] = NULL;
-		batch_tab[word_size] = shm->get_new_batch(word_size); //get new batch
+		batch_t* temp = batch_tab[word_size];
+
+		if(batch_tab[word_size]->count > 0){
+			batch_t* temp = shm->abs_addr(batch_tab[word_size]->next_batch);
+			shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr); //push finished batch to prefree list
+			batch_tab[word_size] = temp;
+		} else {
+			shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr); //push finished batch to prefree list
+			batch_tab[word_size] = shm->get_new_batch(word_size); //get new batch
+		}
 	}
 
 	ret = (HeapWord*) batch_tab[word_size]->array[batch_tab[word_size]->bump]; // allocate from inside the batch
+	printf("Allocated: %p\n", ret);
 	batch_tab[word_size]->bump++;
 
 	return ret;
