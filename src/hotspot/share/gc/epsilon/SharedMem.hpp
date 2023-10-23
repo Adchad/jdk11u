@@ -53,7 +53,7 @@ struct batch_stack{
 #define ENTRIES_SIZE (sizeof(struct entry)*BUFFER_MAX_SIZE)
 #define NBR_OF_ENTRIES BUFFER_MAX_SIZE
 //#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
-#define BATCH_SPACE_SIZE (1024*1024*512)
+#define BATCH_SPACE_SIZE (1024*1024*1024)
 #define NBR_OF_BATCHES (BATCH_SPACE_SIZE/sizeof(batch_t))
 
 

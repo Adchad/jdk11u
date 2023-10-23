@@ -16,7 +16,7 @@
 #define GB 262144 * PAGE_SIZE
 
 #define SHM_NAME "prout"
-#define SHM_SIZE GB
+#define SHM_SIZE 2*GB
 
 // Header Params
 #define HEADER_OFFSET 8  // size of HEADER
