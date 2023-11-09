@@ -32,6 +32,12 @@
 #define DEADBEEF 0 // mark collected objects by replacing data with deadbeef
 #define REMOTE_LOADING 1 // instrumentate classloader to send data to GC
 #define ALLOC_BUFFER 0
+#define COLLECTION_THRESHOLD 40
+
+#define ARENA_SIZE_IN_BYTES (2 * PAGE_SIZE) // size of the arena memory block                                                                                                                                    
+#define ARENA_SIZE (ARENA_SIZE_IN_BYTES / 8)                                                                                                                                                                     
+
+#define ARENA_MAX_SIZE ARENA_SIZE   // max size of object that can be allocated from the arena
 
 // Allocation buffer parameters
 #define BUFFER_SIZE 61 // amount of pointers stored in the allocation buffer in the JVM side

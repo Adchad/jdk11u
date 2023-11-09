@@ -210,6 +210,7 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 	}
 #endif
 
+
 	used_.fetch_add(word_size*8 + HEADER_OFFSET);
     uint64_t iptr = (uint64_t)allocated;
 	uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
@@ -223,6 +224,9 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 	}
     *((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size;
 
+	if(used_.load() >= COLLECTION_THRESHOLD*capacity()){
+		start_collect_sig(0);
+	}
 }
 
 
@@ -312,7 +316,7 @@ void RemoteSpace::stw_pre_collect() {
 }
 
 void start_collect_sig(int sig) {
-		EpsilonHeap::heap()->vm_collect_impl();
+	EpsilonHeap::heap()->vm_collect_impl();
 }
 
 void end_collect_sig(int sig) {
@@ -329,6 +333,9 @@ void end_collect_sig(int sig) {
 	write(sockfd_remote, &msg, sizeof(uint64_t));
 	read(sockfd_remote, &free_space, sizeof(uint64_t));
 	lock_remote.unlock();
+
+	CodeCache::gc_epilogue();
+	JvmtiExport::gc_epilogue();
 
 	//lock_collect.unlock();
 	//gettimeofday(&end, NULL);

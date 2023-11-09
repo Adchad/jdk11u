@@ -273,16 +273,33 @@ void MemAllocator::Allocation::notify_allocation() {
 
 HeapWord* MemAllocator::allocate_outside_tlab(Allocation& allocation) const {
   allocation._allocated_outside_tlab = true;
-  HeapWord* mem = ((EpsilonHeap*)_heap)->mem_allocate_klass(_word_size, &allocation._overhead_limit_exceeded, _klass);
-  if (mem != NULL) {
-    return mem;
+  if(UseEpsilonGC){ 
+      size_t size = _word_size+1;
+      if(size >= ARENA_MAX_SIZE/2){
+		  if(size <= ARENA_MAX_SIZE)
+			  size = 1;
+		  else
+			size = size/ARENA_MAX_SIZE;
+          if(size*ARENA_MAX_SIZE < _word_size+1)
+        	  size++;
+          size *= ARENA_MAX_SIZE;
+      }
+      HeapWord* mem = ((EpsilonHeap*)_heap)->mem_allocate_klass(size-1, &allocation._overhead_limit_exceeded, _klass);
+      if (mem != NULL) {
+        return mem;
+      }
+	  return nullptr;
   }
-
-  NOT_PRODUCT(_heap->check_for_non_bad_heap_word_value(mem, _word_size));
-  size_t size_in_bytes = _word_size * HeapWordSize;
-  _thread->incr_allocated_bytes(size_in_bytes);
-
-  return mem;
+  else{
+      HeapWord* mem = _heap->mem_allocate(_word_size, &allocation._overhead_limit_exceeded);
+      if (mem == NULL) {
+        return mem;
+      }
+ 	  NOT_PRODUCT(_heap->check_for_non_bad_heap_word_value(mem, _word_size));
+ 	  size_t size_in_bytes = _word_size * HeapWordSize;
+ 	  _thread->incr_allocated_bytes(size_in_bytes);
+	  return mem;
+  }
 }
 
 HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {

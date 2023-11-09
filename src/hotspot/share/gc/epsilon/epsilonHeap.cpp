@@ -371,7 +371,7 @@ void EpsilonHeap::collect(GCCause::Cause cause) {
 
 
 void EpsilonHeap::collect_impl(){
-  CodeCache::gc_prologue();
+  //CodeCache::gc_prologue();
   BiasedLocking::preserve_marks();
   DerivedPointerTable::set_active(false);
   //DerivedPointerTable::update_pointers();
