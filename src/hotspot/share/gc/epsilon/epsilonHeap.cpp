@@ -233,12 +233,39 @@ HeapWord* EpsilonHeap::allocate_work_impl(size_t size) {
 
 HeapWord* EpsilonHeap::allocate_work_klass_impl(size_t size, Klass* klass) {
     assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
-    return _space->par_allocate_klass(size, klass);
+    HeapWord* mem =  _space->par_allocate_klass(size, klass);
+    //HeapWord* mem =  _space->par_allocate(size);
+
+	size_t used = _space->used();
+	{
+	 size_t last = _last_counter_update;
+   	 if ((used - last >= _step_counter_update) && Atomic::cmpxchg(used, &_last_counter_update, last) == last) {
+   	   _monitoring_support->update_counters();
+   	 }
+	}
+
+	{
+    size_t last = _last_heap_print;
+    if ((used - last >= _step_heap_print) && Atomic::cmpxchg(used, &_last_heap_print, last) == last) {
+      print_heap_info(used);
+      print_metaspace_info();
+    }
+    }
+
+	return mem;
 }
 
 
 void EpsilonHeap::concurrent_post_allocate(HeapWord* allocated, size_t size, Klass* klass){
 	((RemoteSpace*)_space)->concurrent_post_allocate(allocated, size, klass);
+
+	size_t used = _space->used();
+	{
+    size_t last = _last_counter_update;
+    if ((used - last >= _step_counter_update) && Atomic::cmpxchg(used, &_last_counter_update, last) == last) {
+      _monitoring_support->update_counters();
+    }
+  }
 }
 
 
@@ -331,12 +358,12 @@ HeapWord* EpsilonHeap::allocate_new_tlab(size_t min_size,
 }
 
 HeapWord* EpsilonHeap::mem_allocate(size_t size, bool *gc_overhead_limit_was_exceeded) {
-  *gc_overhead_limit_was_exceeded = true;
+  *gc_overhead_limit_was_exceeded = false;
   return allocate_work(size);
 }
 
 HeapWord* EpsilonHeap::mem_allocate_klass(size_t size, bool *gc_overhead_limit_was_exceeded, Klass* klass) {
-    *gc_overhead_limit_was_exceeded = true;
+    *gc_overhead_limit_was_exceeded = false;
     return allocate_work_klass(size, klass);
 }
 

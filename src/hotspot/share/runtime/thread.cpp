@@ -139,6 +139,8 @@
 #include "jfr/jfr.hpp"
 #endif
 
+#include "gc/epsilon/SharedMem.hpp"
+
 // Initialization after module runtime initialization
 void universe_post_module_init();  // must happen after call_initPhase2
 
@@ -457,6 +459,13 @@ Thread::~Thread() {
   if (this == Thread::current()) {
     Thread::clear_thread_current();
   }
+
+  if(UseEpsilonGC){
+#if PSEUDO_TLAB
+	  if(pseudo_tlab_ != nullptr)
+		  ((PseudoTLAB*)pseudo_tlab_)->free();
+  }
+#endif
 
   CHECK_UNHANDLED_OOPS_ONLY(if (CheckUnhandledOops) delete unhandled_oops();)
 }

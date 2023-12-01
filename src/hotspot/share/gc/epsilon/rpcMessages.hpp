@@ -16,10 +16,10 @@
 #define GB 262144 * PAGE_SIZE
 
 #define SHM_NAME "prout"
-#define SHM_SIZE 2*GB
+#define SHM_SIZE 4*GB
 
 // Header Params
-#define HEADER_OFFSET 8  // size of HEADER
+#define HEADER_OFFSET 16  // size of HEADER
 #define SIZE_OFFSET 8 // offset of size (the offset are negative)
 #define KLASS_OFFSET 4 // offset of klass ID
 
@@ -32,16 +32,16 @@
 #define DEADBEEF 0 // mark collected objects by replacing data with deadbeef
 #define REMOTE_LOADING 1 // instrumentate classloader to send data to GC
 #define ALLOC_BUFFER 0
-#define COLLECTION_THRESHOLD 40
+#define COLLECTION_THRESHOLD 60
 
 #define ARENA_SIZE_IN_BYTES (2 * PAGE_SIZE) // size of the arena memory block                                                                                                                                    
 #define ARENA_SIZE (ARENA_SIZE_IN_BYTES / 8)                                                                                                                                                                     
 
-#define ARENA_MAX_SIZE ARENA_SIZE   // max size of object that can be allocated from the arena
+#define ARENA_MAX_SIZE (ARENA_SIZE -2)   // max size of object that can be allocated from the arena
 
 // Allocation buffer parameters
-#define BUFFER_SIZE 61 // amount of pointers stored in the allocation buffer in the JVM side
-#define BUFFER_MAX_SIZE 256 // max size of object that can be allocated from the buffer
+#define BUFFER_SIZE 125 // amount of pointers stored in the allocation buffer in the JVM side
+#define BUFFER_MAX_SIZE ARENA_MAX_SIZE // max size of object that can be allocated from the buffer
 
 enum klass_type {instance = 1, objarray = 2, typearray = 3, instanceref = 4, instancemirror = 5, instanceclassloader = 6};
 

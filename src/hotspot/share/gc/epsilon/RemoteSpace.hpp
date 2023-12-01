@@ -43,6 +43,8 @@ extern std::mutex lock_remote;
 extern std::mutex lock_collect;
 extern std::mutex lock_allocbuffer;
 extern std::mutex lock_gc_helper;
+extern std::mutex lock_alloc_print;
+extern std::atomic<bool> collecting;
 extern int sockfd_remote;
 extern AllocationBuffer* alloc_buffer;
 extern uint64_t free_space;
@@ -76,6 +78,7 @@ private:
 	bool collected = false;
 	struct range_t* heap_range;
 	bool rp_init = false;
+	float col_threshold = COLLECTION_THRESHOLD/100;
 #if GCHELPER
 	GCHelper gchelper;
 	SpanSubjectToDiscoveryClosure _span_based_discoverer;

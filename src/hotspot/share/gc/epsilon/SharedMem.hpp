@@ -35,7 +35,7 @@ struct entry{
 	std::atomic<uint64_t> batch;
 	std::atomic<uint64_t> count;
 
-	char padding[64 - 16 ];
+	char padding[64 - 16];
 };
 
 struct batch_queue{
@@ -53,7 +53,7 @@ struct batch_stack{
 #define ENTRIES_SIZE (sizeof(struct entry)*BUFFER_MAX_SIZE)
 #define NBR_OF_ENTRIES BUFFER_MAX_SIZE
 //#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
-#define BATCH_SPACE_SIZE (1024*1024*1024)
+#define BATCH_SPACE_SIZE (3*1024*1024*1024UL)
 #define NBR_OF_BATCHES (BATCH_SPACE_SIZE/sizeof(batch_t))
 
 
@@ -80,16 +80,35 @@ public:
 
 	batch_t* get_new_batch(size_t word_size); 
 
+	int size_of_buffer(int size){
+		if(size <= 128)
+			return 125;
+		if(size <= 256)
+			return 61;
+		if(size <= 512)
+			return 31;
+		if(size <= 1024)
+			return 15;
+		if(size <= 2048)
+			return 7;
+		if(size <= 4096)
+			return 3;
+
+		return 1;
+	}
+
 };
 
 
 class PseudoTLAB {
 private:
 	SharedMem* shm;
+	void* thread;
 	batch_t* batch_tab[NBR_OF_ENTRIES];
 public:
-	void initialize(SharedMem* shm_);
+	void initialize(SharedMem* shm_, void* thread_);
 	HeapWord* allocate(size_t word_size);
+	void free();
 
 };
 

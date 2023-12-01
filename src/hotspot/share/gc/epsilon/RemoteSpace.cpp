@@ -30,6 +30,8 @@ std::mutex lock_remote;
 std::mutex lock_collect;
 std::mutex lock_allocbuffer;
 std::mutex lock_gc_helper;
+std::mutex lock_alloc_print;
+std::atomic<bool> collecting;
 AllocationBuffer* alloc_buffer;
 uint64_t free_space;
 uint64_t cap;
@@ -71,12 +73,14 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
 	epsilon_sh_mem = setup_shm();
 	shm = (SharedMem*) malloc(sizeof(SharedMem));
 	shm->initialize(epsilon_sh_mem);
+
 }
 
 RemoteSpace::~RemoteSpace(){
     //close(sockfd_remote);
 }
 
+int alloc_fd;
 
 void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) {
 	_mr = mr;
@@ -101,9 +105,12 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	cap = mr_word_size*8;
 	free_space = cap;
 	used_.store(0);
+	collecting.store(false);
 	
 	alloc_buffer = (AllocationBuffer*) malloc(sizeof(AllocationBuffer));
 	alloc_buffer->initialize(sockfd_remote);
+
+	alloc_fd = creat("alloc_data", 0);
 
 	
 }
@@ -142,35 +149,18 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 	//printf("Test alloc wait lock");
 	//printf("Tentative d'alloc\n");
 
-	//lock_collect.lock();
-#if ALLOC_BUFFER
-	if(alloc_buffer->is_candidate(word_size)  ){
-		lock_allocbuffer.lock();
-		allocated = alloc_buffer->allocate(word_size);
-		if(allocated == nullptr){
-			lock_remote.lock();
-			allocated = alloc_buffer->add_bucket_and_allocate(word_size);
-			lock_remote.unlock();
-		}
-		lock_allocbuffer.unlock();
-	}
-	else{
-#endif
+	lock_collect.lock();
+	lock_remote.lock();
+	struct msg_par_allocate_klass msg ;
+	msg.msg_type.type = 'k';
+    msg.word_size = static_cast<uint32_t>(word_size);
+    msg.klass = static_cast<uint32_t>((uint64_t) klass);
+	write(sockfd_remote, &msg, sizeof(struct msg_par_allocate_klass));
+    struct msg_alloc_response result ;
+    read(sockfd_remote, &result, sizeof(msg_alloc_response));
+	lock_remote.unlock();
 
-		lock_remote.lock();
-		struct msg_par_allocate_klass msg ;
-		msg.msg_type.type = 'k';
-    	msg.word_size = static_cast<uint32_t>(word_size);
-    	msg.klass = static_cast<uint32_t>((uint64_t) klass);
-		write(sockfd_remote, &msg, sizeof(struct msg_par_allocate_klass));
-    	struct msg_alloc_response result ;
-    	read(sockfd_remote, &result, sizeof(msg_alloc_response));
-		lock_remote.unlock();
-
-		allocated = result.ptr;
-#if ALLOC_BUFFER
-	}
-#endif
+	allocated = result.ptr;
 
 
     if(allocated != nullptr){
@@ -181,9 +171,16 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 			lock_gc_helper.unlock();
 		}
 #endif
+	//	lock_alloc_print.lock();
+	//	dprintf(alloc_fd,"%p, %lu\n", allocated, word_size);
+	//	lock_alloc_print.unlock();
 		used_.fetch_add(word_size*8 + HEADER_OFFSET);
         uint64_t iptr = (uint64_t)allocated;
 		uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
+
+	//	printf("Klass: %u, name: %s\n", short_klass, allocated,klass->external_name());
+		//printf("Klass: %u, addr: %p, size: %lu, name: %s\n", short_klass,allocated, word_size,klass->external_name());
+
 		if(klass->is_objArray_klass()){
 			*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass + 1;
 		}else if(klass->is_typeArray_klass()){
@@ -196,24 +193,29 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 		//return allocated;
     }
 
+	//lock_remote.unlock();
+	lock_collect.unlock();
 	//printf("Alloc: %p\n", allocated);
     return allocated;
 }
 
 void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size, Klass* klass){
 
+	lock_collect.lock();
 #if GCHELPER
 	if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
 		lock_gc_helper.lock();
 		gchelper.add_root(allocated);
-		lock_gc_helper.unlock();
+		lock_gc_helper.unlock(); 
 	}
 #endif
-
-
+	//lock_alloc_print.lock();
+	//lock_alloc_print.unlock();
 	used_.fetch_add(word_size*8 + HEADER_OFFSET);
     uint64_t iptr = (uint64_t)allocated;
 	uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
+
+	//printf("Klass: %u, addr: %p, size: %lu, name: %s\n", short_klass,allocated, word_size,klass->external_name());
 
 	if(klass->is_objArray_klass()){
 		*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass + 1;
@@ -222,9 +224,14 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 	}else if(klass->is_instance_klass()){
 		*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass;
 	}
+	//else{printf("Caca Boudin\n");}
     *((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size;
 
-	if(used_.load() >= COLLECTION_THRESHOLD*capacity()){
+
+	lock_collect.unlock();
+
+	if(used_glob() >= (capacity()*COLLECTION_THRESHOLD)/100 && !collecting.load()){
+		collecting.store(true);
 		start_collect_sig(0);
 	}
 }
@@ -281,6 +288,7 @@ void RemoteSpace::print_on(outputStream* st) const{return;}
 
 void RemoteSpace::stw_pre_collect() {
 
+	lock_collect.lock();
 	printf("Start of collection\n");
 	if(!rp_init){
 		rp_init = true;
@@ -292,8 +300,9 @@ void RemoteSpace::stw_pre_collect() {
 
 	//struct timeval start, end;
 	//gettimeofday(&start, NULL);
-	//lock_collect.lock();
-	fsync(fd_for_heap);
+	int ret = fsync(fd_for_heap);
+
+	printf("Ret: %d\n", ret);
 
 	ioctl(fd_for_heap, 0, 1);
 
@@ -322,6 +331,7 @@ void start_collect_sig(int sig) {
 void end_collect_sig(int sig) {
 	free_space = 0;
 	used_.store(0);
+	collecting.store(false);
 	//read(sockfd_collect, &free_space, sizeof(uint64_t));
 	lock_allocbuffer.lock();
 	alloc_buffer->free_all();
@@ -337,11 +347,11 @@ void end_collect_sig(int sig) {
 	CodeCache::gc_epilogue();
 	JvmtiExport::gc_epilogue();
 
-	//lock_collect.unlock();
 	//gettimeofday(&end, NULL);
 	//printf("[téléGC] Collection:  Time: %lds;  Used before: %lu; Used after: %lu\n", end.tv_sec - start.tv_sec, start_used, used() );
 	printf("\n");
 	printf("[téléGC] Collection: Used after: %lu\n",  used_glob() );
+	lock_collect.unlock();
 }
 
 
