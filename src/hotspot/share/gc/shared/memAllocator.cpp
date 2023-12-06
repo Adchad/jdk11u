@@ -117,6 +117,7 @@ public:
 };
 
 bool MemAllocator::Allocation::check_out_of_memory() {
+  if(UseEpsilonGC){return false;}
   Thread* THREAD = _thread;
   assert(!HAS_PENDING_EXCEPTION, "Unexpected exception, will result in uninitialized storage");
 

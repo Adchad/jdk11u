@@ -57,7 +57,7 @@ bool AllocationBuffer::is_candidate(size_t size){
 }
 
 void AllocationBuffer::free_all(){
-	for(int i=0; i<BUFFER_MAX_SIZE; i++){
+	for(unsigned int i=0; i<BUFFER_MAX_SIZE; i++){
 		if(table[i]!=nullptr){
 			free(table[i]);
 		}

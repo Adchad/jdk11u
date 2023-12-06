@@ -22,12 +22,10 @@ enum entry_state {
 
 typedef struct batch{
 	uint64_t array[BUFFER_SIZE];
+	uint64_t next1;
+	uint64_t next2;
 	uint32_t bump;
-	uint32_t next1;
-	uint32_t next2;
 	uint32_t size;
-	uint32_t count;
-	uint32_t next_batch;
 } batch_t;
 
 struct entry{
@@ -53,7 +51,7 @@ struct batch_stack{
 #define ENTRIES_SIZE (sizeof(struct entry)*BUFFER_MAX_SIZE)
 #define NBR_OF_ENTRIES BUFFER_MAX_SIZE
 //#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
-#define BATCH_SPACE_SIZE (3*1024*1024*1024UL)
+#define BATCH_SPACE_SIZE (5ULL*1024*1024*1024UL)
 #define NBR_OF_BATCHES (BATCH_SPACE_SIZE/sizeof(batch_t))
 
 
@@ -84,15 +82,15 @@ public:
 		if(size <= 128)
 			return 125;
 		if(size <= 256)
-			return 61;
+			return 64;
 		if(size <= 512)
-			return 31;
+			return 32;
 		if(size <= 1024)
-			return 15;
+			return 16;
 		if(size <= 2048)
-			return 7;
+			return 8;
 		if(size <= 4096)
-			return 3;
+			return 4;
 
 		return 1;
 	}

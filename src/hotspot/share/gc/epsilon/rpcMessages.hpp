@@ -12,11 +12,11 @@
 #include "oops/oop.inline.hpp"
 #include <unistd.h>
 
-#define PAGE_SIZE 4096L 
-#define GB 262144 * PAGE_SIZE
+#define PAGE_SIZE 4096UL 
+#define GB 262144UL * PAGE_SIZE
 
 #define SHM_NAME "prout"
-#define SHM_SIZE 4*GB
+#define SHM_SIZE GB*6ULL
 
 // Header Params
 #define HEADER_OFFSET 16  // size of HEADER

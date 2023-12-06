@@ -20,7 +20,7 @@ void SharedMem::stack_push(struct batch_stack* list, uint64_t batch){
 	uint64_t orig;
 	//do{ 
 		orig = list->head.load();
-		abs_addr(batch)->next1 = (uint32_t) orig;
+		abs_addr(batch)->next1 =  orig;
 		list->head.store(batch);
 	//}while(!list->head.compare_exchange_strong(orig, batch));
 	sem_post(mutex);
@@ -37,7 +37,7 @@ uint64_t SharedMem::stack_pop(batch_stack *list){
 			sem_post(mutex);
 			return 0;
 		}
-		next = (uint64_t) abs_addr(orig)->next1;
+		next = abs_addr(orig)->next1;
 		list->head.store(next);
 	//}while(!list->head.compare_exchange_strong(orig, next));
 
@@ -98,7 +98,7 @@ HeapWord* PseudoTLAB::allocate(size_t word_size){
 
 void PseudoTLAB::free(){
 	batch_t* curr;
-	for(int i=0; i<NBR_OF_ENTRIES; i++){
+	for(unsigned int i=0; i<NBR_OF_ENTRIES; i++){
 		curr = batch_tab[i];
 		if(curr!=NULL){
 			shm->stack_push(shm->prefree_list, (uint64_t)curr  - (uint64_t)shm->start_addr); //push finished batch to prefree list
