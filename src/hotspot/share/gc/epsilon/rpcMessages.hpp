@@ -16,7 +16,7 @@
 #define GB 262144UL * PAGE_SIZE
 
 #define SHM_NAME "prout"
-#define SHM_SIZE GB*6ULL
+#define SHM_SIZE GB*5ULL
 
 // Header Params
 #define HEADER_OFFSET 16  // size of HEADER
@@ -32,7 +32,7 @@
 #define DEADBEEF 0 // mark collected objects by replacing data with deadbeef
 #define REMOTE_LOADING 1 // instrumentate classloader to send data to GC
 #define ALLOC_BUFFER 0
-#define COLLECTION_THRESHOLD 60
+#define COLLECTION_THRESHOLD 35
 
 #define ARENA_SIZE_IN_BYTES (2 * PAGE_SIZE) // size of the arena memory block                                                                                                                                    
 #define ARENA_SIZE (ARENA_SIZE_IN_BYTES / 8)                                                                                                                                                                     
@@ -109,6 +109,7 @@ struct msg_klass_data_2{
     uint64_t base_klass = 0; //only for obj_array
     BasicType basetype = T_ILLEGAL; //only for typearray
     int layout_helper;
+	uint64_t oop;
 };
 
 
@@ -118,6 +119,12 @@ struct msg_collect{
 	int32_t shift;
     uint32_t static_base;
     uint32_t static_length;
+};
+
+struct deadbeef_req_t{
+	uint32_t msg_type;
+	uint32_t size;
+	uint64_t addr;
 };
 
 

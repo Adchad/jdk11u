@@ -12,6 +12,7 @@
 #include "memory/iterator.inline.hpp"
 #include "gc/epsilon/roots.hpp"
 #include "oops/oop.inline.hpp"
+#include "oops/klass.hpp"
 #include "oops/instanceMirrorKlass.inline.hpp"
 #include "oops/instanceRefKlass.inline.hpp"
 
@@ -44,9 +45,12 @@ public:
 
 	bool do_metadata(){return false;}
 	
-	void do_klass(Klass* k){}
+	void do_klass(Klass* k){
+		oop op = k->klass_holder();
+		do_oop(&op);
+	}
 
-	void do_cld(ClassLoaderData* k){}
+	void do_cld(ClassLoaderData* k){k->oops_do(this,false);}
 
     //void do_oop(oop* o){
 	//	if(*o != nullptr){

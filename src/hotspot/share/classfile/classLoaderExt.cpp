@@ -344,6 +344,7 @@ InstanceKlass* ClassLoaderExt::load_class(Symbol* name, const char* path, TRAPS)
 	msg->msg_type.type = 'l';
 	msg->klass = static_cast<uint32_t>((uint64_t)result);
     msg->layout_helper = result->layout_helper();
+	msg->oop = (uint64_t) loader_data->class_loader();
 	if(result->is_reference_instance_klass()){ //REF INSTANCE
 		msg->klasstype = instanceref;
 	} else if(result->is_mirror_instance_klass()){ //CLASS INSTANCE

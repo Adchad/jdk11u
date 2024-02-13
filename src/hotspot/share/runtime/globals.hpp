@@ -803,10 +803,10 @@ define_pd_global(uint64_t,MaxRAM,                    1ULL*G);
   develop(bool, ProtectionDomainVerification, true,                         \
           "Verify protection domain before resolution in system dictionary")\
                                                                             \
-  product(bool, ClassUnloading, true,                                       \
+  product(bool, ClassUnloading, false,                                       \
           "Do unloading of classes")                                        \
                                                                             \
-  product(bool, ClassUnloadingWithConcurrentMark, true,                     \
+  product(bool, ClassUnloadingWithConcurrentMark, false,                     \
           "Do unloading of classes with a concurrent marking cycle")        \
                                                                             \
   develop(bool, DisableStartThread, false,                                  \

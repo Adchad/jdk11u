@@ -27,6 +27,7 @@
 
 #include "gc/shared/barrierSet.hpp"
 
+
 // No interaction with application is required for Epsilon, and therefore
 // the barrier set is empty.
 class EpsilonBarrierSet: public BarrierSet {
@@ -45,6 +46,7 @@ public:
     typedef BarrierSet::AccessBarrier<decorators, BarrierSetT> Raw;
 
   public:
+
     // Needed for loads on non-heap weak references
 //    template <typename T>
 //    static oop oop_load_not_in_heap(T* addr){
@@ -57,36 +59,34 @@ public:
 //  		return value;
 //	};
 //
-//
-//    // Needed for weak references
-//    static oop oop_load_in_heap_at(oop base, ptrdiff_t offset){
-//		uint64_t addr = (uint64_t) base + (uint64_t) offset;
-//		uint32_t *array = (uint32_t*)(&addr);
-//		if(( array[0] == 0xdeadbeef ) || ( array[1] == 0xdeadbeef) ){
-//			printf("prout, addr: %p \n",(void*) addr);
-//		}
-//
-//		oop value = Raw::oop_load_in_heap_at(base, offset);
-//		//printf("%p\n", value);
-//		
-//		//Klass* k = ((uint64_t)value>=0x600000000) ? value->klass_or_null() : nullptr;
-//
-//		//printf("In heap at, addr %p, klass: %s \n", (void*) value,   (k!=nullptr) ? k->external_name() : "NULL"  );
-//		return value;
-//	}
 
-    // Defensive: will catch weak oops at addresses in heap
-//    template <typename T>
-//    static oop oop_load_in_heap(T* addr){
-//		uint32_t *array = (uint32_t*) (&addr);
-//		if(( array[0] == 0xdeadbeef ) || ( array[1] == 0xdeadbeef) ){
-//			printf("prout, addr: %p \n", addr);
-//		}
-//
-//		printf("In heap, addr: %p \n", addr);
-//		oop value = Raw::template oop_load_in_heap<T>(addr);
-//  		return value;
-//	};
+	static void breakpointable(){}
+
+	static void check_addr(void* addr){
+		if(*((uint32_t*)((uint64_t)addr - 4 /*KLASS_OFFSET*/)) == 0xffffffff){
+			printf("Lecture d'un truc free, addr:%p\n", addr);
+			breakpointable();
+		}
+	}
+    // Needed for weak references
+    static oop oop_load_in_heap_at(oop base, ptrdiff_t offset){
+		void* addr =(void*)((uint64_t) base + (uint64_t) offset);
+		check_addr(addr);
+
+		oop value = Raw::oop_load_in_heap_at(base, offset);
+		return value;
+	}
+
+
+	 // Defensive: will catch weak oops at addresses in heap
+    template <typename T>
+	static oop oop_load_in_heap(T* addr){
+		check_addr((void*)addr);
+	
+		oop value = Raw::template oop_load_in_heap<T>(addr);
+		return value;
+	}
+
   };
 };
 

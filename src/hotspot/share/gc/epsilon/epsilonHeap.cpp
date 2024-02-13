@@ -398,7 +398,7 @@ void EpsilonHeap::collect(GCCause::Cause cause) {
 
 
 void EpsilonHeap::collect_impl(){
-  //CodeCache::gc_prologue();
+  CodeCache::gc_prologue();
   BiasedLocking::preserve_marks();
   DerivedPointerTable::set_active(false);
   //DerivedPointerTable::update_pointers();
@@ -416,13 +416,13 @@ void EpsilonHeap::vm_collect_impl(){
 }
 
 void EpsilonHeap::do_full_collection(bool clear_all_soft_refs) {
-	//if (SafepointSynchronize::is_at_safepoint()) {
-    //	  //printf("safepoint\n");
-    //	  collect_impl();
-    //    } else {
-    //	  //printf("no safepoint\n");
-    //	  vm_collect_impl();
-    //}
+//	if (SafepointSynchronize::is_at_safepoint()) {
+//    	  //printf("safepoint\n");
+//    	  collect_impl();
+//        } else {
+//    	  //printf("no safepoint\n");
+//    	  vm_collect_impl();
+//    }
 }
 
 void EpsilonHeap::safe_object_iterate(ObjectClosure *cl) {

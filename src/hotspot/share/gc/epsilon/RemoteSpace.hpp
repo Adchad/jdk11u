@@ -54,6 +54,8 @@ extern int shm_fd;
 extern int fd_for_heap;
 extern void* epsilon_sh_mem;
 
+extern std::atomic<int> test_collect; //TODO remove this
+
 
 class RemoteSpace : public ContiguousSpace{
 

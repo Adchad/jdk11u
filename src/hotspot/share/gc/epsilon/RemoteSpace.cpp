@@ -40,6 +40,8 @@ int fd_for_heap;
 int shm_fd;
 void* epsilon_sh_mem;
 
+std::atomic<int> test_collect;  //TODO remove this
+
 
 
 RemoteSpace::RemoteSpace() : ContiguousSpace() {
@@ -165,15 +167,23 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 
     if(allocated != nullptr){
 #if GCHELPER
-		if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
+		if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
 			lock_gc_helper.lock();
 			gchelper.add_root(allocated);
 			lock_gc_helper.unlock();
 		}
+		else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
+			lock_gc_helper.lock();
+			gchelper.add_root(allocated);
+			lock_gc_helper.unlock(); 
+		}
 #endif
-	//	lock_alloc_print.lock();
-	//	dprintf(alloc_fd,"%p, %lu\n", allocated, word_size);
-	//	lock_alloc_print.unlock();
+
+		//lock_alloc_print.lock();
+		//dprintf(alloc_fd,"%p, %s\n", allocated, klass->external_name());
+		//lock_alloc_print.unlock();
+
+
 		used_.fetch_add(word_size*8 + HEADER_OFFSET);
         uint64_t iptr = (uint64_t)allocated;
 		uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
@@ -203,14 +213,23 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 
 	lock_collect.lock();
 #if GCHELPER
-	if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
+	if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
+		lock_gc_helper.lock();
+		gchelper.add_root(allocated);
+		lock_gc_helper.unlock(); 
+	}
+	else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
 		lock_gc_helper.lock();
 		gchelper.add_root(allocated);
 		lock_gc_helper.unlock(); 
 	}
 #endif
+
 	//lock_alloc_print.lock();
+	//dprintf(alloc_fd,"%p, %s\n", allocated, klass->external_name());
 	//lock_alloc_print.unlock();
+
+
 	used_.fetch_add(word_size*8 + HEADER_OFFSET);
     uint64_t iptr = (uint64_t)allocated;
 	uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
@@ -230,8 +249,9 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 
 	lock_collect.unlock();
 
-	if(used_glob() >= (capacity()*COLLECTION_THRESHOLD)/100 && !collecting.load()){
+	if(used_glob() >= (capacity()*COLLECTION_THRESHOLD)/100 && !collecting.load() && test_collect.load() < 3){
 		collecting.store(true);
+		test_collect.fetch_add(1);
 		start_collect_sig(0);
 	}
 }
@@ -259,7 +279,6 @@ size_t RemoteSpace::capacity() const{
 }
 
 
-
 void getandsend_roots(){
     RootMark rm;
     rm.do_it();
@@ -272,12 +291,14 @@ void getandsend_roots(){
 
 #if GCHELPER
 void RemoteSpace::getandsend_helper(){
+	lock_gc_helper.lock();
     gchelper.do_it();
     uint64_t array_length = (uint64_t) gchelper.getArraySize();
     uint64_t*helper_array = gchelper.helperArray();
     write(sockfd_remote, &array_length, sizeof(uint64_t));
 	//printf("Send helper roots, size: %lu\n", array_length);
     int res = write(sockfd_remote, helper_array, sizeof(uint64_t)*array_length );
+	lock_gc_helper.unlock();
 }
 #endif
 
@@ -320,6 +341,17 @@ void RemoteSpace::stw_pre_collect() {
 #if GCHELPER
 	getandsend_helper();
 #endif
+
+	//struct deadbeef_req_t msg2;
+	//read(sockfd_remote, &msg2, sizeof(deadbeef_req_t));
+	//while(msg2.msg_type == 23){
+	//	//printf("Collected addr: %p\n", (void*)msg2.addr);
+	//	*((uint32_t*)((uint64_t)msg2.addr - KLASS_OFFSET)) = 0xffffffff;
+	//	for(uint32_t i =0; i< msg2.size-1; i++){
+	//		*(((uint64_t*)msg2.addr)+i) = 0xdeadbeefdeadbeef;
+	//	}
+	//	read(sockfd_remote, &msg2, sizeof(deadbeef_req_t));
+	//}	
 	lock_remote.unlock();
 
 }
@@ -329,8 +361,8 @@ void start_collect_sig(int sig) {
 }
 
 void end_collect_sig(int sig) {
-	free_space = 0;
-	used_.store(0);
+	free_space = 0; //TODO uncomment this
+	used_.store(0); //TODO uncomment this
 	collecting.store(false);
 	//read(sockfd_collect, &free_space, sizeof(uint64_t));
 	lock_allocbuffer.lock();
@@ -340,8 +372,9 @@ void end_collect_sig(int sig) {
 	opcode msg;
 	msg.type = 'f';
 	lock_remote.lock();
-	write(sockfd_remote, &msg, sizeof(uint64_t));
-	read(sockfd_remote, &free_space, sizeof(uint64_t));
+	write(sockfd_remote, &msg, sizeof(uint64_t));   //TODO uncomment this
+	read(sockfd_remote, &free_space, sizeof(uint64_t)); //TODO uncomment this
+	printf("Swept: %lu\n", free_space);
 	lock_remote.unlock();
 
 	CodeCache::gc_epilogue();
