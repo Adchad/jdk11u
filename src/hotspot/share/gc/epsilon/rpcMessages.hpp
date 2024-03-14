@@ -19,7 +19,7 @@
 #define SHM_SIZE GB*5ULL
 
 // Header Params
-#define HEADER_OFFSET 16  // size of HEADER
+#define HEADER_OFFSET 8  // size of HEADER
 #define SIZE_OFFSET 8 // offset of size (the offset are negative)
 #define KLASS_OFFSET 4 // offset of klass ID
 
@@ -32,7 +32,8 @@
 #define DEADBEEF 0 // mark collected objects by replacing data with deadbeef
 #define REMOTE_LOADING 1 // instrumentate classloader to send data to GC
 #define ALLOC_BUFFER 0
-#define COLLECTION_THRESHOLD 35
+#define COLLECTION_THRESHOLD 75
+#define SOFTMAX_PER 40
 
 #define ARENA_SIZE_IN_BYTES (2 * PAGE_SIZE) // size of the arena memory block                                                                                                                                    
 #define ARENA_SIZE (ARENA_SIZE_IN_BYTES / 8)                                                                                                                                                                     

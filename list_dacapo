@@ -1,0 +1,18 @@
+works:
+	avrora
+	fop
+	h2
+	jython
+	luindex
+	pmd
+	sunflow
+	tradebeans
+	xalan
+	lusearch
+	lusearch-fix
+
+does not work:
+	batik
+	eclipse
+	tomcat
+	tradesoap

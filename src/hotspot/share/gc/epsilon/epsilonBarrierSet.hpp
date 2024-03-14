@@ -60,32 +60,32 @@ public:
 //	};
 //
 
-	static void breakpointable(){}
-
-	static void check_addr(void* addr){
-		if(*((uint32_t*)((uint64_t)addr - 4 /*KLASS_OFFSET*/)) == 0xffffffff){
-			printf("Lecture d'un truc free, addr:%p\n", addr);
-			breakpointable();
-		}
-	}
+//	static void breakpointable(){}
+//
+//	static void check_addr(void* addr){
+//		if(*((uint32_t*)((uint64_t)addr - 4 /*KLASS_OFFSET*/)) == 0xffffffff){
+//			printf("Lecture d'un truc free, addr:%p\n", addr);
+//			breakpointable();
+//		}
+//	}
     // Needed for weak references
-    static oop oop_load_in_heap_at(oop base, ptrdiff_t offset){
-		void* addr =(void*)((uint64_t) base + (uint64_t) offset);
-		check_addr(addr);
-
-		oop value = Raw::oop_load_in_heap_at(base, offset);
-		return value;
-	}
-
-
-	 // Defensive: will catch weak oops at addresses in heap
-    template <typename T>
-	static oop oop_load_in_heap(T* addr){
-		check_addr((void*)addr);
-	
-		oop value = Raw::template oop_load_in_heap<T>(addr);
-		return value;
-	}
+//    static oop oop_load_in_heap_at(oop base, ptrdiff_t offset){
+//		void* addr =(void*)((uint64_t) base + (uint64_t) offset);
+//		check_addr(addr);
+//
+//		oop value = Raw::oop_load_in_heap_at(base, offset);
+//		return value;
+//	}
+//
+//
+//	 // Defensive: will catch weak oops at addresses in heap
+//    template <typename T>
+//	static oop oop_load_in_heap(T* addr){
+//		check_addr((void*)addr);
+//	
+//		oop value = Raw::template oop_load_in_heap<T>(addr);
+//		return value;
+//	}
 
   };
 };

@@ -23,6 +23,8 @@
 #include "gc/epsilon/AllocationBuffer.hpp"
 #include "gc/epsilon/SharedMem.hpp"
 
+#define maxou(a,b) ((a)>(b)?(a):(b))
+
 struct range_t {
 	char* base;
 	size_t size;
@@ -49,6 +51,7 @@ extern int sockfd_remote;
 extern AllocationBuffer* alloc_buffer;
 extern uint64_t free_space;
 extern uint64_t cap;
+extern size_t softmax_;
 extern std::atomic<uint64_t> used_;
 extern int shm_fd;
 extern int fd_for_heap;
@@ -101,6 +104,7 @@ public:
     void set_end(HeapWord* value);
     size_t used() const;
     size_t capacity() const;
+	size_t softmax(){return softmax_;};
     void safe_object_iterate(ObjectClosure* blk);
     void print_on(outputStream* st) const;
 

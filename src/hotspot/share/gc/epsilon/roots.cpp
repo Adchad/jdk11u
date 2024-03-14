@@ -29,9 +29,9 @@
 
 
 void RootMark::do_it(){
-	StrongRootsScope scope(1);
-	CLDToOopClosure clds(&rc, true);
-	MarkingCodeBlobClosure blobs(&rc, true);
+	//StrongRootsScope scope(1);
+	CLDToOopClosure clds(&rc, false);
+	MarkingCodeBlobClosure blobs(&rc, false);
 
 	{
 		MutexLockerEx lock(CodeCache_lock, Mutex::_no_safepoint_check_flag);
