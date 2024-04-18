@@ -23,6 +23,7 @@
 #include "gc/epsilon/AllocationBuffer.hpp"
 #include "gc/epsilon/SharedMem.hpp"
 
+#define minou(a,b) ((a)>(b)?(b):(a))
 #define maxou(a,b) ((a)>(b)?(a):(b))
 
 struct range_t {

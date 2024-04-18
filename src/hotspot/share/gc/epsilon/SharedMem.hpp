@@ -106,6 +106,7 @@ private:
 public:
 	void initialize(SharedMem* shm_, void* thread_);
 	HeapWord* allocate(size_t word_size);
+	//HeapWord* allocate(size_t word_size);
 	void free();
 
 };

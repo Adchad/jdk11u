@@ -185,6 +185,9 @@ hotspot_not_fast_gc = \
   :hotspot_gc \
   -:tier1_gc
 
+prout = \
+  gc/epsilon/
+
 tier1_gc_1 = \
   gc/epsilon/ \
   gc/g1/ \

@@ -89,9 +89,9 @@ public:
       Atomic::inc(&_req_id);
 
 
-	  printf("Start pause\n");
+	  //printf("Start pause\n");
 	  _heap->collect_impl();
-	  printf("End pause \n");
+	  //printf("End pause \n");
 
 
 	  Heap_lock->unlock();
@@ -267,7 +267,6 @@ void EpsilonHeap::concurrent_post_allocate(HeapWord* allocated, size_t size, Kla
     }
   }
 }
-
 
 HeapWord* EpsilonHeap::allocate_new_tlab(size_t min_size,
                                          size_t requested_size,

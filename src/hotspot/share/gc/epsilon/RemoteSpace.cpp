@@ -96,6 +96,7 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
     msg.mr_start =  mr_start;
     msg.mr_word_size =  mr_word_size;
     msg.obj_array_base = (uint32_t) arrayOopDesc::base_offset_in_bytes(T_OBJECT);
+	//ioctl(fd_for_heap, 0, 0);
 	msg.obj_array_length = arrayOopDesc::length_offset_in_bytes();
     msg.clear_space = clear_space;
     msg.mangle_space = mangle_space;
@@ -176,7 +177,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 			lock_gc_helper.unlock();
 		}
 		//else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
-	//	//else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL ){
+	//	////else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL ){
 		//	lock_gc_helper.lock();
 		//	gchelper.add_root(allocated);
 		//	lock_gc_helper.unlock(); 
@@ -184,7 +185,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 #endif
 
 		//lock_alloc_print.lock();
-		//dprintf(alloc_fd,"%p, %s\n", allocated, klass->external_name());
+		///dprintf(alloc_fd,"%p, %s, collection: %d\n", allocated, klass->external_name(), test_collect.load());
 		//lock_alloc_print.unlock();
 
 
@@ -223,18 +224,18 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 		gchelper.add_root(allocated);
 		lock_gc_helper.unlock(); 
 	}
-//	else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL){
-//	////else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
-//		lock_gc_helper.lock();
-//		gchelper.add_root(allocated);
-//		lock_gc_helper.unlock(); 
-//	}
+	//else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL){
+	////////else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
+	//	lock_gc_helper.lock();
+	//	gchelper.add_root(allocated);
+	//	lock_gc_helper.unlock(); 
+	//}
 
 	//}
 #endif
 
 	//lock_alloc_print.lock();
-	//dprintf(alloc_fd,"%p, %s\n", allocated, klass->external_name());
+	////dprintf(alloc_fd,"%p, %s, collection: %d\n", allocated, klass->external_name(), test_collect.load());
 	//lock_alloc_print.unlock();
 
 
@@ -259,14 +260,11 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 	//
 	
 
-	if(used_glob() >= (softmax()*COLLECTION_THRESHOLD)/100 && !collecting.load() && test_collect.load() < 10){
+	if(used_glob() >= (softmax()*COLLECTION_THRESHOLD)/100 && !collecting.load() && test_collect.load() < MAX_COLLECTIONS){
 		collecting.store(true);
-		test_collect.fetch_add(1);
 		start_collect_sig(0);
 	}
 }
-
-
 
 
 void RemoteSpace::set_end(HeapWord* value){
@@ -305,8 +303,8 @@ void RemoteSpace::getandsend_helper(){
     gchelper.do_it();
     uint64_t array_length = (uint64_t) gchelper.getArraySize();
     uint64_t* helper_array = gchelper.helperArray();
-    write(sockfd_remote, &array_length, sizeof(uint64_t));
 	//printf("Send helper roots, size: %lu\n", array_length);
+    write(sockfd_remote, &array_length, sizeof(uint64_t));
     int res = write(sockfd_remote, helper_array, sizeof(uint64_t)*array_length );
 	lock_gc_helper.unlock();
 }
@@ -320,19 +318,18 @@ void RemoteSpace::print_on(outputStream* st) const{return;}
 void RemoteSpace::stw_pre_collect() {
 
 	lock_collect.lock();
-	printf("Start of collection\n");
+	test_collect.fetch_add(1);
+	printf("[téléGC] Start of collection: Used: %luM (%lu%%)\n",  used_glob()/(1024*1024), (used_glob()*100)/cap );
 	if(!rp_init){
 		rp_init = true;
 		post_initialize();
 	}
 
 	size_t start_used  = used();
-	printf("cap: %lu, used: %lu\n", cap, used_.load());
+	//printf("cap: %lu, used: %lu\n", cap, used_.load());
 
 	//struct timeval start, end;
 	//gettimeofday(&start, NULL);
-
-
 
 	struct msg_collect msg;
 	msg.msg_type.type = 'c';
@@ -349,13 +346,12 @@ void RemoteSpace::stw_pre_collect() {
 	getandsend_helper();
 #endif
 
-	ioctl(fd_for_heap, 0, 1);
-
 	_mm_mfence();
 	int ret = fsync(fd_for_heap);
 	//printf("Ret: %d\n", ret);
+	ioctl(fd_for_heap, 0, 1); //VERY IMPORTANT THAT THE IOCTL IS AFTER THE FSYNC
 	int done = 1;
-	write(sockfd_remote, &done, sizeof(int));  // on envoie la base et le shift pour la conversion narrowoop en oop
+	write(sockfd_remote, &done, sizeof(int));  
 	//struct deadbeef_req_t msg2;
 	//read(sockfd_remote, &msg2, sizeof(deadbeef_req_t));
 	//while(msg2.msg_type == 23){
@@ -389,18 +385,18 @@ void end_collect_sig(int sig) {
 	lock_remote.lock();
 	write(sockfd_remote, &msg, sizeof(uint64_t));   //TODO uncomment this
 	read(sockfd_remote, &free_space, sizeof(uint64_t)); //TODO uncomment this
-	printf("Swept: %lu\n", free_space);
+	//printf("Swept: %lu\n", free_space);
 	lock_remote.unlock();
 
 	CodeCache::gc_epilogue();
 	JvmtiExport::gc_epilogue();
 
 	//gettimeofday(&end, NULL);
-	//printf("[téléGC] Collection:  Time: %lds;  Used before: %lu; Used after: %lu\n", end.tv_sec - start.tv_sec, start_used, used() );
-	printf("\n");
-	printf("[téléGC] Collection: Used after: %lu\n",  used_glob() );
+	//printf("[/téléGC] Collection:  Time: %lds;  Used before: %lu; Used after: %lu\n", end.tv_sec - start.tv_sec, start_used, used() );
+	//printf("\n");
+	printf("[téléGC] Collection: Used after: %luM (%lu%%)\n",  used_glob()/(1024*1024), (used_glob()*100)/cap );
 
-	softmax_ = maxou(used_glob()*2, cap);
+	softmax_ = minou(used_glob()*3, cap);
 
 	collecting.store(false);
 	lock_collect.unlock();
