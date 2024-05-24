@@ -43,13 +43,14 @@ public:
 
 	ReferenceIterationMode reference_iteration_mode() { return DO_DISCOVERY; }	
 
-	bool do_metadata(){return false;}
+	bool do_metadata(){return true;}
 	
 	void do_klass(Klass* k){
 		oop op = k->klass_holder();
 		do_oop(&op);
 	}
 
+	//void do_cld(ClassLoaderData* k){}
 	void do_cld(ClassLoaderData* k){k->oops_do(this,false);}
 
     //void do_oop(oop* o){

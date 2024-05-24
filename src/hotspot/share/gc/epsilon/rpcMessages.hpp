@@ -32,9 +32,9 @@
 #define DEADBEEF 0 // mark collected objects by replacing data with deadbeef
 #define REMOTE_LOADING 1 // instrumentate classloader to send data to GC
 #define ALLOC_BUFFER 0
-#define MAX_COLLECTIONS 10
+#define MAX_COLLECTIONS 100
 #define COLLECTION_THRESHOLD 80
-#define SOFTMAX_PER 40
+#define SOFTMAX_PER 20
 #define SOFTMIN_PER 20
 
 #define ARENA_SIZE_IN_BYTES (2 * PAGE_SIZE) // size of the arena memory block                                                                                                                                    

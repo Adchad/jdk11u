@@ -185,7 +185,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 #endif
 
 		//lock_alloc_print.lock();
-		///dprintf(alloc_fd,"%p, %s, collection: %d\n", allocated, klass->external_name(), test_collect.load());
+		//dprintf(alloc_fd,"%p, %s, collection: %d\n", allocated, klass->external_name(), test_collect.load());
 		//lock_alloc_print.unlock();
 
 
@@ -219,10 +219,13 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 	//lock_collect.lock();
 #if GCHELPER
 
-	if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
+	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
+	if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
+		//lock_collect.lock();
 		lock_gc_helper.lock();
 		gchelper.add_root(allocated);
 		lock_gc_helper.unlock(); 
+		//lock_collect.unlock();
 	}
 	//else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL){
 	////////else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
@@ -235,15 +238,13 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 #endif
 
 	//lock_alloc_print.lock();
-	////dprintf(alloc_fd,"%p, %s, collection: %d\n", allocated, klass->external_name(), test_collect.load());
+	//dprintf(alloc_fd,"%p, %s, collection: %d\n", allocated, klass->external_name(), test_collect.load());
 	//lock_alloc_print.unlock();
 
 
 	used_.fetch_add(word_size*8 + HEADER_OFFSET);
     uint64_t iptr = (uint64_t)allocated;
 	uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
-
-	//printf("Klass: %u, addr: %p, size: %lu, name: %s\n", short_klass,allocated, word_size,klass->external_name());
 
 	if(klass->is_objArray_klass()){
 		*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass + 1;
@@ -396,7 +397,7 @@ void end_collect_sig(int sig) {
 	//printf("\n");
 	printf("[téléGC] Collection: Used after: %luM (%lu%%)\n",  used_glob()/(1024*1024), (used_glob()*100)/cap );
 
-	softmax_ = minou(used_glob()*3, cap);
+	softmax_ = minou(used_glob()*2, cap);
 
 	collecting.store(false);
 	lock_collect.unlock();

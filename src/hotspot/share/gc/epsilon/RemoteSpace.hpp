@@ -92,6 +92,8 @@ private:
 	MemRegion _mr;
 #endif
 
+	int alloc_fd;
+
 
 public:
     RemoteSpace();
