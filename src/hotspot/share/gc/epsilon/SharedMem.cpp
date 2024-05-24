@@ -69,26 +69,14 @@ HeapWord* PseudoTLAB::allocate(size_t word_size){
 	if(batch_tab[word_size] == NULL){ // if there is no batch
 		batch_tab[word_size] = shm->get_new_batch(word_size); //get new batch
 		batch_tab[word_size]->bump = 0;
+	} else if(batch_tab[word_size]->bump >= (uint32_t) shm->size_of_buffer(word_size)){ // if batch is finished
+		shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr); //push finished batch to prefree list
+		batch_tab[word_size] = shm->get_new_batch(word_size); //get new batchù
+		batch_tab[word_size]->bump = 0;
 	}
-	//else if(batch_tab[word_size]->bump >= (uint32_t) shm->size_of_buffer(word_size)){ // if batch is finished
-	else if(batch_tab[word_size]->bump >= (uint32_t) shm->size_of_buffer(word_size)){ // if batch is finished
-		//printf("What was pushed: %lu, for size: %ld\n", (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr, word_size);
-		batch_t* temp = batch_tab[word_size];
 
-		//if(batch_tab[word_size]->next_batch =! 0 && batch_tab[word_size]->count != 0 ){
-		//	batch_t* temp = shm->abs_addr(batch_tab[word_size]->next_batch);
-		//	shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr); //push finished batch to prefree list
-		//	batch_tab[word_size] = temp;
-		//	//printf("Coucou: batch: %p, size: %lu\n", batch_tab[word_size], word_size );
-		//} else {
-			shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr); //push finished batch to prefree list
-			batch_tab[word_size] = shm->get_new_batch(word_size); //get new batchù
-			batch_tab[word_size]->bump = 0;
-		//}
-	}
 	ret = (HeapWord*) batch_tab[word_size]->array[batch_tab[word_size]->bump]; // allocate from inside the batch
-	//printf("ret: %p, size: %lu, bump: %u\n", ret, word_size, batch_tab[word_size]->bump);
-	//printf("Allocated: %p,  Size: %lu,  thread: %p, bump: %u, batch: %p\n", ret, word_size, thread, batch_tab[word_size]->bump, batch_tab[word_size]);
+
 	batch_tab[word_size]->bump++;
 
 	return ret;
