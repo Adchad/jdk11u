@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <cstring>
+#include <atomic>
 #include <mutex>
 #include "memory/iterator.hpp"
 #include "memory/iterator.inline.hpp"
@@ -167,6 +168,7 @@ public:
 class GCHelper {
 private:
    MemRegion mr;	
+   std::atomic<int> helper_lock;
 public:
     HelperClosure* hc;
 	struct linked_list* helper_roots;
@@ -194,13 +196,19 @@ public:
         return hc->getArray();
     }
 
-	void add_root(HeapWord* ref){
-		struct linked_list* new_root = (struct linked_list*) malloc(sizeof(linked_list));
-		new_root->value = ref;
-		new_root->next = helper_roots;
-		helper_roots = new_root;
-	}
+	void add_root(HeapWord* ref);
 
+    void spin_lock(std::atomic<int>* lock){                                                                                                                                                 
+        int zero = 0;                                                                                                                                                                       
+        while(!lock->compare_exchange_strong(zero, 1, std::memory_order_seq_cst)){                                                                                                          
+            zero = 0;                                                                                                                                                                       
+            asm volatile("pause");                                                                                                                                                          
+        }                                                                                                                                                                                   
+    }                                                                                                                                                                                       
+                                                                                                                                                                                            
+    void spin_unlock(std::atomic<int>* lock){                                                                                                                                               
+        lock->store(0, std::memory_order_seq_cst);                                                                                                                                          
+    }
 
 
 };

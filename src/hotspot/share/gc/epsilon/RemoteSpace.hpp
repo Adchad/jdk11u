@@ -44,15 +44,16 @@ size_t used_glob();
 
 extern std::mutex lock_remote;
 extern std::mutex lock_collect;
+extern std::mutex lock_collect2;
 extern std::mutex lock_allocbuffer;
 extern std::mutex lock_gc_helper;
 extern std::mutex lock_alloc_print;
 extern std::atomic<bool> collecting;
 extern int sockfd_remote;
 extern AllocationBuffer* alloc_buffer;
-extern uint64_t free_space;
+extern std::atomic<uint64_t> free_space;
 extern uint64_t cap;
-extern size_t softmax_;
+extern std::atomic<size_t> softmax;
 extern std::atomic<uint64_t> used_;
 extern int shm_fd;
 extern int fd_for_heap;
@@ -107,7 +108,6 @@ public:
     void set_end(HeapWord* value);
     size_t used() const;
     size_t capacity() const;
-	size_t softmax(){return softmax_;};
     void safe_object_iterate(ObjectClosure* blk);
     void print_on(outputStream* st) const;
 

@@ -34,3 +34,16 @@ void GCHelper::do_it(){
 		curr = curr->next;
 	}
 }
+
+
+
+void GCHelper::add_root(HeapWord* ref){
+	struct linked_list* new_root = (struct linked_list*) malloc(sizeof(linked_list));
+	new_root->value = ref;
+
+	spin_lock(&helper_lock);
+	new_root->next = helper_roots;
+	helper_roots = new_root;
+	spin_unlock(&helper_lock);
+
+}

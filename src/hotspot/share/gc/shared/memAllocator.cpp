@@ -315,9 +315,8 @@ HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {
 		}
 		mem = ((PseudoTLAB*)_thread->pseudo_tlab())->allocate(_word_size + HEADER_OFFSET/sizeof(HeapWord));
 		if(mem != NULL)
-			//printf("%p, %lu, %p\n", mem, _word_size+1, _thread);
-			// concurrent post allocate is done to add custom header to objects for collection
 			((EpsilonHeap*)_heap)->concurrent_post_allocate(mem, _word_size, _klass);
+			// concurrent post allocate is done to add custom header to objects for collection
 		return mem;
 	  } else {
 		return allocate_outside_tlab(allocation);

@@ -29,13 +29,14 @@ int sockfd_remote = -1;
 
 std::mutex lock_remote;
 std::mutex lock_collect;
+std::mutex lock_collect2;
 std::mutex lock_allocbuffer;
 std::mutex lock_gc_helper;
 std::mutex lock_alloc_print;
 std::atomic<bool> collecting;
-size_t softmax_;
+std::atomic<size_t> softmax;
 AllocationBuffer* alloc_buffer;
-uint64_t free_space;
+std::atomic<uint64_t> free_space;
 uint64_t cap;
 std::atomic<uint64_t> used_;
 int fd_for_heap;
@@ -108,8 +109,8 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	
 	RemoteSpace::poule = nullptr;
 	cap = mr_word_size*8;
-	free_space = cap;
-	softmax_ = (cap*SOFTMAX_PER)/100;
+	free_space.store(cap);
+	softmax.store((cap*SOFTMAX_PER)/100);
 	used_.store(0);
 	collecting.store(false);
 	
@@ -172,9 +173,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     if(allocated != nullptr){
 #if GCHELPER
 		if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
-			lock_gc_helper.lock();
 			gchelper.add_root(allocated);
-			lock_gc_helper.unlock();
 		}
 		//else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
 	//	////else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL ){
@@ -222,9 +221,7 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
 	if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
 		//lock_collect.lock();
-		lock_gc_helper.lock();
 		gchelper.add_root(allocated);
-		lock_gc_helper.unlock(); 
 		//lock_collect.unlock();
 	}
 	//else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL){
@@ -259,11 +256,15 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 
 	//lock_collect.unlock();
 	//
-	
 
-	if(used_glob() >= (softmax()*COLLECTION_THRESHOLD)/100 && !collecting.load() && test_collect.load() < MAX_COLLECTIONS){
-		collecting.store(true);
-		start_collect_sig(0);
+	if(used_glob() >= (softmax.load()*COLLECTION_THRESHOLD)/100 && test_collect.load() < MAX_COLLECTIONS){
+		bool collected = false;
+		if(collecting.compare_exchange_strong(collected, true)){
+			collected = false;
+			start_collect_sig(0);
+		}
+		//collecting.store(true);
+		//start_collect_sig(0);
 	}
 }
 
@@ -276,11 +277,11 @@ void RemoteSpace::set_end(HeapWord* value){
 }
 
 size_t RemoteSpace::used() const{
-	return cap - free_space + used_.load();
+	return cap - free_space.load() + used_.load();
 }
 
 size_t used_glob(){
-	return cap - free_space + used_.load();
+	return cap - free_space.load() + used_.load();
 }
 
 size_t RemoteSpace::capacity() const{
@@ -353,6 +354,8 @@ void RemoteSpace::stw_pre_collect() {
 	ioctl(fd_for_heap, 0, 1); //VERY IMPORTANT THAT THE IOCTL IS AFTER THE FSYNC
 	int done = 1;
 	write(sockfd_remote, &done, sizeof(int));  
+
+	read(sockfd_remote, &done, sizeof(int));
 	//struct deadbeef_req_t msg2;
 	//read(sockfd_remote, &msg2, sizeof(deadbeef_req_t));
 	//while(msg2.msg_type == 23){
@@ -364,7 +367,6 @@ void RemoteSpace::stw_pre_collect() {
 	//	read(sockfd_remote, &msg2, sizeof(deadbeef_req_t));
 	//}	
 	lock_remote.unlock();
-	//lock_collect.unlock();
 
 }
 
@@ -373,8 +375,8 @@ void start_collect_sig(int sig) {
 }
 
 void end_collect_sig(int sig) {
-	//lock_collect.lock();
-	free_space = 0; //TODO uncomment this
+	lock_collect2.lock();
+	free_space.store(0); //TODO uncomment this
 	used_.store(0); //TODO uncomment this
 	//read(sockfd_collect, &free_space, sizeof(uint64_t));
 	lock_allocbuffer.lock();
@@ -397,9 +399,10 @@ void end_collect_sig(int sig) {
 	//printf("\n");
 	printf("[téléGC] Collection: Used after: %luM (%lu%%)\n",  used_glob()/(1024*1024), (used_glob()*100)/cap );
 
-	softmax_ = minou(used_glob()*2, cap);
+	softmax.store(minou(used_glob()*3, cap));
 
 	collecting.store(false);
+	lock_collect2.unlock();
 	lock_collect.unlock();
 }
 
