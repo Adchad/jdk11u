@@ -349,7 +349,7 @@ class Thread: public ThreadShadow {
   ThreadLocalAllocBuffer _tlab;                 // Thread-local eden
 
 #if PSEUDO_TLAB
-private:
+public:
 	void* pseudo_tlab_;
 public:
 	void* pseudo_tlab(){

@@ -462,8 +462,11 @@ Thread::~Thread() {
 
   if(UseEpsilonGC){
 #if PSEUDO_TLAB
-	  if(pseudo_tlab_ != nullptr)
+	  if(pseudo_tlab_ != nullptr){
 		  ((PseudoTLAB*)pseudo_tlab_)->free();
+		  free(pseudo_tlab_);
+		  pseudo_tlab_ = nullptr;
+	  }
   }
 #endif
 
@@ -2077,6 +2080,15 @@ void JavaThread::exit(bool destroy_vm, ExitType exit_type) {
     tlab().make_parsable(true);  // retire TLAB
   }
 
+  if(UseEpsilonGC){
+#if PSEUDO_TLAB
+	  if(pseudo_tlab_ != nullptr)
+		  ((PseudoTLAB*)pseudo_tlab_)->free();
+		  free(pseudo_tlab_);
+		  pseudo_tlab_ = nullptr;
+  }
+#endif
+
   if (JvmtiEnv::environments_might_exist()) {
     JvmtiExport::cleanup_thread(this);
   }
@@ -2132,6 +2144,16 @@ void JavaThread::cleanup_failed_attach_current_thread(bool is_daemon) {
   if (UseTLAB) {
     tlab().make_parsable(true);  // retire TLAB, if any
   }
+
+  if(UseEpsilonGC){
+#if PSEUDO_TLAB
+	  if(pseudo_tlab_ != nullptr){
+		  ((PseudoTLAB*)pseudo_tlab_)->free();
+		  free(pseudo_tlab_);
+		  pseudo_tlab_ = nullptr;
+	  }
+  }
+#endif
 
   BarrierSet::barrier_set()->on_thread_detach(this);
 

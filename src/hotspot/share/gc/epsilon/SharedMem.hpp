@@ -24,6 +24,8 @@ typedef struct batch{
 	uint64_t array[BUFFER_SIZE];
 	uint64_t next1;
 	uint64_t next2;
+    uint64_t prev2; 
+    uint64_t thread_no;
 	uint32_t bump;
 	uint32_t size;
 } batch_t;
@@ -50,7 +52,7 @@ struct batch_stack{
 #define ENTRIES_SIZE (sizeof(struct entry)*BUFFER_MAX_SIZE)
 #define NBR_OF_ENTRIES BUFFER_MAX_SIZE
 //#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
-#define BATCH_SPACE_SIZE (4ULL*1024*1024*1024UL)
+#define BATCH_SPACE_SIZE (5ULL*1024*1024*1024UL)
 #define NBR_OF_BATCHES (BATCH_SPACE_SIZE/sizeof(batch_t))
 
 
@@ -80,31 +82,31 @@ public:
 
 	int size_of_buffer(int size){
 		if(size <= 128)
-			return 125;
+			return 251;
 		if(size <= 256)
-			return 64;
+			return 128;
 		if(size <= 512)
-			return 32;
+			return 64;
 		if(size <= 1024)
-			return 16;
+			return 32;
 		if(size <= 2048)
-			return 8;
+			return 16;
 		if(size <= 4096)
-			return 4;
+			return 8;
 
 		return 1;
 	}
 
     void spin_lock(std::atomic<int>* lock){                                                                                                                                                 
         int zero = 0;                                                                                                                                                                       
-        while(!lock->compare_exchange_strong(zero, 1, std::memory_order_seq_cst)){                                                                                                          
+        while(!lock->compare_exchange_strong(zero, 1)){                                                                                                          
             zero = 0;                                                                                                                                                                       
             asm volatile("pause");                                                                                                                                                          
         }                                                                                                                                                                                   
     }                                                                                                                                                                                       
                                                                                                                                                                                             
     void spin_unlock(std::atomic<int>* lock){                                                                                                                                               
-        lock->store(0, std::memory_order_seq_cst);                                                                                                                                          
+        lock->store(0);                                                                                                                                          
     }
 
 };

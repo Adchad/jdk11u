@@ -16,7 +16,7 @@
 #define GB 262144UL * PAGE_SIZE
 
 #define SHM_NAME "prout"
-#define SHM_SIZE GB*5ULL
+#define SHM_SIZE GB*6ULL
 
 // Header Params
 #define HEADER_OFFSET 8  // size of HEADER
@@ -43,7 +43,7 @@
 #define ARENA_MAX_SIZE (ARENA_SIZE - 2)   // max size of object that can be allocated from the arena
 
 // Allocation buffer parameters
-#define BUFFER_SIZE 125 // amount of pointers stored in the allocation buffer in the JVM side
+#define BUFFER_SIZE 251// amount of pointers stored in the allocation buffer in the JVM side
 #define BUFFER_MAX_SIZE ARENA_MAX_SIZE // max size of object that can be allocated from the buffer
 
 enum klass_type {instance = 1, objarray = 2, typearray = 3, instanceref = 4, instancemirror = 5, instanceclassloader = 6};
@@ -60,6 +60,10 @@ struct msg_initialize{
     size_t mr_word_size;
     uint32_t obj_array_base;
 	uint32_t obj_array_length;
+	int mirror_static_offset;
+	int mirror_static_count_offset;
+	int referent_offset;
+	int discovered_offset;
 	pid_t pid;
     bool clear_space;
     bool mangle_space;

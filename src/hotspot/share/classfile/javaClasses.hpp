@@ -233,8 +233,9 @@ class java_lang_Class : AllStatic {
   static int _array_klass_offset;
 
   static int _oop_size_offset;
+ public:
   static int _static_oop_field_count_offset;
-
+ private:
   static int _protection_domain_offset;
   static int _init_lock_offset;
   static int _signers_offset;

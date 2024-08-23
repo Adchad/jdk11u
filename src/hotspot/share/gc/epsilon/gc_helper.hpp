@@ -42,7 +42,7 @@ public:
 		set_ref_discoverer_internal(rp);
 	}
 
-	ReferenceIterationMode reference_iteration_mode() { return DO_DISCOVERY; }	
+	ReferenceIterationMode reference_iteration_mode() { return DO_FIELDS; }	
 
 	bool do_metadata(){return true;}
 	
@@ -200,14 +200,14 @@ public:
 
     void spin_lock(std::atomic<int>* lock){                                                                                                                                                 
         int zero = 0;                                                                                                                                                                       
-        while(!lock->compare_exchange_strong(zero, 1, std::memory_order_seq_cst)){                                                                                                          
+        while(!lock->compare_exchange_strong(zero, 1)){                                                                                                          
             zero = 0;                                                                                                                                                                       
             asm volatile("pause");                                                                                                                                                          
         }                                                                                                                                                                                   
     }                                                                                                                                                                                       
                                                                                                                                                                                             
     void spin_unlock(std::atomic<int>* lock){                                                                                                                                               
-        lock->store(0, std::memory_order_seq_cst);                                                                                                                                          
+        lock->store(0);                                                                                                                                          
     }
 
 

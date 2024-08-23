@@ -71,8 +71,8 @@ HeapWord* PseudoTLAB::allocate(size_t word_size){
 		batch_tab[word_size] = shm->get_new_batch(word_size); //get new batch
 		batch_tab[word_size]->bump = 0;
 	}
-	//else if(batch_tab[word_size]->bump >= (uint32_t) shm->size_of_buffer(word_size)){ // if batch is finished
 	else if(batch_tab[word_size]->bump >= (uint32_t) shm->size_of_buffer(word_size)){ // if batch is finished
+	//else if(batch_tab[word_size]->bump >= BUFFER_SIZE){ // if batch is finished
 		//printf("What was pushed: %lu, for size: %ld\n", (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr, word_size);
 		batch_t* temp = batch_tab[word_size];
 

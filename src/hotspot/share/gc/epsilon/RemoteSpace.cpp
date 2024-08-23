@@ -20,6 +20,7 @@
 #include "memory/iterator.inline.hpp"
 #include "gc/shared/referenceProcessor.inline.hpp"
 #include "gc/epsilon/gc_helper.hpp"
+#include "classfile/javaClasses.hpp"
 #include <fcntl.h>
 #include <immintrin.h>
 
@@ -99,6 +100,10 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
     msg.obj_array_base = (uint32_t) arrayOopDesc::base_offset_in_bytes(T_OBJECT);
 	//ioctl(fd_for_heap, 0, 0);
 	msg.obj_array_length = arrayOopDesc::length_offset_in_bytes();
+	msg.mirror_static_offset = InstanceMirrorKlass::offset_of_static_fields();
+	msg.mirror_static_count_offset = java_lang_Class::_static_oop_field_count_offset;
+	msg.referent_offset = java_lang_ref_Reference::referent_offset;
+	msg.discovered_offset = java_lang_ref_Reference::discovered_offset;
     msg.clear_space = clear_space;
     msg.mangle_space = mangle_space;
 	msg.pid = getpid();
@@ -173,6 +178,8 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
     if(allocated != nullptr){
 #if GCHELPER
 		if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
+		//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
+		//if(klass->is_instance_klass() && ( ((InstanceKlass*)klass)->is_reference_instance_klass() )){
 			gchelper.add_root(allocated);
 		}
 		//else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
@@ -219,11 +226,12 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 #if GCHELPER
 
 	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
-	if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
-		//lock_collect.lock();
-		gchelper.add_root(allocated);
-		//lock_collect.unlock();
-	}
+	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
+	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() )){
+	//	//lock_collect.lock();
+	//	gchelper.add_root(allocated);
+	////	//lock_collect.unlock();
+	//}
 	//else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL){
 	////////else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
 	//	lock_gc_helper.lock();
@@ -301,14 +309,14 @@ void getandsend_roots(){
 
 #if GCHELPER
 void RemoteSpace::getandsend_helper(){
-	lock_gc_helper.lock();
-    gchelper.do_it();
+	//lock_gc_helper.lock();
+    //gchelper.do_it();
     uint64_t array_length = (uint64_t) gchelper.getArraySize();
     uint64_t* helper_array = gchelper.helperArray();
 	//printf("Send helper roots, size: %lu\n", array_length);
     write(sockfd_remote, &array_length, sizeof(uint64_t));
     int res = write(sockfd_remote, helper_array, sizeof(uint64_t)*array_length );
-	lock_gc_helper.unlock();
+	//lock_gc_helper.unlock();
 }
 #endif
 
