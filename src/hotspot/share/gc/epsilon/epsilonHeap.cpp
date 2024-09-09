@@ -235,23 +235,6 @@ HeapWord* EpsilonHeap::allocate_work_klass_impl(size_t size, Klass* klass) {
     assert(is_object_aligned(size), "Allocation size should be aligned: " SIZE_FORMAT, size);
     HeapWord* mem =  _space->par_allocate_klass(size, klass);
     //HeapWord* mem =  _space->par_allocate(size);
-
-	size_t used = _space->used();
-	{
-	 size_t last = _last_counter_update;
-   	 if ((used - last >= _step_counter_update) && Atomic::cmpxchg(used, &_last_counter_update, last) == last) {
-   	   _monitoring_support->update_counters();
-   	 }
-	}
-
-	{
-    size_t last = _last_heap_print;
-    if ((used - last >= _step_heap_print) && Atomic::cmpxchg(used, &_last_heap_print, last) == last) {
-      print_heap_info(used);
-      print_metaspace_info();
-    }
-    }
-
 	return mem;
 }
 
@@ -264,6 +247,13 @@ void EpsilonHeap::concurrent_post_allocate(HeapWord* allocated, size_t size, Kla
     size_t last = _last_counter_update;
     if ((used - last >= _step_counter_update) && Atomic::cmpxchg(used, &_last_counter_update, last) == last) {
       _monitoring_support->update_counters();
+    }
+	{
+    size_t last = _last_heap_print;
+    if ((used - last >= _step_heap_print) && Atomic::cmpxchg(used, &_last_heap_print, last) == last) {
+      print_heap_info(used);
+      print_metaspace_info();
+    }
     }
   }
 }

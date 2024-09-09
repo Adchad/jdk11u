@@ -73,8 +73,9 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
     signal(SIGUSR1, start_collect_sig);
     signal(SIGUSR2, end_collect_sig);
 
-	
+#if GCHELPER	
 	gchelper.initialize();
+#endif
 
 	epsilon_sh_mem = setup_shm();
 	shm = (SharedMem*) malloc(sizeof(SharedMem));
@@ -89,7 +90,9 @@ RemoteSpace::~RemoteSpace(){
 int alloc_fd;
 
 void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) {
+#if GCHELPER
 	_mr = mr;
+#endif
     struct msg_initialize msg;
     HeapWord* mr_start = mr.start();
 	printf("Start: %p\n",  mr_start);
@@ -128,9 +131,11 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 }
 
 void RemoteSpace::post_initialize(){
+#if GCHELPER
 	_span_based_discoverer.set_span(_mr);
 	rp = new ReferenceProcessor(&_span_based_discoverer);
 	gchelper.set_rp(rp);
+#endif
 }
 
 HeapWord *RemoteSpace::par_allocate(size_t word_size) {
@@ -225,13 +230,13 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 	//lock_collect.lock();
 #if GCHELPER
 
-	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
+	if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
 	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
 	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() )){
 	//	//lock_collect.lock();
-	//	gchelper.add_root(allocated);
+		gchelper.add_root(allocated);
 	////	//lock_collect.unlock();
-	//}
+	}
 	//else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL){
 	////////else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
 	//	lock_gc_helper.lock();

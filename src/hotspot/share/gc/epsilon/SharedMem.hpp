@@ -80,21 +80,18 @@ public:
 
 	batch_t* get_new_batch(size_t word_size); 
 
-	int size_of_buffer(int size){
-		if(size <= 128)
-			return 251;
-		if(size <= 256)
-			return 128;
-		if(size <= 512)
-			return 64;
-		if(size <= 1024)
-			return 32;
-		if(size <= 2048)
-			return 16;
-		if(size <= 4096)
-			return 8;
-
-		return 1;
+    int size_of_buffer(int size){                                                                                                                                                    
+		if(size <= 64)                                                                                                                                                                      
+    	    return 123;                                                                                                                                                                     
+    	if(size <= 128)                                                                                                                                                                     
+    	    return 64;                                                                                                                                                                      
+    	if(size <= 256)                                                                                                                                                                     
+    	    return 32;                                                                                                                                                                      
+    	if(size <= 512)                                                                                                                                                                     
+    	    return 4;                                                                                                                                                                       
+    	if(size <= 1024)                                                                                                                                                                    
+    	    return 2;                                                                                                                                                                       
+    	return 1;                                                                                                                                                                           
 	}
 
     void spin_lock(std::atomic<int>* lock){                                                                                                                                                 

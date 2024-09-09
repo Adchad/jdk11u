@@ -28,7 +28,7 @@
 #define RSPACE_PORT 42069 // port of socket btwn GC and JVM
 #define COLLECT_PORT 42071 // port of socket btwn GC and JVM
 #define KLASSNAME 0 // give the class name to gc ?
-#define GCHELPER 1 // help from JVM for some complicated objects in the GC
+#define GCHELPER 0 // help from JVM for some complicated objects in the GC
 #define DEADBEEF 0 // mark collected objects by replacing data with deadbeef
 #define REMOTE_LOADING 1 // instrumentate classloader to send data to GC
 #define ALLOC_BUFFER 0
@@ -37,13 +37,13 @@
 #define SOFTMAX_PER 20
 #define SOFTMIN_PER 20
 
-#define ARENA_SIZE_IN_BYTES (2 * PAGE_SIZE) // size of the arena memory block                                                                                                                                    
+#define ARENA_SIZE_IN_BYTES (16 * PAGE_SIZE) // size of the arena memory block                                                                                                                                    
 #define ARENA_SIZE (ARENA_SIZE_IN_BYTES / 8)                                                                                                                                                                     
 
 #define ARENA_MAX_SIZE (ARENA_SIZE - 2)   // max size of object that can be allocated from the arena
 
 // Allocation buffer parameters
-#define BUFFER_SIZE 251// amount of pointers stored in the allocation buffer in the JVM side
+#define BUFFER_SIZE 123// amount of pointers stored in the allocation buffer in the JVM side
 #define BUFFER_MAX_SIZE ARENA_MAX_SIZE // max size of object that can be allocated from the buffer
 
 enum klass_type {instance = 1, objarray = 2, typearray = 3, instanceref = 4, instancemirror = 5, instanceclassloader = 6};
