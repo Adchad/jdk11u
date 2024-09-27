@@ -214,7 +214,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 		}else if(klass->is_instance_klass()){
 			*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass;
 		}
-        *((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size;
+        *((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size +1;
 
 		//return allocated;
     }
@@ -248,11 +248,11 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 #endif
 
 	//lock_alloc_print.lock();
-	//dprintf(alloc_fd,"%p, %s, collection: %d\n", allocated, klass->external_name(), test_collect.load());
+	//printf("%p, %s, collection: %d\n", allocated, klass->external_name(), test_collect.load());
 	//lock_alloc_print.unlock();
 
 
-	used_.fetch_add(word_size*8 + HEADER_OFFSET);
+	used_.fetch_add(word_size*8);
     uint64_t iptr = (uint64_t)allocated;
 	uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
 

@@ -44,6 +44,7 @@ protected:
 
 private:
   // Allocate from the current thread's TLAB, with broken-out slow path.
+  size_t calculate_size(size_t size) const;
   HeapWord* allocate_inside_tlab(Allocation& allocation) const;
   HeapWord* allocate_inside_tlab_slow(Allocation& allocation) const;
   HeapWord* allocate_outside_tlab(Allocation& allocation) const;

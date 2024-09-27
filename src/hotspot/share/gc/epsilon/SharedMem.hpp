@@ -49,8 +49,8 @@ struct batch_stack{
 #define PRE_FREE_SIZE sizeof(struct batch_stack)
 #define SPIN_SIZE sizeof(std::atomic<int>)
 #define SEM_SIZE sizeof(sem_t)
-#define ENTRIES_SIZE (sizeof(struct entry)*BUFFER_MAX_SIZE)
-#define NBR_OF_ENTRIES BUFFER_MAX_SIZE
+#define NBR_OF_ENTRIES 18
+#define ENTRIES_SIZE (sizeof(struct entry)*NBR_OF_ENTRIES)
 //#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
 #define BATCH_SPACE_SIZE (5ULL*1024*1024*1024UL)
 #define NBR_OF_BATCHES (BATCH_SPACE_SIZE/sizeof(batch_t))
@@ -80,31 +80,35 @@ public:
 
 	batch_t* get_new_batch(size_t word_size); 
 
-    int size_of_buffer(int size){                                                                                                                                                    
-		if(size <= 64)                                                                                                                                                                      
-    	    return 123;                                                                                                                                                                     
-    	if(size <= 128)                                                                                                                                                                     
-    	    return 64;                                                                                                                                                                      
-    	if(size <= 256)                                                                                                                                                                     
-    	    return 32;                                                                                                                                                                      
-    	if(size <= 512)                                                                                                                                                                     
-    	    return 4;                                                                                                                                                                       
-    	if(size <= 1024)                                                                                                                                                                    
-    	    return 2;                                                                                                                                                                       
-    	return 1;                                                                                                                                                                           
+    int size_of_buffer(int size){ 
+		if(size <= 64)
+    	    return 123;
+    	if(size <= 128)
+    	    return 64;
+    	if(size <= 256) 
+    	    return 32;
+    	if(size <= 512)
+    	    return 4;
+    	if(size <= 1024)
+    	    return 2;
+		return 0;
 	}
 
-    void spin_lock(std::atomic<int>* lock){                                                                                                                                                 
-        int zero = 0;                                                                                                                                                                       
-        while(!lock->compare_exchange_strong(zero, 1)){                                                                                                          
-            zero = 0;                                                                                                                                                                       
-            asm volatile("pause");                                                                                                                                                          
-        }                                                                                                                                                                                   
-    }                                                                                                                                                                                       
-                                                                                                                                                                                            
-    void spin_unlock(std::atomic<int>* lock){                                                                                                                                               
-        lock->store(0);                                                                                                                                          
+    void spin_lock(std::atomic<int>* lock){ 
+        int zero = 0;
+        while(!lock->compare_exchange_strong(zero, 1)){
+            zero = 0;
+            asm volatile("pause");
+        } 
+	}
+           
+
+    void spin_unlock(std::atomic<int>* lock){ 
+        lock->store(0);                                              
     }
+
+	int index_from_size(int size); 
+	int size_from_index(int index);
 
 };
 

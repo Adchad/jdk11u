@@ -37,7 +37,7 @@
 #define SOFTMAX_PER 20
 #define SOFTMIN_PER 20
 
-#define ARENA_SIZE_IN_BYTES (32 * PAGE_SIZE) // size of the arena memory block                                                                                                                                    
+#define ARENA_SIZE_IN_BYTES (4 * PAGE_SIZE) // size of the arena memory block                                                                                                                                    
 #define ARENA_SIZE (ARENA_SIZE_IN_BYTES / 8)                                                                                                                                                                     
 
 #define ARENA_MAX_SIZE (ARENA_SIZE - 2)   // max size of object that can be allocated from the arena

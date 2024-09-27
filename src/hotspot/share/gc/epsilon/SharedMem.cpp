@@ -66,15 +66,16 @@ void PseudoTLAB::initialize(SharedMem* shm_, void* thread_ ){
 }
 
 HeapWord* PseudoTLAB::allocate(size_t word_size){
+	int index = shm->index_from_size(word_size);
 	HeapWord* ret;
-	if(batch_tab[word_size] == NULL){ // if there is no batch
-		batch_tab[word_size] = shm->get_new_batch(word_size); //get new batch
-		batch_tab[word_size]->bump = 0;
+	if(batch_tab[index] == NULL){ // if there is no batch
+		batch_tab[index] = shm->get_new_batch(index); //get new batch
+		batch_tab[index]->bump = 0;
 	}
-	else if(batch_tab[word_size]->bump >= (uint32_t) shm->size_of_buffer(word_size)){ // if batch is finished
+	else if(batch_tab[index]->bump >= (uint32_t) shm->size_of_buffer(word_size)){ // if batch is finished
 	//else if(batch_tab[word_size]->bump >= BUFFER_SIZE){ // if batch is finished
 		//printf("What was pushed: %lu, for size: %ld\n", (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr, word_size);
-		batch_t* temp = batch_tab[word_size];
+		batch_t* temp = batch_tab[index];
 
 		//if(batch_tab[word_size]->next_batch =! 0 && batch_tab[word_size]->count != 0 ){
 		//	batch_t* temp = shm->abs_addr(batch_tab[word_size]->next_batch);
@@ -82,15 +83,15 @@ HeapWord* PseudoTLAB::allocate(size_t word_size){
 		//	batch_tab[word_size] = temp;
 		//	//printf("Coucou: batch: %p, size: %lu\n", batch_tab[word_size], word_size );
 		//} else {
-			shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr); //push finished batch to prefree list
-			batch_tab[word_size] = shm->get_new_batch(word_size); //get new batchù
-			batch_tab[word_size]->bump = 0;
+			shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[index] - (uint64_t)shm->start_addr); //push finished batch to prefree list
+			batch_tab[index] = shm->get_new_batch(index); //get new batchù
+			batch_tab[index]->bump = 0;
 		//}
 	}
-	ret = (HeapWord*) batch_tab[word_size]->array[batch_tab[word_size]->bump]; // allocate from inside the batch
+	ret = (HeapWord*) batch_tab[index]->array[batch_tab[index]->bump]; // allocate from inside the batch
 	//printf("ret: %p, size: %lu, bump: %u\n", ret, word_size, batch_tab[word_size]->bump);
 	//printf("Allocated: %p,  Size: %lu,  thread: %p, bump: %u, batch: %p\n", ret, word_size, thread, batch_tab[word_size]->bump, batch_tab[word_size]);
-	batch_tab[word_size]->bump++;
+	batch_tab[index]->bump++;
 
 	return ret;
 
@@ -105,3 +106,37 @@ void PseudoTLAB::free(){
 		}
 	}
 }
+
+
+ int SharedMem::index_from_size(int size){
+     if(size <= 8)
+         return size-1;
+     if(size <= 16)
+         return 8;
+     if(size <= 32)
+         return 9;
+     if(size <= 64)
+         return 10;
+     if(size <= 128)
+         return 11;
+     if(size <= 256)
+         return 12;
+     if(size <= 512)
+         return 13;
+     if(size <= 1024)
+         return 14;
+     if(size <= 2048)
+         return 15;
+     if(size <= 4096)
+         return 16;
+     if(size <= 8096)
+         return 17;
+	 return 0;
+ }
+
+
+ int SharedMem::size_from_index(int index){
+     if(index <= 7)
+         return index + 1;
+     return 16<<(index-8);
+ }
