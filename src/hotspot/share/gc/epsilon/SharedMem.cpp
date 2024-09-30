@@ -59,14 +59,15 @@ batch_t* SharedMem::get_new_batch(size_t word_size){
 	return abs_addr(offset);
 }
 
-void PseudoTLAB::initialize(SharedMem* shm_, void* thread_ ){
+void PseudoTLAB::initialize(SharedMem* shm_, int tid_){
 	shm = shm_;
-	thread = thread_;
+	tid = tid_;
 	memset(batch_tab, 0, NBR_OF_ENTRIES*sizeof(batch_t*));
 }
 
 HeapWord* PseudoTLAB::allocate(size_t word_size){
-	int index = shm->index_from_size(word_size);
+	int index = index_from_size(word_size);
+	//printf("size: %lu, index_from_size: %d\n", word_size, index);
 	HeapWord* ret;
 	if(batch_tab[index] == NULL){ // if there is no batch
 		batch_tab[index] = shm->get_new_batch(index); //get new batch
@@ -107,36 +108,18 @@ void PseudoTLAB::free(){
 	}
 }
 
-
- int SharedMem::index_from_size(int size){
-     if(size <= 8)
-         return size-1;
-     if(size <= 16)
-         return 8;
-     if(size <= 32)
-         return 9;
-     if(size <= 64)
-         return 10;
-     if(size <= 128)
-         return 11;
-     if(size <= 256)
-         return 12;
-     if(size <= 512)
-         return 13;
-     if(size <= 1024)
-         return 14;
-     if(size <= 2048)
-         return 15;
-     if(size <= 4096)
-         return 16;
-     if(size <= 8096)
-         return 17;
-	 return 0;
- }
-
-
- int SharedMem::size_from_index(int index){
-     if(index <= 7)
-         return index + 1;
-     return 16<<(index-8);
- }
+int PseudoTLAB::index_from_size(int size){                                                                                                                                                   
+    if(size <= NBR_OF_LINEAR_ENTRIES)                                                                                                                                                       
+        return (size-1)*LINEAR_ENTRIES_WIDTH + tid%LINEAR_ENTRIES_WIDTH;                                                                                                                                               
+    if(size <= 8192)                                                                                                                                                                        
+        return NBR_OF_LINEAR_ENTRIES*LINEAR_ENTRIES_WIDTH + __builtin_ctz(size) - 4;                                                                                                        
+    return 0;                                                                                                                                                                               
+}                                                                                                                                                                                           
+                                                                                                                                                                                            
+                                                                                                                                                                                            
+int SharedMem::size_from_index(int index){                                                                                                                                                  
+    if(index <= NBR_OF_LINEAR_ENTRIES*LINEAR_ENTRIES_WIDTH -1)                                                                                                                              
+        return index/LINEAR_ENTRIES_WIDTH + 1;                                                                                                                                              
+    return 16 << (index - NBR_OF_LINEAR_ENTRIES*LINEAR_ENTRIES_WIDTH);                                                                                                                      
+                                                                                                                                                                                            
+}                                                                                                                                                                                           

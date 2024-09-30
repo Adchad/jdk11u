@@ -34,7 +34,7 @@ struct entry{
 	std::atomic<uint64_t> batch;
 	std::atomic<uint64_t> count;
 	char padding[64 - sizeof(char*)*2];
-};
+} __attribute__((aligned (64)));
 
 struct batch_queue{
 	batch_t* head;
@@ -49,7 +49,10 @@ struct batch_stack{
 #define PRE_FREE_SIZE sizeof(struct batch_stack)
 #define SPIN_SIZE sizeof(std::atomic<int>)
 #define SEM_SIZE sizeof(sem_t)
-#define NBR_OF_ENTRIES 18
+#define NBR_OF_LINEAR_ENTRIES 8                                                                                                                                                             
+#define NBR_OF_EXP_ENTRIES 10                                                                                                                                                               
+#define LINEAR_ENTRIES_WIDTH 5                                                                                                                                                              
+#define NBR_OF_ENTRIES (NBR_OF_LINEAR_ENTRIES*LINEAR_ENTRIES_WIDTH + NBR_OF_EXP_ENTRIES)
 #define ENTRIES_SIZE (sizeof(struct entry)*NBR_OF_ENTRIES)
 //#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
 #define BATCH_SPACE_SIZE (5ULL*1024*1024*1024UL)
@@ -107,7 +110,6 @@ public:
         lock->store(0);                                              
     }
 
-	int index_from_size(int size); 
 	int size_from_index(int index);
 
 };
@@ -116,13 +118,14 @@ public:
 class PseudoTLAB {
 private:
 	SharedMem* shm;
-	void* thread;
+	int tid;
 	batch_t* batch_tab[NBR_OF_ENTRIES];
 public:
-	void initialize(SharedMem* shm_, void* thread_);
+	void initialize(SharedMem* shm_, int tid_);
 	HeapWord* allocate(size_t word_size);
 	//HeapWord* allocate(size_t word_size);
 	void free();
+	int index_from_size(int size); 
 
 };
 

@@ -276,7 +276,15 @@ size_t MemAllocator::calculate_size(size_t size) const {
 	size++;  //add custom header padding
 	size_t old_size = size;
     if( size<= ARENA_SIZE/2 ) {
-        return size;
+		if(size<=8)
+			return size;
+        size--;
+		size |= size >> 1;
+    	size |= size >> 2;
+    	size |= size >> 4;
+    	size |= size >> 8;
+    	size |= size >> 16;
+    	return size + 1;
     } else {
 		if(size <= ARENA_SIZE)
 			size = 1;
@@ -313,14 +321,14 @@ HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {
   assert(UseTLAB, "should use UseTLAB");
   HeapWord* mem = NULL;
   if(UseEpsilonGC){ 
-	  size_t true_size = _word_size + 1;
+	  size_t true_size = calculate_size(_word_size);
 	  //Custom TLAB for teleGC
 	  if(true_size <= ARENA_SIZE/2){
 		//printf("size: %lu\n", _word_size);
 		if(_thread->pseudo_tlab() == NULL){
 			 SharedMem* shm = ((EpsilonHeap*)_heap)->shm;
 			 PseudoTLAB* ptlab = (PseudoTLAB*) malloc(sizeof(PseudoTLAB));
-			 ptlab->initialize(shm, _thread);
+			 ptlab->initialize(shm, _thread->osthread()->thread_id());
 			 _thread->set_pseudo_tlab((void*)ptlab);
 		}
 		mem = ((PseudoTLAB*)_thread->pseudo_tlab())->allocate(true_size);
