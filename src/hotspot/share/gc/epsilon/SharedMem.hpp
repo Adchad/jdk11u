@@ -46,17 +46,26 @@ struct batch_stack{
 	char padding[64 - sizeof(head)];
 };
 
+struct ticket_lock{                                                                                                                                                                         
+    std::atomic<int> ticket;                                                                                                                                                                
+    std::atomic<int> screen;                                                                                                                                                                
+};                                                                                                                                                                                          
+
+
 #define PRE_FREE_SIZE sizeof(struct batch_stack)
-#define SPIN_SIZE sizeof(std::atomic<int>)
+#define SPIN_SIZE sizeof(struct ticket_lock)
 #define SEM_SIZE sizeof(sem_t)
-#define NBR_OF_LINEAR_ENTRIES 8                                                                                                                                                             
-#define NBR_OF_EXP_ENTRIES 10                                                                                                                                                               
-#define LINEAR_ENTRIES_WIDTH 5                                                                                                                                                              
+#define NBR_OF_LINEAR_ENTRIES 8
+#define NBR_OF_EXP_ENTRIES 10
+#define LINEAR_ENTRIES_WIDTH 5
 #define NBR_OF_ENTRIES (NBR_OF_LINEAR_ENTRIES*LINEAR_ENTRIES_WIDTH + NBR_OF_EXP_ENTRIES)
 #define ENTRIES_SIZE (sizeof(struct entry)*NBR_OF_ENTRIES)
 //#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
 #define BATCH_SPACE_SIZE (5ULL*1024*1024*1024UL)
 #define NBR_OF_BATCHES (BATCH_SPACE_SIZE/sizeof(batch_t))
+
+
+class PseudoTLAB; 
 
 
 class SharedMem {
@@ -65,8 +74,11 @@ public:
 	struct batch_stack* prefree_list;
 	struct entry* entry_tab;
 	batch_t* start_of_batches;
-	std::atomic<int>* share_lock;
+	//std::atomic<int>* share_lock;
+	struct ticket_lock* share_lock;
 	sem_t* mutex;
+
+	std::atomic<int> thread_counter;
 
 //	struct batch_queue* free_list;
 //	struct batch_queue* in_use_list;
@@ -81,7 +93,7 @@ public:
 	void stack_push(batch_stack* list, uint64_t batch);
 	uint64_t stack_pop(batch_stack*);
 
-	batch_t* get_new_batch(size_t word_size); 
+	batch_t* get_new_batch(size_t word_size, PseudoTLAB* tlab); 
 
     int size_of_buffer(int size){ 
 		if(size <= 64)
@@ -97,18 +109,23 @@ public:
 		return 0;
 	}
 
-    void spin_lock(std::atomic<int>* lock){ 
-        int zero = 0;
-        while(!lock->compare_exchange_strong(zero, 1)){
-            zero = 0;
-            asm volatile("pause");
-        } 
-	}
-           
-
-    void spin_unlock(std::atomic<int>* lock){ 
-        lock->store(0);                                              
+    void init_ticket_lock(struct ticket_lock* t){ 
+        t->ticket.store(0);                       
+        t->screen.store(0);                       
+    }                                             
+                                                  
+    void spin_lock(struct ticket_lock* lock){     
+        //ecrire un ticket lock                   
+        int my = lock->ticket.fetch_add(1) ;      
+        while(lock->screen.load() < my){          
+            asm volatile("pause");                
+        }                                         
+    }                                             
+                                                  
+    void spin_unlock(struct ticket_lock* lock){   
+        lock->screen.fetch_add(1);                
     }
+
 
 	int size_from_index(int index);
 
@@ -120,8 +137,12 @@ private:
 	SharedMem* shm;
 	int tid;
 	batch_t* batch_tab[NBR_OF_ENTRIES];
+
 public:
-	void initialize(SharedMem* shm_, int tid_);
+	int nb_get_batch;
+	int nb_loops;
+
+	void initialize(SharedMem* shm_);
 	HeapWord* allocate(size_t word_size);
 	//HeapWord* allocate(size_t word_size);
 	void free();

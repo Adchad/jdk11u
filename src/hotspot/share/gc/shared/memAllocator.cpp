@@ -328,7 +328,7 @@ HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {
 		if(_thread->pseudo_tlab() == NULL){
 			 SharedMem* shm = ((EpsilonHeap*)_heap)->shm;
 			 PseudoTLAB* ptlab = (PseudoTLAB*) malloc(sizeof(PseudoTLAB));
-			 ptlab->initialize(shm, _thread->osthread()->thread_id());
+			 ptlab->initialize(shm);
 			 _thread->set_pseudo_tlab((void*)ptlab);
 		}
 		mem = ((PseudoTLAB*)_thread->pseudo_tlab())->allocate(true_size);
