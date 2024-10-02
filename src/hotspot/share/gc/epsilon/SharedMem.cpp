@@ -99,40 +99,29 @@ void PseudoTLAB::initialize(SharedMem* shm_){
 }
 
 HeapWord* PseudoTLAB::allocate(size_t word_size){
-	int base_index = index_from_size(word_size) ;
-	int index = batch_index_from_size(word_size);
-	//printf("size: %lu, index_from_size: %d\n", word_size, index);
 	HeapWord* ret;
-	if(batch_tab[index] == NULL){ // if there is no batch
-		if(index<=7)
-			batch_tab[index] = shm->get_new_batch(index, thread_offset, this); //get new batch
-		else
-			batch_tab[index] = shm->get_new_batch_exp(base_index, this); //get new batch
-		batch_tab[index]->bump = 0;
-	}
-	else if(batch_tab[index]->bump >= (uint32_t) shm->size_of_buffer(word_size)){ // if batch is finished
-	//else if(batch_tab[word_size]->bump >= BUFFER_SIZE){ // if batch is finished
-		//printf("What was pushed: %lu, for size: %ld\n", (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr, word_size);
-		batch_t* temp = batch_tab[index];
+	size_t index = batch_index_from_size_slow(word_size);
 
-		//if(batch_tab[word_size]->next_batch =! 0 && batch_tab[word_size]->count != 0 ){
-		//	batch_t* temp = shm->abs_addr(batch_tab[word_size]->next_batch);
-		//	shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[word_size] - (uint64_t)shm->start_addr); //push finished batch to prefree list
-		//	batch_tab[word_size] = temp;
-		//	//printf("Coucou: batch: %p, size: %lu\n", batch_tab[word_size], word_size );
-		//} else {
-		shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[index] - (uint64_t)shm->start_addr); //push finished batch to prefree list
-		//batch_tab[index] = shm->get_new_batch(base_index, thread_offset, this); //get new batchù
+	if(batch_tab[index] == NULL){ // if there is no batch
+		int base_index = index_from_size(word_size) ;
 		if(index<=7)
 			batch_tab[index] = shm->get_new_batch(index, thread_offset, this); //get new batch
 		else
 			batch_tab[index] = shm->get_new_batch_exp(base_index, this); //get new batch
 		batch_tab[index]->bump = 0;
-		//}
+	} else if(batch_tab[index]->bump >= (uint32_t) shm->size_of_buffer(word_size)){ // if batch is finished
+		int base_index = index_from_size(word_size) ;
+		batch_t* temp = batch_tab[index];
+		shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[index] - (uint64_t)shm->start_addr); //push finished batch to prefree list
+
+		if(index<=7)
+			batch_tab[index] = shm->get_new_batch(index, thread_offset, this); //get new batch
+		else
+			batch_tab[index] = shm->get_new_batch_exp(base_index, this); //get new batch
+		batch_tab[index]->bump = 0;
 	}
+
 	ret = (HeapWord*) batch_tab[index]->array[batch_tab[index]->bump]; // allocate from inside the batch
-	//printf("ret: %p, size: %lu, bump: %u\n", ret, word_size, batch_tab[word_size]->bump);
-	//printf("Allocated: %p,  Size: %lu,  thread: %p, bump: %u, batch: %p\n", ret, word_size, thread, batch_tab[word_size]->bump, batch_tab[word_size]);
 	batch_tab[index]->bump++;
 
 	return ret;
@@ -159,7 +148,15 @@ int PseudoTLAB::index_from_size(int size){
     return 0;
 }
   
-int PseudoTLAB::batch_index_from_size(int size){                                                                                                                                                   
+inline size_t PseudoTLAB::batch_index_from_size(size_t size){                                                                                                                                                   
+	size_t idx_lin = size - 1;
+	size_t idx_exp = (sizeof(size_t) << 3) - __builtin_clzll(idx_lin) + 4 ; //c'est pas +4 c'est -log2(16) + 8
+  	size_t klin = size < 9 ? -1 : 0;
+  	size_t kexp = ~klin;
+  	return (idx_lin & klin) | (idx_exp & kexp);
+}
+ 
+size_t PseudoTLAB::batch_index_from_size_slow(size_t size){                                                                                                                                                   
     if(size <= NBR_OF_LINEAR_ENTRIES){
 		//printf("tid: %d, index: %d\n",tid , (size-1)*LINEAR_ENTRIES_WIDTH + tid%LINEAR_ENTRIES_WIDTH);
         return (size-1);
@@ -168,7 +165,7 @@ int PseudoTLAB::batch_index_from_size(int size){
         return NBR_OF_LINEAR_ENTRIES + __builtin_ctz(size) - 4;  
     return 0;
 }
- 
+
 int SharedMem::size_from_index(int index){                                                                                                                                                  
     if(index <= NBR_OF_LINEAR_ENTRIES*LINEAR_ENTRIES_WIDTH -1) 
         return index/LINEAR_ENTRIES_WIDTH + 1;
