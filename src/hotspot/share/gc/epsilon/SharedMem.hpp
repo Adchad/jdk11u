@@ -56,7 +56,7 @@ struct ticket_lock{
 #define SPIN_SIZE sizeof(struct ticket_lock)
 #define SEM_SIZE sizeof(sem_t)
 #define NBR_OF_LINEAR_ENTRIES 8
-#define NBR_OF_EXP_ENTRIES 10
+#define NBR_OF_EXP_ENTRIES 6
 #define LINEAR_ENTRIES_WIDTH 5
 #define NBR_OF_ENTRIES (NBR_OF_LINEAR_ENTRIES*LINEAR_ENTRIES_WIDTH + NBR_OF_EXP_ENTRIES)
 #define ENTRIES_SIZE (sizeof(struct entry)*NBR_OF_ENTRIES)
@@ -93,11 +93,14 @@ public:
 	void stack_push(batch_stack* list, uint64_t batch);
 	uint64_t stack_pop(batch_stack*);
 
-	batch_t* get_new_batch(size_t word_size, PseudoTLAB* tlab); 
+	batch_t* get_new_batch(int index, int thread_offset, PseudoTLAB* tlab); 
+	batch_t* get_new_batch_exp(int index, PseudoTLAB* tlab); 
 
     int size_of_buffer(int size){ 
+		if(size <= 32)
+			return 507;
 		if(size <= 64)
-    	    return 123;
+    	    return 128;
     	if(size <= 128)
     	    return 64;
     	if(size <= 256) 
@@ -136,7 +139,8 @@ class PseudoTLAB {
 private:
 	SharedMem* shm;
 	int tid;
-	batch_t* batch_tab[NBR_OF_ENTRIES];
+	int thread_offset ;
+	batch_t* batch_tab[NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES];
 
 public:
 	int nb_get_batch;
@@ -147,6 +151,7 @@ public:
 	//HeapWord* allocate(size_t word_size);
 	void free();
 	int index_from_size(int size); 
+	int batch_index_from_size(int size); 
 
 };
 

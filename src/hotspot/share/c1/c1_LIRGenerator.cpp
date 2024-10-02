@@ -674,8 +674,8 @@ void LIRGenerator::print_if_not_loaded(const NewInstance* new_instance) {
 void LIRGenerator::new_instance(LIR_Opr dst, ciInstanceKlass* klass, bool is_unresolved, LIR_Opr scratch1, LIR_Opr scratch2, LIR_Opr scratch3, LIR_Opr scratch4, LIR_Opr klass_reg, CodeEmitInfo* info) {
   klass2reg_with_patching(klass_reg, klass, info, is_unresolved);
   // If klass is not loaded we do not know if the klass has finalizers:
-  if (UseFastNewInstance && klass->is_loaded()
-      && !Klass::layout_helper_needs_slow_path(klass->layout_helper())) {
+  //if (false && UseFastNewInstance && klass->is_loaded() && !Klass::layout_helper_needs_slow_path(klass->layout_helper())) {
+  if (UseFastNewInstance && klass->is_loaded() && !Klass::layout_helper_needs_slow_path(klass->layout_helper())) {
 
     Runtime1::StubID stub_id = klass->is_initialized() ? Runtime1::fast_new_instance_id : Runtime1::fast_new_instance_init_check_id;
 

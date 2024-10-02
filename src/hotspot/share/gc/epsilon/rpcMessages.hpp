@@ -43,7 +43,7 @@
 #define ARENA_MAX_SIZE (ARENA_SIZE - 2)   // max size of object that can be allocated from the arena
 
 // Allocation buffer parameters
-#define BUFFER_SIZE 123// amount of pointers stored in the allocation buffer in the JVM side
+#define BUFFER_SIZE 507// amount of pointers stored in the allocation buffer in the JVM side
 #define BUFFER_MAX_SIZE ARENA_MAX_SIZE // max size of object that can be allocated from the buffer
 
 enum klass_type {instance = 1, objarray = 2, typearray = 3, instanceref = 4, instancemirror = 5, instanceclassloader = 6};

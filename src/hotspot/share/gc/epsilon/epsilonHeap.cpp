@@ -124,12 +124,13 @@ jint EpsilonHeap::initialize() {
   _space = new RemoteSpace();
   ((RemoteSpace*) _space)->set_fd(heap_rs.fd_for_heap());
   ((RemoteSpace*) _space)->set_range(heap_rs.base(), heap_rs.size());
-  shm = ((RemoteSpace*) _space)->shm;
 #else
   _space = new ContiguousSpace();
 #endif
 
   _space->initialize(committed_region, /* clear_space = */ true, /* mangle_space = */ true);
+
+  shm = ((RemoteSpace*) _space)->shm;
 
   cap = committed_region.word_size()*8;
 

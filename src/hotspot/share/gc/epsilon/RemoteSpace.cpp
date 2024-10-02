@@ -36,7 +36,7 @@ std::mutex lock_gc_helper;
 std::mutex lock_alloc_print;
 std::atomic<bool> collecting;
 std::atomic<size_t> softmax;
-AllocationBuffer* alloc_buffer;
+//AllocationBuffer* alloc_buffer;
 std::atomic<uint64_t> free_space;
 uint64_t cap;
 std::atomic<uint64_t> used_;
@@ -76,10 +76,6 @@ RemoteSpace::RemoteSpace() : ContiguousSpace() {
 #if GCHELPER	
 	gchelper.initialize();
 #endif
-
-	epsilon_sh_mem = setup_shm();
-	shm = (SharedMem*) malloc(sizeof(SharedMem));
-	shm->initialize(epsilon_sh_mem);
 
 }
 
@@ -122,11 +118,15 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	used_.store(0);
 	collecting.store(false);
 	
-	alloc_buffer = (AllocationBuffer*) malloc(sizeof(AllocationBuffer));
-	alloc_buffer->initialize(sockfd_remote);
+	//alloc_buffer = (AllocationBuffer*) malloc(sizeof(AllocationBuffer));
+	//alloc_buffer->initialize(sockfd_remote);
 
 	alloc_fd = creat("alloc_data", 0);
 
+
+	epsilon_sh_mem = setup_shm();
+	shm = (SharedMem*) malloc(sizeof(SharedMem));
+	shm->initialize(epsilon_sh_mem);
 	
 }
 
@@ -393,7 +393,7 @@ void end_collect_sig(int sig) {
 	used_.store(0); //TODO uncomment this
 	//read(sockfd_collect, &free_space, sizeof(uint64_t));
 	lock_allocbuffer.lock();
-	alloc_buffer->free_all();
+	//alloc_buffer->free_all();
 	lock_allocbuffer.unlock();
 	ioctl(fd_for_heap, 0, 0);
 	opcode msg;

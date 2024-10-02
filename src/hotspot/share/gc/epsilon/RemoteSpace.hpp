@@ -50,7 +50,7 @@ extern std::mutex lock_gc_helper;
 extern std::mutex lock_alloc_print;
 extern std::atomic<bool> collecting;
 extern int sockfd_remote;
-extern AllocationBuffer* alloc_buffer;
+//extern AllocationBuffer* alloc_buffer;
 extern std::atomic<uint64_t> free_space;
 extern uint64_t cap;
 extern std::atomic<size_t> softmax;
