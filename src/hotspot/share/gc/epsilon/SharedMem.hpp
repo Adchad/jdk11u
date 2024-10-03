@@ -109,7 +109,7 @@ public:
     	    return 4;
     	if(size <= 1024)
     	    return 2;
-		return 0;
+		return 1;
 	}
 
     void init_ticket_lock(struct ticket_lock* t){ 
