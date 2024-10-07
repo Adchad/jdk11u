@@ -56,7 +56,7 @@ struct ticket_lock{
 #define SPIN_SIZE sizeof(struct ticket_lock)
 #define SEM_SIZE sizeof(sem_t)
 #define NBR_OF_LINEAR_ENTRIES 8
-#define NBR_OF_EXP_ENTRIES 6
+#define NBR_OF_EXP_ENTRIES 10 //up to 8192 in size 
 #define LINEAR_ENTRIES_WIDTH 5
 #define NBR_OF_ENTRIES (NBR_OF_LINEAR_ENTRIES*LINEAR_ENTRIES_WIDTH + NBR_OF_EXP_ENTRIES)
 #define ENTRIES_SIZE (sizeof(struct entry)*NBR_OF_ENTRIES)

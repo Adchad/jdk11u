@@ -62,10 +62,10 @@ batch_t* SharedMem::get_new_batch(int index, int thread_offset, PseudoTLAB* tlab
 		//faire un test en lecture avant d'écrire
 	//	tlab->nb_loops++;
 		//if(entry_tab[base_index + count].batch.load() != 0)
-		//	offset = entry_tab[base_index + count].batch.exchange(0);
+	//	offset = entry_tab[base_index + count].batch.exchange(0);
 		if(entry_tab[base_index].batch.load() != 0)
 			offset = entry_tab[base_index].batch.exchange(0);
-		count = (count + 1) %LINEAR_ENTRIES_WIDTH;
+	//	count = (count + 1) %LINEAR_ENTRIES_WIDTH;
 		asm volatile("pause");
 	}while(offset==0);
 	//if(tlab->nb_get_batch % 1000 == 0)
@@ -100,7 +100,7 @@ void PseudoTLAB::initialize(SharedMem* shm_){
 
 HeapWord* PseudoTLAB::allocate(size_t word_size){
 	HeapWord* ret;
-	size_t index = batch_index_from_size_slow(word_size);
+	size_t index = batch_index_from_size(word_size);
 
 	if(batch_tab[index] == NULL){ // if there is no batch
 		if(index<=7)

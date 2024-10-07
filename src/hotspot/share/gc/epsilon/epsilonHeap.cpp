@@ -243,20 +243,20 @@ HeapWord* EpsilonHeap::allocate_work_klass_impl(size_t size, Klass* klass) {
 void EpsilonHeap::concurrent_post_allocate(HeapWord* allocated, size_t size, Klass* klass){
 	((RemoteSpace*)_space)->concurrent_post_allocate(allocated, size, klass);
 
-	size_t used = _space->used();
-	{
-    size_t last = _last_counter_update;
-    if ((used - last >= _step_counter_update) && Atomic::cmpxchg(used, &_last_counter_update, last) == last) {
-      _monitoring_support->update_counters();
-    }
-	{
-    size_t last = _last_heap_print;
-    if ((used - last >= _step_heap_print) && Atomic::cmpxchg(used, &_last_heap_print, last) == last) {
-      print_heap_info(used);
-      print_metaspace_info();
-    }
-    }
-  }
+//	size_t used = _space->used();
+//	{
+//    size_t last = _last_counter_update;
+//    if ((used - last >= _step_counter_update) && Atomic::cmpxchg(used, &_last_counter_update, last) == last) {
+//      _monitoring_support->update_counters();
+//    }
+//	{
+//    size_t last = _last_heap_print;
+//    if ((used - last >= _step_heap_print) && Atomic::cmpxchg(used, &_last_heap_print, last) == last) {
+//      print_heap_info(used);
+//      print_metaspace_info();
+//    }
+//    }
+//  }
 }
 
 HeapWord* EpsilonHeap::allocate_new_tlab(size_t min_size,
