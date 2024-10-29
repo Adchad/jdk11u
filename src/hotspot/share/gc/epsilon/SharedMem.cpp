@@ -49,11 +49,12 @@ uint64_t SharedMem::stack_pop(batch_stack *list){
 
 batch_t* SharedMem::get_new_batch(int index, int thread_offset, PseudoTLAB* tlab){
 	uint64_t offset = 0;
-	int base_index = index*LINEAR_ENTRIES_WIDTH;
+	//int base_index = index*LINEAR_ENTRIES_WIDTH;
+	int base_index = index << 2;
 	int count = thread_offset;
 	//entry_tab[word_size].state = USED;
 	//tlab->nb_get_batch++;
-	entry_tab[base_index].count.store(1);
+	//entry_tab[base_index].count.store(1);
 	//entry_tab[base_index+1].count.store(1);
 	//entry_tab[base_index+2].count.store(1);
 	//entry_tab[base_index+3].count.store(1);
@@ -61,11 +62,11 @@ batch_t* SharedMem::get_new_batch(int index, int thread_offset, PseudoTLAB* tlab
 	do{
 		//faire un test en lecture avant d'écrire
 	//	tlab->nb_loops++;
-		//if(entry_tab[base_index + count].batch.load() != 0)
-	//	offset = entry_tab[base_index + count].batch.exchange(0);
-		if(entry_tab[base_index].batch.load() != 0)
-			offset = entry_tab[base_index].batch.exchange(0);
-	//	count = (count + 1) %LINEAR_ENTRIES_WIDTH;
+		if(entry_tab[base_index + count].batch.load() != 0)
+			offset = entry_tab[base_index + count].batch.exchange(0);
+		//if(entry_tab[base_index].batch.load() != 0)
+		//	offset = entry_tab[base_index].batch.exchange(0);
+		count = (count + 1) & 3;// cette ligne semble diviser par 3 les perfs
 		asm volatile("pause");
 	}while(offset==0);
 	//if(tlab->nb_get_batch % 1000 == 0)
@@ -106,16 +107,16 @@ HeapWord* PseudoTLAB::allocate(size_t word_size){
 		if(index<=7)
 			batch_tab[index] = shm->get_new_batch(index, thread_offset, this); //get new batch
 		else
-			batch_tab[index] = shm->get_new_batch_exp(index + 32, this); //get new batch
+			batch_tab[index] = shm->get_new_batch_exp(index + 24, this); //get new batch
 		batch_tab[index]->bump = 0;
-	} else if(batch_tab[index]->bump >= (uint32_t) shm->size_of_buffer(word_size)){ // if batch is finished
+	} else if(batch_tab[index]->bump >= batch_tab[index]->end){ // if batch is finished
 		batch_t* temp = batch_tab[index];
 		shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[index] - (uint64_t)shm->start_addr); //push finished batch to prefree list
 
 		if(index<=7)
 			batch_tab[index] = shm->get_new_batch(index, thread_offset, this); //get new batch
 		else
-			batch_tab[index] = shm->get_new_batch_exp(index + 32, this); //get new batch
+			batch_tab[index] = shm->get_new_batch_exp(index + 24, this); //get new batch
 		batch_tab[index]->bump = 0;
 	}
 

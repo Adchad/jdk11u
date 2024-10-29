@@ -221,6 +221,15 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 
 	//lock_remote.unlock();
 	lock_collect.unlock();
+
+	if(used_glob() >= (softmax.load()*COLLECTION_THRESHOLD)/100 && test_collect.load() < MAX_COLLECTIONS){
+		bool collected = false;
+		if(collecting.compare_exchange_strong(collected, true)){
+			collected = false;
+			start_collect_sig(0);
+		}
+	}
+
 	//printf("Alloc: %p\n", allocated);
     return allocated;
 }
@@ -228,24 +237,24 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size, Klass* klass){
 
 	//lock_collect.lock();
-#if GCHELPER
+//#if GCHELPER
 
-	if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
-	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
-	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() )){
-	//	//lock_collect.lock();
-		gchelper.add_root(allocated);
-	////	//lock_collect.unlock();
-	}
-	//else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL){
-	////////else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
-	//	lock_gc_helper.lock();
-	//	gchelper.add_root(allocated);
-	//	lock_gc_helper.unlock(); 
-	//}
-
-	//}
-#endif
+//	if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
+//	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
+//	//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() )){
+//	//	//lock_collect.lock();
+//		gchelper.add_root(allocated);
+//	////	//lock_collect.unlock();
+//	}
+//	//else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL){
+//	////////else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
+//	//	lock_gc_helper.lock();
+//	//	gchelper.add_root(allocated);
+//	//	lock_gc_helper.unlock(); 
+//	//}
+//
+//	//}
+//#endif
 
 	//lock_alloc_print.lock();
 	//printf("%p, %s, collection: %d\n", allocated, klass->external_name(), test_collect.load());
@@ -256,29 +265,23 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
     uint64_t iptr = (uint64_t)allocated;
 	uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
 
-	if(klass->is_objArray_klass()){
+	if(klass->is_instance_klass()){
+		*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass;
+	}else if(klass->is_objArray_klass()){
 		*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass + 1;
 	}else if(klass->is_typeArray_klass()){
 		*((uint32_t*)(iptr - KLASS_OFFSET)) = 42;
-	}else if(klass->is_instance_klass()){
-		*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass;
 	}
+
+	//*((uint32_t*)((uint64_t)allocated - KLASS_OFFSET)) = (klass->is_typeArray_klass()) ? 42 : ( static_cast<uint32_t>((uint64_t)klass) + klass->is_objArray_klass() ) ;
+
 	//else{printf("Caca Boudin\n");}
-    *((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size;
+    *((uint32_t*)((uint64_t)allocated - SIZE_OFFSET)) = (uint32_t) word_size;
 
 
 	//lock_collect.unlock();
 	//
 
-	if(used_glob() >= (softmax.load()*COLLECTION_THRESHOLD)/100 && test_collect.load() < MAX_COLLECTIONS){
-		bool collected = false;
-		if(collecting.compare_exchange_strong(collected, true)){
-			collected = false;
-			start_collect_sig(0);
-		}
-		//collecting.store(true);
-		//start_collect_sig(0);
-	}
 }
 
 
