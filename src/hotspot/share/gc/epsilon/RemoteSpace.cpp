@@ -222,13 +222,6 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 	//lock_remote.unlock();
 	lock_collect.unlock();
 
-	if(used_glob() >= (softmax.load()*COLLECTION_THRESHOLD)/100 && test_collect.load() < MAX_COLLECTIONS){
-		bool collected = false;
-		if(collecting.compare_exchange_strong(collected, true)){
-			collected = false;
-			start_collect_sig(0);
-		}
-	}
 
 	//printf("Alloc: %p\n", allocated);
     return allocated;
@@ -262,22 +255,29 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 
 
 	used_.fetch_add(word_size*8);
-    uint64_t iptr = (uint64_t)allocated;
-	uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
+    //uint64_t iptr = (uint64_t)allocated;
+	//uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
 
-	if(klass->is_instance_klass()){
-		*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass;
-	}else if(klass->is_objArray_klass()){
-		*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass + 1;
-	}else if(klass->is_typeArray_klass()){
-		*((uint32_t*)(iptr - KLASS_OFFSET)) = 42;
-	}
+	//if(klass->is_instance_klass()){
+	//	*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass;
+	//}else if(klass->is_objArray_klass()){
+	//	*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass + 1;
+	//}else if(klass->is_typeArray_klass()){
+	//	*((uint32_t*)(iptr - KLASS_OFFSET)) = 42;
+	//}
 
-	//*((uint32_t*)((uint64_t)allocated - KLASS_OFFSET)) = (klass->is_typeArray_klass()) ? 42 : ( static_cast<uint32_t>((uint64_t)klass) + klass->is_objArray_klass() ) ;
+	*((uint32_t*)((uint64_t)allocated - KLASS_OFFSET)) = (klass->is_typeArray_klass()) ? 42 : ( static_cast<uint32_t>((uint64_t)klass) + klass->is_objArray_klass() ) ;
 
 	//else{printf("Caca Boudin\n");}
     *((uint32_t*)((uint64_t)allocated - SIZE_OFFSET)) = (uint32_t) word_size;
 
+	if(used_glob() >= (softmax.load()*COLLECTION_THRESHOLD)/100 && test_collect.load() < MAX_COLLECTIONS){
+		bool collected = false;
+		if(collecting.compare_exchange_strong(collected, true)){
+			collected = false;
+			start_collect_sig(0);
+		}
+	}
 
 	//lock_collect.unlock();
 	//

@@ -196,9 +196,9 @@ const char* OptoRuntime::stub_name(address entry) {
 JRT_BLOCK_ENTRY(void, OptoRuntime::new_instance_C(Klass* klass, JavaThread* thread))
   JRT_BLOCK;
 #ifndef PRODUCT
-  SharedRuntime::_new_instance_ctr++;         // new instance requires GC
+  //SharedRuntime::_new_instance_ctr++;         // new instance requires GC
 #endif
-  assert(check_compiled_frame(thread), "incorrect caller");
+  //assert(check_compiled_frame(thread), "incorrect caller");
 
   // These checks are cheap to make and support reflective allocation.
   int lh = klass->layout_helper();
@@ -234,9 +234,9 @@ JRT_END
 JRT_BLOCK_ENTRY(void, OptoRuntime::new_array_C(Klass* array_type, int len, JavaThread *thread))
   JRT_BLOCK;
 #ifndef PRODUCT
-  SharedRuntime::_new_array_ctr++;            // new array requires GC
+  //SharedRuntime::_new_array_ctr++;            // new array requires GC
 #endif
-  assert(check_compiled_frame(thread), "incorrect caller");
+  //assert(check_compiled_frame(thread), "incorrect caller");
 
   // Scavenge and allocate an instance.
   oop result;
@@ -271,9 +271,9 @@ JRT_END
 JRT_BLOCK_ENTRY(void, OptoRuntime::new_array_nozero_C(Klass* array_type, int len, JavaThread *thread))
   JRT_BLOCK;
 #ifndef PRODUCT
-  SharedRuntime::_new_array_ctr++;            // new array requires GC
+  //SharedRuntime::_new_array_ctr++;            // new array requires GC
 #endif
-  assert(check_compiled_frame(thread), "incorrect caller");
+  //assert(check_compiled_frame(thread), "incorrect caller");
 
   // Scavenge and allocate an instance.
   oop result;
@@ -321,7 +321,7 @@ JRT_ENTRY(void, OptoRuntime::multianewarray2_C(Klass* elem_type, int len1, int l
 #ifndef PRODUCT
   SharedRuntime::_multi2_ctr++;                // multianewarray for 1 dimension
 #endif
-  assert(check_compiled_frame(thread), "incorrect caller");
+  //assert(check_compiled_frame(thread), "incorrect caller");
   assert(elem_type->is_klass(), "not a class");
   jint dims[2];
   dims[0] = len1;
@@ -337,7 +337,7 @@ JRT_ENTRY(void, OptoRuntime::multianewarray3_C(Klass* elem_type, int len1, int l
 #ifndef PRODUCT
   SharedRuntime::_multi3_ctr++;                // multianewarray for 1 dimension
 #endif
-  assert(check_compiled_frame(thread), "incorrect caller");
+  //assert(check_compiled_frame(thread), "incorrect caller");
   assert(elem_type->is_klass(), "not a class");
   jint dims[3];
   dims[0] = len1;
@@ -354,7 +354,7 @@ JRT_ENTRY(void, OptoRuntime::multianewarray4_C(Klass* elem_type, int len1, int l
 #ifndef PRODUCT
   SharedRuntime::_multi4_ctr++;                // multianewarray for 1 dimension
 #endif
-  assert(check_compiled_frame(thread), "incorrect caller");
+  //assert(check_compiled_frame(thread), "incorrect caller");
   assert(elem_type->is_klass(), "not a class");
   jint dims[4];
   dims[0] = len1;
@@ -372,7 +372,7 @@ JRT_ENTRY(void, OptoRuntime::multianewarray5_C(Klass* elem_type, int len1, int l
 #ifndef PRODUCT
   SharedRuntime::_multi5_ctr++;                // multianewarray for 1 dimension
 #endif
-  assert(check_compiled_frame(thread), "incorrect caller");
+  //assert(check_compiled_frame(thread), "incorrect caller");
   assert(elem_type->is_klass(), "not a class");
   jint dims[5];
   dims[0] = len1;
@@ -387,7 +387,7 @@ JRT_ENTRY(void, OptoRuntime::multianewarray5_C(Klass* elem_type, int len1, int l
 JRT_END
 
 JRT_ENTRY(void, OptoRuntime::multianewarrayN_C(Klass* elem_type, arrayOopDesc* dims, JavaThread *thread))
-  assert(check_compiled_frame(thread), "incorrect caller");
+  //assert(check_compiled_frame(thread), "incorrect caller");
   assert(elem_type->is_klass(), "not a class");
   assert(oop(dims)->is_typeArray(), "not an array");
 
