@@ -18,7 +18,10 @@ badd +1 SharedMem.cpp
 badd +1 SharedMem.hpp
 badd +1 ../shared/memAllocator.cpp
 badd +1 ../shared/memAllocator.hpp
-badd +0 epsilonBarrierSet.hpp
+badd +1 gc_helper.cpp
+badd +1 gc_helper.hpp
+badd +0 ../../oops/objArrayKlass.cpp
+badd +0 ../../oops/typeArrayKlass.cpp
 argglobal
 %argdel
 $argadd RemoteSpace.cpp
@@ -66,40 +69,15 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 205 - ((0 * winheight(0) + 22) / 44)
+let s:l = 66 - ((29 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-205
+66
 normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
 exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
-tabedit epsilonBarrierSet.hpp
-set splitbelow splitright
-set nosplitbelow
-set nosplitright
-wincmd t
-set winminheight=0
-set winheight=1
-set winminwidth=0
-set winwidth=1
-argglobal
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 22) / 44)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1
-normal! 0
 tabedit SharedMem.hpp
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -171,12 +149,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 22) / 44)
+let s:l = 31 - ((0 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+31
+normal! 074|
 tabedit AllocationBuffer.hpp
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -272,7 +250,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 291 - ((15 * winheight(0) + 22) / 44)
+let s:l = 291 - ((3 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -281,6 +259,108 @@ normal! 07|
 wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
 exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
+tabedit ../../oops/objArrayKlass.cpp
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 48 - ((14 * winheight(0) + 22) / 44)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+48
+normal! 0
+tabedit ../../oops/typeArrayKlass.cpp
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 64 - ((0 * winheight(0) + 22) / 44)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+64
+normal! 0
+tabedit gc_helper.hpp
+set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+1wincmd h
+wincmd w
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+exe 'vert 1resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 95 + 96) / 192)
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 1 - ((0 * winheight(0) + 22) / 44)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1
+normal! 0
+wincmd w
+argglobal
+if bufexists("gc_helper.cpp") | buffer gc_helper.cpp | else | edit gc_helper.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 1 - ((0 * winheight(0) + 22) / 44)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1
+normal! 0
+wincmd w
+exe 'vert 1resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 95 + 96) / 192)
 tabedit epsilonHeap.hpp
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -333,7 +413,7 @@ normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
 exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
-tabnext 2
+tabnext 7
 set stal=1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

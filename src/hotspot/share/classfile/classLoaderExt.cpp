@@ -342,7 +342,8 @@ InstanceKlass* ClassLoaderExt::load_class(Symbol* name, const char* path, TRAPS)
 	//printf("la klass à dallas\n");
     auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
 	msg->msg_type.type = 'l';
-	msg->klass = static_cast<uint32_t>((uint64_t)result);
+	//msg->klass = static_cast<uint32_t>((uint64_t)result);
+	msg->klass = Klass::encode_klass_not_null(result);
     msg->layout_helper = result->layout_helper();
 	msg->oop = (uint64_t) loader_data->class_loader();
 	if(result->is_reference_instance_klass()){ //REF INSTANCE

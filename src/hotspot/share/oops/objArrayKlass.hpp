@@ -37,7 +37,6 @@ class ObjArrayKlass : public ArrayKlass {
 
  public:
   static const KlassID ID = ObjArrayKlassID;
-
  private:
   // If you add a new field that points to any metaspace object, you
   // must add this field to ObjArrayKlass::metaspace_pointers_do().

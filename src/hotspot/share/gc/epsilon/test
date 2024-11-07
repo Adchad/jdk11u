@@ -1,0 +1,8 @@
+struct *p = batch_tab[index];
+int bump = p->bump++;   
+ret=(HeapWord*)p->array[bump];    
+
+struct {
+    uintptr_t bump;
+    uintptr_t arrays[1024];
+};                            

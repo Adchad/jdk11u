@@ -33,6 +33,7 @@ public:
         	list_length++;
         	struct linked_list* curr = head;
         	new_node->value = (HeapWord*) *o;
+			//printf("%p,  %p\n",*o ,(*o)->compressed_klass_addr());
 			//printf("\t%p\n",(HeapWord*) *o);
         	new_node->next = curr;
         	head = new_node;
@@ -48,6 +49,7 @@ public:
         	list_length++;
         	struct linked_list* curr = head;
         	new_node->value = (HeapWord*) oopDesc::decode_oop_raw(*o);
+			//printf("%p,  %p\n",new_node->value ,((oop)new_node->value)->compressed_klass_addr());
 			//printf("\t%p\n", (HeapWord*)(uint64_t)  *o);
         	new_node->next = curr;
         	head = new_node;

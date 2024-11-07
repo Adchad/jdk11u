@@ -45,6 +45,16 @@
 #include "runtime/mutexLocker.hpp"
 #include "utilities/macros.hpp"
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include <cstring>
+#include "gc/epsilon/RemoteSpace.hpp"
+#include "gc/epsilon/rpcMessages.hpp"
+
+
+
 ObjArrayKlass* ObjArrayKlass::allocate(ClassLoaderData* loader_data, int n, Klass* k, Symbol* name, TRAPS) {
   assert(ObjArrayKlass::header_size() <= InstanceKlass::header_size(),
       "array klasses must be same size as InstanceKlass");
@@ -160,6 +170,46 @@ ObjArrayKlass::ObjArrayKlass(int n, Klass* element_klass, Symbol* name) : ArrayK
   this->set_class_loader_data(bk->class_loader_data());
 
   this->set_layout_helper(array_layout_helper(T_OBJECT));
+
+#if REMOTE_LOADING
+  if(sockfd_remote < 0 ){
+	printf("loader socket\n");
+    sockfd_remote = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd_remote < 0)
+    {
+        perror ("socket");
+        exit (EXIT_FAILURE);
+    }
+
+    struct sockaddr_in server;
+
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server.sin_port = htons( RSPACE_PORT );
+
+    if (connect(sockfd_remote, (struct sockaddr *)&server , sizeof(server)) < 0)
+    {
+        puts("connect error");
+    }
+  }
+  if(sockfd_remote > 2){
+	//printf("la klass à dallas\n");
+    auto * msg = (struct msg_klass_data_2*) malloc(sizeof(struct msg_klass_data_2));
+	msg->msg_type.type = 'l';
+	//msg->klass = static_cast<uint32_t>((uint64_t)result);
+	msg->klass = Klass::encode_klass_not_null(this);
+    msg->layout_helper = this->layout_helper();
+	msg->klasstype = objarray;
+	msg->special = 0;
+	//if(strstr(result->external_name(), "java.lang.String") !=nullptr){
+	//	msg->special = 1;
+	//}
+    lock_remote.lock();
+    write(sockfd_remote, msg, sizeof(msg_klass_data_2));
+    lock_remote.unlock();
+	//printf("Received klass\n");
+  }
+#endif
   assert(this->is_array_klass(), "sanity");
   assert(this->is_objArray_klass(), "sanity");
 }

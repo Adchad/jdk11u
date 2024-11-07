@@ -92,6 +92,9 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
     struct msg_initialize msg;
     HeapWord* mr_start = mr.start();
 	printf("Start: %p\n",  mr_start);
+	if(UseCompressedClassPointers)
+		printf("Used compressed class pointers");
+
     size_t  mr_word_size = mr.word_size();
 	msg.msg_type.type = 'i';
     msg.mr_start =  mr_start;
@@ -202,7 +205,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 
 		used_.fetch_add(word_size*8 + HEADER_OFFSET);
         uint64_t iptr = (uint64_t)allocated;
-		uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
+		uint32_t short_klass = Klass::encode_klass_not_null(klass);
 
 	//	printf("Klass: %u, name: %s\n", short_klass, allocated,klass->external_name());
 		//printf("Klass: %u, addr: %p, size: %lu, name: %s\n", short_klass,allocated, word_size,klass->external_name());
@@ -222,7 +225,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 	//lock_remote.unlock();
 	lock_collect.unlock();
 
-
+	slow_path_post_alloc();
 	//printf("Alloc: %p\n", allocated);
     return allocated;
 }
@@ -266,11 +269,13 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 	//	*((uint32_t*)(iptr - KLASS_OFFSET)) = 42;
 	//}
 
-	*((uint32_t*)((uint64_t)allocated - KLASS_OFFSET)) = (klass->is_typeArray_klass()) ? 42 : ( static_cast<uint32_t>((uint64_t)klass) + klass->is_objArray_klass() ) ;
+	//*((uint32_t*)((uint64_t)allocated - KLASS_OFFSET)) = (klass->is_typeArray_klass()) ? 42 : ( Klass::encode_klass_not_null(klass) + klass->is_objArray_klass() ) ;
 
 	//else{printf("Caca Boudin\n");}
     *((uint32_t*)((uint64_t)allocated - SIZE_OFFSET)) = (uint32_t) word_size;
+}
 
+void RemoteSpace::slow_path_post_alloc(){
 	if(used_glob() >= (softmax.load()*COLLECTION_THRESHOLD)/100 && test_collect.load() < MAX_COLLECTIONS){
 		bool collected = false;
 		if(collecting.compare_exchange_strong(collected, true)){
