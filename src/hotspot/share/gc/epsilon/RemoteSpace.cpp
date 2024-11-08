@@ -274,7 +274,7 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
     //*((uint32_t*)((uint64_t)allocated - SIZE_OFFSET)) = (uint32_t) word_size;
 }
 
-void RemoteSpace::slow_path_post_alloc(uin64_t used_local){
+void RemoteSpace::slow_path_post_alloc(uint64_t used_local){
 	used_.fetch_add(used_local*8);
 
 	if(used_glob() >= (softmax.load()*COLLECTION_THRESHOLD)/100 && test_collect.load() < MAX_COLLECTIONS){

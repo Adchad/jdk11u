@@ -144,7 +144,7 @@ private:
 	int tid;
 	int thread_offset ;
 	batch_t* batch_tab[NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES];
-	uitn64_t used_local;
+	uint64_t used_local;
 
 public:
 	int nb_get_batch;
