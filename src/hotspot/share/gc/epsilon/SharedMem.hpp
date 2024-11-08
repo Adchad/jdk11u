@@ -67,6 +67,7 @@ struct ticket_lock{
 
 
 class PseudoTLAB; 
+class RemoteSpace; 
 
 
 class SharedMem {
@@ -80,12 +81,13 @@ public:
 	sem_t* mutex;
 
 	std::atomic<int> thread_counter;
+	RemoteSpace* rs;
 
 //	struct batch_queue* free_list;
 //	struct batch_queue* in_use_list;
 	
 public:
-	void initialize(void* addr_);
+	void initialize(void* addr_, RemoteSpace* rs_);
 	
 	batch_t* abs_addr(uint64_t offset){
 		return (batch_t*)(offset + (uint64_t)start_addr);
@@ -142,6 +144,7 @@ private:
 	int tid;
 	int thread_offset ;
 	batch_t* batch_tab[NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES];
+	uitn64_t used_local;
 
 public:
 	int nb_get_batch;

@@ -129,7 +129,7 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 
 	epsilon_sh_mem = setup_shm();
 	shm = (SharedMem*) malloc(sizeof(SharedMem));
-	shm->initialize(epsilon_sh_mem);
+	shm->initialize(epsilon_sh_mem, this);
 	
 }
 
@@ -225,7 +225,6 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 	//lock_remote.unlock();
 	lock_collect.unlock();
 
-	slow_path_post_alloc();
 	//printf("Alloc: %p\n", allocated);
     return allocated;
 }
@@ -272,10 +271,12 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 	//*((uint32_t*)((uint64_t)allocated - KLASS_OFFSET)) = (klass->is_typeArray_klass()) ? 42 : ( Klass::encode_klass_not_null(klass) + klass->is_objArray_klass() ) ;
 
 	//else{printf("Caca Boudin\n");}
-    *((uint32_t*)((uint64_t)allocated - SIZE_OFFSET)) = (uint32_t) word_size;
+    //*((uint32_t*)((uint64_t)allocated - SIZE_OFFSET)) = (uint32_t) word_size;
 }
 
-void RemoteSpace::slow_path_post_alloc(){
+void RemoteSpace::slow_path_post_alloc(uin64_t used_local){
+	used_.fetch_add(used_local*8);
+
 	if(used_glob() >= (softmax.load()*COLLECTION_THRESHOLD)/100 && test_collect.load() < MAX_COLLECTIONS){
 		bool collected = false;
 		if(collecting.compare_exchange_strong(collected, true)){

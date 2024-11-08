@@ -2,8 +2,9 @@
 // Created by adam on 8/31/23.
 //
 #include "gc/epsilon/SharedMem.hpp"
+#include "gc/epsilon/RemoteSpace.hpp"
 
-void SharedMem::initialize( void* addr_){
+void SharedMem::initialize( void* addr_, RemoteSpace* rs_){
 	start_addr = addr_;
 	printf("Shared memory addr: %p\n", start_addr);
 	//memset(start_addr, 0, PRE_FREE_SIZE + ENTRIES_SIZE);
@@ -14,6 +15,8 @@ void SharedMem::initialize( void* addr_){
 	start_of_batches = (batch_t*) ((uint64_t)entry_tab + ENTRIES_SIZE);
 	
 	thread_counter.store(0);
+
+	rs = rs_;
 }
 
 void SharedMem::stack_push(struct batch_stack* list, uint64_t batch){
@@ -96,6 +99,7 @@ void PseudoTLAB::initialize(SharedMem* shm_){
 	shm = shm_;
 	tid = shm->thread_counter.fetch_add(1);
 	thread_offset = tid%LINEAR_ENTRIES_WIDTH;
+	used_local=0;
 	memset(batch_tab, 0, (NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES)*sizeof(batch_t*));
 }
 
@@ -118,11 +122,13 @@ HeapWord* PseudoTLAB::allocate(size_t word_size){
 		else
 			batch_tab[index] = shm->get_new_batch_exp(index + 24, this); //get new batch
 		batch_tab[index]->bump = 0;
+		shm->rs->slow_path_post_alloc(used_local);
 	}
 
 	ret = (HeapWord*) batch_tab[index]->array[batch_tab[index]->bump]; // allocate from inside the batch
 	batch_tab[index]->bump++;
-
+	
+	used_local += word_size;
 	return ret;
 
 }

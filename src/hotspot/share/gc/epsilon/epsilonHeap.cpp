@@ -259,9 +259,6 @@ void EpsilonHeap::concurrent_post_allocate(HeapWord* allocated, size_t size, Kla
 //  }
 }
 
-void EpsilonHeap::slow_path_post_alloc(){
-	((RemoteSpace*)_space)->slow_path_post_alloc();
-}
 
 HeapWord* EpsilonHeap::allocate_new_tlab(size_t min_size,
                                          size_t requested_size,

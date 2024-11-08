@@ -320,15 +320,10 @@ HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {
 			 PseudoTLAB* ptlab = (PseudoTLAB*) malloc(sizeof(PseudoTLAB));
 			 ptlab->initialize(shm);
 			 _thread->set_pseudo_tlab((void*)ptlab);
-			mem = ((PseudoTLAB*)_thread->pseudo_tlab())->allocate(true_size);
-			if(mem != NULL)
-				((EpsilonHeap*)_heap)->concurrent_post_allocate(mem, true_size, _klass);
-				//((EpsilonHeap*)_heap)->slow_path_post_alloc();
-			return mem;
 		}
 		mem = ((PseudoTLAB*)_thread->pseudo_tlab())->allocate(true_size);
-		if(mem != NULL)
-			((EpsilonHeap*)_heap)->concurrent_post_allocate(mem, true_size, _klass);
+		//if(mem != NULL)
+		//	((EpsilonHeap*)_heap)->concurrent_post_allocate(mem, true_size, _klass);
 		//	((EpsilonHeap*)_heap)->slow_path_post_alloc();
 			// concurrent post allocate is done to add custom header to objects for collection
 		return mem;
