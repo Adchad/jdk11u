@@ -20,8 +20,10 @@ badd +1 ../shared/memAllocator.cpp
 badd +1 ../shared/memAllocator.hpp
 badd +1 gc_helper.cpp
 badd +1 gc_helper.hpp
-badd +0 ../../oops/objArrayKlass.cpp
-badd +0 ../../oops/typeArrayKlass.cpp
+badd +49 epsilonBarrierSet.cpp
+badd +0 epsilonBarrierSet.hpp
+badd +18 epsilonBarrierSetAssembler.cpp
+badd +0 epsilonBarrierSetAssembler.hpp
 argglobal
 %argdel
 $argadd RemoteSpace.cpp
@@ -149,12 +151,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 31 - ((0 * winheight(0) + 22) / 44)
+let s:l = 1 - ((0 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-31
-normal! 074|
+1
+normal! 0
 tabedit AllocationBuffer.hpp
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -250,7 +252,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 291 - ((3 * winheight(0) + 22) / 44)
+let s:l = 291 - ((15 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -259,56 +261,6 @@ normal! 07|
 wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
 exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
-tabedit ../../oops/objArrayKlass.cpp
-set splitbelow splitright
-set nosplitbelow
-set nosplitright
-wincmd t
-set winminheight=0
-set winheight=1
-set winminwidth=0
-set winwidth=1
-argglobal
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 48 - ((14 * winheight(0) + 22) / 44)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-48
-normal! 0
-tabedit ../../oops/typeArrayKlass.cpp
-set splitbelow splitright
-set nosplitbelow
-set nosplitright
-wincmd t
-set winminheight=0
-set winheight=1
-set winminwidth=0
-set winwidth=1
-argglobal
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 64 - ((0 * winheight(0) + 22) / 44)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-64
-normal! 0
 tabedit gc_helper.hpp
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -343,6 +295,58 @@ normal! 0
 wincmd w
 argglobal
 if bufexists("gc_helper.cpp") | buffer gc_helper.cpp | else | edit gc_helper.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 1 - ((0 * winheight(0) + 22) / 44)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1
+normal! 0
+wincmd w
+exe 'vert 1resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 95 + 96) / 192)
+tabedit epsilonBarrierSetAssembler.hpp
+set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+1wincmd h
+wincmd w
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+exe 'vert 1resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 95 + 96) / 192)
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 1 - ((0 * winheight(0) + 22) / 44)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1
+normal! 0
+wincmd w
+argglobal
+if bufexists("epsilonBarrierSetAssembler.cpp") | buffer epsilonBarrierSetAssembler.cpp | else | edit epsilonBarrierSetAssembler.cpp | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}

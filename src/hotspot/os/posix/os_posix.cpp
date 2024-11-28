@@ -278,6 +278,7 @@ char* os::map_memory_to_file(char* base, size_t size, int fd) {
   if (base != NULL) {
     flags |= MAP_FIXED;
   }
+  //flags |= MAP_POPULATE;
   char* addr = (char*)mmap(base, size, prot, flags, fd, 0);
 
   printf("Mmap starting address: %p\n", addr);

@@ -1,0 +1,22 @@
+ Performance counter stats for 'systemd-run --scope -p MemoryLimit=2G ./build/linux-x86_64-normal-server-release/jdk/bin/java -XX:AllocateHeapAt=/dev/fakeblk -Xlog:gc=debug -XX:-OptimizeStringConcat -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -Xnoclassgc -XX:-ClassUnloading -Xms16g -Xmx16g -jar ../dacapo-23.11-chopin.jar h2':
+
+     34,217,996.21 msec task-clock                       #   18.428 CPUs utilized             
+         5,287,242      context-switches                 #  154.516 /sec                      
+            25,846      cpu-migrations                   #    0.755 /sec                      
+        19,373,557      page-faults                      #  566.180 /sec                      
+54,020,462,367,459      cycles                           #    1.579 GHz                         (40.00%)
+ 5,631,774,417,764      stalled-cycles-frontend          #   10.43% frontend cycles idle        (40.00%)
+15,481,984,388,532      stalled-cycles-backend           #   28.66% backend cycles idle         (40.00%)
+45,263,169,575,365      instructions                     #    0.84  insn per cycle            
+                                                  #    0.34  stalled cycles per insn     (40.00%)
+ 9,019,315,132,101      branches                         #  263.584 M/sec                       (40.00%)
+    11,329,453,379      branch-misses                    #    0.13% of all branches             (40.00%)
+ 9,450,153,213,286      L1-dcache-loads                  #  276.175 M/sec                       (40.00%)
+    13,714,926,653      L1-dcache-load-misses            #    0.15% of all L1-dcache accesses   (40.00%)
+    43,706,767,872      LLC-loads                        #    1.277 M/sec                       (40.00%)
+    11,519,035,866      LLC-load-misses                  #   26.36% of all LL-cache accesses    (40.00%)
+
+    1856.870968125 seconds time elapsed
+
+   19283.453329000 seconds user
+   14778.188544000 seconds sys

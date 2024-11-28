@@ -273,7 +273,7 @@ void MemAllocator::Allocation::notify_allocation() {
 }
 
 size_t MemAllocator::calculate_size(size_t size) const {
-	size++;  //add custom header padding
+	//size++;  //add custom header padding
 	size_t old_size = size;
 
 	if(size <= ARENA_SIZE)
@@ -292,7 +292,7 @@ HeapWord* MemAllocator::allocate_outside_tlab(Allocation& allocation) const {
   HeapWord* mem;
   size_t size = calculate_size(_word_size); 
   if(UseEpsilonGC){ 
-      mem = ((EpsilonHeap*)_heap)->mem_allocate_klass(size - HEADER_OFFSET/sizeof(HeapWord), &allocation._overhead_limit_exceeded, _klass);
+      mem = ((EpsilonHeap*)_heap)->mem_allocate_klass(size, &allocation._overhead_limit_exceeded, _klass);
   }
   else{
       mem = _heap->mem_allocate(_word_size, &allocation._overhead_limit_exceeded);
@@ -300,7 +300,7 @@ HeapWord* MemAllocator::allocate_outside_tlab(Allocation& allocation) const {
   if(mem == NULL){
 	return mem;
   }
-   NOT_PRODUCT(_heap->check_for_non_bad_heap_word_value(mem, _word_size+HEADER_OFFSET/sizeof(HeapWord)));
+   NOT_PRODUCT(_heap->check_for_non_bad_heap_word_value(mem, _word_size));
    size_t size_in_bytes = (size) * HeapWordSize;
    _thread->incr_allocated_bytes(size_in_bytes);
    return mem;
@@ -311,9 +311,9 @@ HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {
   HeapWord* mem = NULL;
   if(UseEpsilonGC){ 
 	  //size_t true_size = calculate_size(_word_size) ;
-	  size_t true_size = _word_size + 1;
+	  //size_t true_size = _word_size + 1;
 	  //Custom TLAB for teleGC
-	  if(true_size <= ARENA_SIZE/2){
+	  if(_word_size <= ARENA_SIZE/2){
 		//printf("size: %lu\n", _word_size);
 		if(_thread->pseudo_tlab() == NULL){
 			 SharedMem* shm = ((EpsilonHeap*)_heap)->shm;
@@ -321,9 +321,10 @@ HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {
 			 ptlab->initialize(shm);
 			 _thread->set_pseudo_tlab((void*)ptlab);
 		}
-		mem = ((PseudoTLAB*)_thread->pseudo_tlab())->allocate(true_size);
+		mem = ((PseudoTLAB*)_thread->pseudo_tlab())->allocate(_word_size);
+		//printf("Allocated: %p, size: %lu\n", mem, _word_size);
 		//if(mem != NULL)
-		//	((EpsilonHeap*)_heap)->concurrent_post_allocate(mem, true_size, _klass);
+			//((EpsilonHeap*)_heap)->concurrent_post_allocate(mem, _word_size, _klass);
 		//	((EpsilonHeap*)_heap)->slow_path_post_alloc();
 			// concurrent post allocate is done to add custom header to objects for collection
 		return mem;

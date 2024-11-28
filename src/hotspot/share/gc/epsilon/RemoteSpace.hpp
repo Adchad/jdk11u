@@ -44,7 +44,7 @@ size_t used_glob();
 
 extern std::mutex lock_remote;
 extern std::mutex lock_collect;
-extern std::mutex lock_collect2;
+//extern std::mutex lock_collect2;
 extern std::mutex lock_allocbuffer;
 extern std::mutex lock_gc_helper;
 extern std::mutex lock_alloc_print;
@@ -52,6 +52,7 @@ extern std::atomic<bool> collecting;
 extern int sockfd_remote;
 //extern AllocationBuffer* alloc_buffer;
 extern std::atomic<uint64_t> free_space;
+extern void* start_addr;
 extern uint64_t cap;
 extern std::atomic<size_t> softmax;
 extern std::atomic<uint64_t> used_;
@@ -59,7 +60,7 @@ extern int shm_fd;
 extern int fd_for_heap;
 extern void* epsilon_sh_mem;
 
-extern std::atomic<int> test_collect; //TODO remove this
+//extern std::atomic<int> test_collect; //TODO remove this
 
 
 class RemoteSpace : public ContiguousSpace{
@@ -67,7 +68,7 @@ class RemoteSpace : public ContiguousSpace{
 
 public:
 
-	SharedMem* shm;
+	static SharedMem* shm;
 
 	static struct hw_list* poule;
 	

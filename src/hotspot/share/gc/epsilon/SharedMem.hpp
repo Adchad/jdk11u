@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <vector>
 #include <atomic>
 #include <semaphore.h>
 #include "gc/epsilon/rpcMessages.hpp"
@@ -59,6 +60,7 @@ struct ticket_lock{
 #define NBR_OF_LINEAR_ENTRIES 8
 #define NBR_OF_EXP_ENTRIES 10 //up to 8192 in size 
 #define LINEAR_ENTRIES_WIDTH 4
+#define START_OF_EXP (LINEAR_ENTRIES_WIDTH-1)*NBR_OF_LINEAR_ENTRIES
 #define NBR_OF_ENTRIES (NBR_OF_LINEAR_ENTRIES*LINEAR_ENTRIES_WIDTH + NBR_OF_EXP_ENTRIES)
 #define ENTRIES_SIZE (sizeof(struct entry)*NBR_OF_ENTRIES)
 //#define BATCH_SPACE_SIZE (SHM_SIZE - ENTRIES_SIZE) 
@@ -82,6 +84,8 @@ public:
 
 	std::atomic<int> thread_counter;
 	RemoteSpace* rs;
+	PseudoTLAB *tlab_list;
+	struct ticket_lock tlab_list_lock;
 
 //	struct batch_queue* free_list;
 //	struct batch_queue* in_use_list;
@@ -98,6 +102,11 @@ public:
 
 	batch_t* get_new_batch(int index, int thread_offset, PseudoTLAB* tlab); 
 	batch_t* get_new_batch_exp(int index, PseudoTLAB* tlab); 
+	
+	int nbr_threads();
+	uint64_t get_while_time();
+	void reset_used();
+	void add_tlab(PseudoTLAB* t);
 
     int size_of_buffer(int size){ 
 		if(size <= 32)
@@ -144,9 +153,11 @@ private:
 	int tid;
 	int thread_offset ;
 	batch_t* batch_tab[NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES];
-	uint64_t used_local;
 
 public:
+	uint64_t used_local;
+	uint64_t cumulative_time;
+	PseudoTLAB* next;
 	int nb_get_batch;
 	int nb_loops;
 

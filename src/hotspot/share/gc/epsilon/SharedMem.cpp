@@ -3,6 +3,7 @@
 //
 #include "gc/epsilon/SharedMem.hpp"
 #include "gc/epsilon/RemoteSpace.hpp"
+#include <time.h>
 
 void SharedMem::initialize( void* addr_, RemoteSpace* rs_){
 	start_addr = addr_;
@@ -15,6 +16,9 @@ void SharedMem::initialize( void* addr_, RemoteSpace* rs_){
 	start_of_batches = (batch_t*) ((uint64_t)entry_tab + ENTRIES_SIZE);
 	
 	thread_counter.store(0);
+	
+	tlab_list = nullptr;
+	init_ticket_lock(&tlab_list_lock);
 
 	rs = rs_;
 }
@@ -51,6 +55,7 @@ uint64_t SharedMem::stack_pop(batch_stack *list){
 
 
 batch_t* SharedMem::get_new_batch(int index, int thread_offset, PseudoTLAB* tlab){
+    //struct timespec start, end;
 	uint64_t offset = 0;
 	//int base_index = index*LINEAR_ENTRIES_WIDTH;
 	int base_index = index << 2;
@@ -62,6 +67,7 @@ batch_t* SharedMem::get_new_batch(int index, int thread_offset, PseudoTLAB* tlab
 	//entry_tab[base_index+2].count.store(1);
 	//entry_tab[base_index+3].count.store(1);
 	//entry_tab[base_index+4].count.store(1);
+    //clock_gettime(CLOCK_MONOTONIC, &start);
 	do{
 		//faire un test en lecture avant d'écrire
 	//	tlab->nb_loops++;
@@ -72,17 +78,21 @@ batch_t* SharedMem::get_new_batch(int index, int thread_offset, PseudoTLAB* tlab
 		count = (count + 1) & 3;// cette ligne semble diviser par 3 les perfs
 		asm volatile("pause");
 	}while(offset==0);
+    //clock_gettime(CLOCK_MONOTONIC, &end);
+	//tlab->cumulative_time += (end.tv_sec - start.tv_sec)* 1e9 + end.tv_nsec - start.tv_nsec;
 	//if(tlab->nb_get_batch % 1000 == 0)
 	//	printf("size: %lu, getbatch: %d, loop: %d \n", word_size, tlab->nb_get_batch, tlab->nb_loops);
 	return abs_addr(offset);
 }
 
 batch_t* SharedMem::get_new_batch_exp(int index, PseudoTLAB* tlab){
+    //struct timespec start, end;
 	uint64_t offset = 0;
 	int base_index = index ; //+ 32; //32 = 40 -8
 	//entry_tab[word_size].state = USED;
 	//tlab->nb_get_batch++;
 	entry_tab[base_index].count.store(1);
+    //clock_gettime(CLOCK_MONOTONIC, &start);
 	do{
 		//faire un test en lecture avant d'écrire
 	//	tlab->nb_loops++;
@@ -90,17 +100,63 @@ batch_t* SharedMem::get_new_batch_exp(int index, PseudoTLAB* tlab){
 			offset = entry_tab[base_index].batch.exchange(0);
 		asm volatile("pause");
 	}while(offset==0);
+    //clock_gettime(CLOCK_MONOTONIC, &end);
+	//tlab->cumulative_time += (end.tv_sec - start.tv_sec)*1e9 + end.tv_nsec - start.tv_nsec;
 	//if(tlab->nb_get_batch % 1000 == 0)
 	//	printf("size: %lu, getbatch: %d, loop: %d \n", word_size, tlab->nb_get_batch, tlab->nb_loops);
 	return abs_addr(offset);
 }
 
+int SharedMem::nbr_threads(){
+	int i = 0;
+	PseudoTLAB* curr = tlab_list;
+	spin_lock(&tlab_list_lock);
+	while(curr!=nullptr){
+		i++;
+		curr = curr->next;
+	}
+	spin_unlock(&tlab_list_lock);
+	return i;
+}
+uint64_t SharedMem::get_while_time(){
+	uint64_t time_total=0;
+	spin_lock(&tlab_list_lock);
+	PseudoTLAB* curr = tlab_list;
+	while(curr!=nullptr){
+		time_total += curr->cumulative_time;
+		curr = curr->next;
+	}
+	spin_unlock(&tlab_list_lock);
+
+	return time_total;
+}
+
+void SharedMem::reset_used(){
+	spin_lock(&tlab_list_lock);
+	PseudoTLAB* curr = tlab_list;
+	while(curr!=nullptr){
+		curr->used_local = 0;
+		curr = curr->next;
+	}
+	spin_unlock(&tlab_list_lock);
+}
+
+void SharedMem::add_tlab(PseudoTLAB* t){
+	spin_lock(&tlab_list_lock);
+	t->next = tlab_list;
+	tlab_list = t;
+	spin_unlock(&tlab_list_lock);
+}
+
 void PseudoTLAB::initialize(SharedMem* shm_){
 	shm = shm_;
 	tid = shm->thread_counter.fetch_add(1);
+	shm->add_tlab(this);
 	thread_offset = tid%LINEAR_ENTRIES_WIDTH;
 	used_local=0;
 	memset(batch_tab, 0, (NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES)*sizeof(batch_t*));
+	cumulative_time=0;
+	
 }
 
 HeapWord* PseudoTLAB::allocate(size_t word_size){
@@ -111,7 +167,7 @@ HeapWord* PseudoTLAB::allocate(size_t word_size){
 		if(index<=7)
 			batch_tab[index] = shm->get_new_batch(index, thread_offset, this); //get new batch
 		else
-			batch_tab[index] = shm->get_new_batch_exp(index + 24, this); //get new batch
+			batch_tab[index] = shm->get_new_batch_exp(index + START_OF_EXP, this); //get new batch
 		batch_tab[index]->bump = 0;
 	} else if(batch_tab[index]->bump >= batch_tab[index]->end){ // if batch is finished
 		batch_t* temp = batch_tab[index];
@@ -120,9 +176,10 @@ HeapWord* PseudoTLAB::allocate(size_t word_size){
 		if(index<=7)
 			batch_tab[index] = shm->get_new_batch(index, thread_offset, this); //get new batch
 		else
-			batch_tab[index] = shm->get_new_batch_exp(index + 24, this); //get new batch
+			batch_tab[index] = shm->get_new_batch_exp(index + START_OF_EXP, this); //get new batch
 		batch_tab[index]->bump = 0;
 		shm->rs->slow_path_post_alloc(used_local);
+		used_local = 0;
 	}
 
 	ret = (HeapWord*) batch_tab[index]->array[batch_tab[index]->bump]; // allocate from inside the batch

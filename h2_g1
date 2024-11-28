@@ -1,0 +1,23 @@
+ Performance counter stats for 'systemd-run --scope -p MemoryLimit=2G ./build/linux-x86_64-normal-server-release/jdk/bin/java -XX:AllocateHeapAt=/dev/fakeblk -Xlog:gc=debug -XX:-OptimizeString
+Concat -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -Xnoclassgc -XX:-ClassUnloading -Xms16g -Xmx16g -jar ../dacapo-23.11-chopin.jar h2':                                                       
+                                                                                                                                                                                                
+      3,111,247.26 msec task-clock                       #    9.816 CPUs utilized                                                                                                               
+           516,952      context-switches                 #  166.156 /sec                                                                                                                        
+             7,505      cpu-migrations                   #    2.412 /sec                                                                                                                        
+        17,525,504      page-faults                      #    5.633 K/sec                                                                                                                       
+ 4,822,703,734,769      cycles                           #    1.550 GHz                         (40.02%)
+   281,454,865,093      stalled-cycles-frontend          #    5.84% frontend cycles idle        (40.03%)
+ 3,863,048,772,073      stalled-cycles-backend           #   80.10% backend cycles idle         (40.03%)
+   877,327,837,502      instructions                     #    0.18  insn per cycle                                                                                                              
+                                                  #    4.40  stalled cycles per insn     (40.02%)                                                                                               
+   263,850,857,963      branches                         #   84.805 M/sec                       (39.97%)
+     3,411,652,619      branch-misses                    #    1.29% of all branches             (39.98%)
+   296,353,728,002      L1-dcache-loads                  #   95.252 M/sec                       (39.97%)
+     4,855,770,212      L1-dcache-load-misses            #    1.64% of all L1-dcache accesses   (39.97%)
+    13,140,686,222      LLC-loads                        #    4.224 M/sec                       (40.01%)
+     3,303,924,345      LLC-load-misses                  #   25.14% of all LL-cache accesses    (40.01%)
+
+     316.969676596 seconds time elapsed
+
+     465.865682000 seconds user
+    2631.517313000 seconds sys

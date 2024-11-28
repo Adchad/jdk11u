@@ -23,14 +23,19 @@
 #include "classfile/javaClasses.hpp"
 #include <fcntl.h>
 #include <immintrin.h>
-
+#include <time.h>
+#include <pthread.h>  
+#include <aio.h>
 #include <unistd.h>
+#include <thread>
+#include <chrono>
+#include <sys/mman.h>
 
 int sockfd_remote = -1;
 
 std::mutex lock_remote;
 std::mutex lock_collect;
-std::mutex lock_collect2;
+//std::mutex lock_collect2;
 std::mutex lock_allocbuffer;
 std::mutex lock_gc_helper;
 std::mutex lock_alloc_print;
@@ -38,13 +43,15 @@ std::atomic<bool> collecting;
 std::atomic<size_t> softmax;
 //AllocationBuffer* alloc_buffer;
 std::atomic<uint64_t> free_space;
+void* start_addr;
 uint64_t cap;
 std::atomic<uint64_t> used_;
 int fd_for_heap;
 int shm_fd;
 void* epsilon_sh_mem;
-
-std::atomic<int> test_collect;  //TODO remove this
+SharedMem* RemoteSpace::shm;
+void* fsync_constantly(void* arg);
+//std::atomic<int> test_collect;  //TODO remove this
 
 
 
@@ -91,6 +98,7 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 #endif
     struct msg_initialize msg;
     HeapWord* mr_start = mr.start();
+	start_addr = (void*) mr_start;
 	printf("Start: %p\n",  mr_start);
 	if(UseCompressedClassPointers)
 		printf("Used compressed class pointers");
@@ -131,6 +139,21 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	shm = (SharedMem*) malloc(sizeof(SharedMem));
 	shm->initialize(epsilon_sh_mem, this);
 	
+	int ret = madvise(start_addr, cap,  MADV_NOHUGEPAGE );
+
+	printf("madvise ret: %d\n",ret);
+
+	//pthread_t fsync_thread;
+	//pthread_create(&fsync_thread, NULL,fsync_constantly, NULL);
+	
+}
+
+void* fsync_constantly(void* arg){
+	while(true){
+		msync(start_addr, cap, MS_ASYNC);
+		sleep(1);
+		//sleep();
+	}	
 }
 
 void RemoteSpace::post_initialize(){
@@ -184,40 +207,40 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 
 
     if(allocated != nullptr){
-#if GCHELPER
-		if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
-		//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
-		//if(klass->is_instance_klass() && ( ((InstanceKlass*)klass)->is_reference_instance_klass() )){
-			gchelper.add_root(allocated);
-		}
-		//else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
-	//	////else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL ){
-		//	lock_gc_helper.lock();
-		//	gchelper.add_root(allocated);
-		//	lock_gc_helper.unlock(); 
-		//}
-#endif
+//#if GCHELPER
+//		if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() || ((InstanceKlass*)klass)->is_class_loader_instance_klass() )){
+//		//if(klass->is_instance_klass() &&( ((InstanceKlass*)klass)->is_reference_instance_klass() || ((InstanceKlass*)klass)->is_mirror_instance_klass() )){
+//		//if(klass->is_instance_klass() && ( ((InstanceKlass*)klass)->is_reference_instance_klass() )){
+//			gchelper.add_root(allocated);
+//		}
+//		//else if(klass->is_objArray_klass() && (strstr(klass->external_name(), "reflect.Method") != NULL || strstr(klass->external_name(), "reflect.Constructor") != NULL) ){
+//	//	////else if(klass->is_objArray_klass() && strstr(klass->external_name(), "reflect") != NULL ){
+//		//	lock_gc_helper.lock();
+//		//	gchelper.add_root(allocated);
+//		//	lock_gc_helper.unlock(); 
+//		//}
+//#endif
 
 		//lock_alloc_print.lock();
 		//dprintf(alloc_fd,"%p, %s, collection: %d\n", allocated, klass->external_name(), test_collect.load());
 		//lock_alloc_print.unlock();
 
 
-		used_.fetch_add(word_size*8 + HEADER_OFFSET);
-        uint64_t iptr = (uint64_t)allocated;
-		uint32_t short_klass = Klass::encode_klass_not_null(klass);
+		used_.fetch_add(word_size*8);// + HEADER_OFFSET);
+        //uint64_t iptr = (uint64_t)allocated;
+		//uint32_t short_klass = Klass::encode_klass_not_null(klass);
 
-	//	printf("Klass: %u, name: %s\n", short_klass, allocated,klass->external_name());
-		//printf("Klass: %u, addr: %p, size: %lu, name: %s\n", short_klass,allocated, word_size,klass->external_name());
+	//	//printf("Klass: %u, name: %s\n", short_klass, allocated,klass->external_name());
+		////printf("Klass: %u, addr: %p, size: %lu, name: %s\n", short_klass,allocated, word_size,klass->external_name());
 
-		if(klass->is_objArray_klass()){
-			*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass + 1;
-		}else if(klass->is_typeArray_klass()){
-			*((uint32_t*)(iptr - KLASS_OFFSET)) = 42;
-		}else if(klass->is_instance_klass()){
-			*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass;
-		}
-        *((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size +1;
+		//if(klass->is_objArray_klass()){
+		//	*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass + 1;
+		//}else if(klass->is_typeArray_klass()){
+		//	*((uint32_t*)(iptr - KLASS_OFFSET)) = 42;
+		//}else if(klass->is_instance_klass()){
+		//	*((uint32_t*)(iptr - KLASS_OFFSET)) = short_klass;
+		//}
+        //*((uint32_t*)(iptr - SIZE_OFFSET)) = (uint32_t) word_size ;// +1;
 
 		//return allocated;
     }
@@ -256,7 +279,7 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 	//lock_alloc_print.unlock();
 
 
-	used_.fetch_add(word_size*8);
+	//used_.fetch_add(word_size*8);
     //uint64_t iptr = (uint64_t)allocated;
 	//uint32_t short_klass = static_cast<uint32_t>((uint64_t)klass);
 
@@ -268,16 +291,17 @@ void RemoteSpace::concurrent_post_allocate(HeapWord*allocated, size_t word_size,
 	//	*((uint32_t*)(iptr - KLASS_OFFSET)) = 42;
 	//}
 
-	//*((uint32_t*)((uint64_t)allocated - KLASS_OFFSET)) = (klass->is_typeArray_klass()) ? 42 : ( Klass::encode_klass_not_null(klass) + klass->is_objArray_klass() ) ;
+//	*((uint32_t*)((uint64_t)allocated - KLASS_OFFSET)) = (klass->is_typeArray_klass()) ? 42 : ( Klass::encode_klass_not_null(klass) + klass->is_objArray_klass() ) ;
 
 	//else{printf("Caca Boudin\n");}
     //*((uint32_t*)((uint64_t)allocated - SIZE_OFFSET)) = (uint32_t) word_size;
+    *(uint32_t*)((uint64_t)allocated) = (uint32_t) word_size;
 }
 
 void RemoteSpace::slow_path_post_alloc(uint64_t used_local){
 	used_.fetch_add(used_local*8);
 
-	if(used_glob() >= (softmax.load()*COLLECTION_THRESHOLD)/100 && test_collect.load() < MAX_COLLECTIONS){
+	if(used_glob() >= (softmax.load()*COLLECTION_THRESHOLD)/100  ){
 		bool collected = false;
 		if(collecting.compare_exchange_strong(collected, true)){
 			collected = false;
@@ -341,8 +365,13 @@ void RemoteSpace::print_on(outputStream* st) const{return;}
 
 void RemoteSpace::stw_pre_collect() {
 
+	//printf("Total time in while (ns): %lu, nbr threads: %d\n",RemoteSpace::shm->get_while_time(), RemoteSpace::shm->nbr_threads());
+	//exit(0);
+
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
 	lock_collect.lock();
-	test_collect.fetch_add(1);
+	//test_collect.fetch_add(1);
 	printf("[téléGC] Start of collection: Used: %luM (%lu%%)\n",  used_glob()/(1024*1024), (used_glob()*100)/cap );
 	if(!rp_init){
 		rp_init = true;
@@ -370,8 +399,10 @@ void RemoteSpace::stw_pre_collect() {
 	getandsend_helper();
 #endif
 
-	_mm_mfence();
-	int ret = fsync(fd_for_heap);
+
+//	_mm_mfence();
+	//int ret = fdatasync(fd_for_heap);
+	msync(start_addr, cap, MS_SYNC);
 	//printf("Ret: %d\n", ret);
 	ioctl(fd_for_heap, 0, 1); //VERY IMPORTANT THAT THE IOCTL IS AFTER THE FSYNC
 	int done = 1;
@@ -390,6 +421,9 @@ void RemoteSpace::stw_pre_collect() {
 	//}	
 	lock_remote.unlock();
 
+	clock_gettime(CLOCK_MONOTONIC, &end);
+	printf("Collection setup took: %lus\n",  end.tv_sec - start.tv_sec);
+
 }
 
 void start_collect_sig(int sig) {
@@ -397,13 +431,15 @@ void start_collect_sig(int sig) {
 }
 
 void end_collect_sig(int sig) {
-	lock_collect2.lock();
+	//lock_collect2.lock();
 	free_space.store(0); //TODO uncomment this
 	used_.store(0); //TODO uncomment this
+	RemoteSpace::shm->reset_used();
+
 	//read(sockfd_collect, &free_space, sizeof(uint64_t));
-	lock_allocbuffer.lock();
+	//lock_allocbuffer.lock();
 	//alloc_buffer->free_all();
-	lock_allocbuffer.unlock();
+	//lock_allocbuffer.unlock();
 	ioctl(fd_for_heap, 0, 0);
 	opcode msg;
 	msg.type = 'f';
@@ -422,9 +458,10 @@ void end_collect_sig(int sig) {
 	printf("[téléGC] Collection: Used after: %luM (%lu%%)\n",  used_glob()/(1024*1024), (used_glob()*100)/cap );
 
 	softmax.store(minou(used_glob()*3, cap));
+	//softmax.store(maxou(minou(used_glob()*3, cap), (cap*SOFTMAX_PER)/100 ));
 
 	collecting.store(false);
-	lock_collect2.unlock();
+	//lock_collect2.unlock();
 	lock_collect.unlock();
 }
 
@@ -456,7 +493,7 @@ void* setup_shm(){
  	    exit(-1);
  	/* Map the object into the caller's address space. */
 
- 	ret_addr = mmap(NULL, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+ 	ret_addr = mmap(NULL, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, shm_fd, 0);
  	if (ret_addr == MAP_FAILED)
 		exit(-1);
 

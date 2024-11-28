@@ -26,10 +26,13 @@
 #define SHARE_VM_GC_EPSILON_BARRIERSET_HPP
 
 #include "gc/shared/barrierSet.hpp"
+#include "gc/epsilon/epsilonBarrierSetAssembler.hpp"
 
 
 // No interaction with application is required for Epsilon, and therefore
 // the barrier set is empty.
+class EpsilonBarrierSetAssembler;
+
 class EpsilonBarrierSet: public BarrierSet {
   friend class VMStructs;
 
