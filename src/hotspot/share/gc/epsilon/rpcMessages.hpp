@@ -34,7 +34,7 @@
 #define ALLOC_BUFFER 0
 #define MAX_COLLECTIONS 100
 #define COLLECTION_THRESHOLD 80
-#define SOFTMAX_PER 40
+#define SOFTMAX_PER 20
 #define SOFTMIN_PER 20
 
 #define ARENA_SIZE_IN_BYTES (32 * PAGE_SIZE) // size of the arena memory block                                                                                                                                    

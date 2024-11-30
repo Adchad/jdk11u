@@ -107,6 +107,7 @@ public:
 	uint64_t get_while_time();
 	void reset_used();
 	void add_tlab(PseudoTLAB* t);
+	void remove_tlab(PseudoTLAB* t);
 
     int size_of_buffer(int size){ 
 		if(size <= 32)

@@ -152,12 +152,6 @@ void SharedMem::remove_tlab(PseudoTLAB* t){
 	PseudoTLAB* prev = nullptr;
 	spin_lock(&tlab_list_lock);
 	PseudoTLAB* curr = tlab_list;
-	if(curr == t){
-		tlab_list = curr->next;
-		spin_unlock(&tlab_list_lock);
-		return;
-	}
-
 	while(curr != nullptr){
 		if(curr == t ){
 			prev->next = curr->next;
@@ -220,7 +214,6 @@ void PseudoTLAB::free(){
 			shm->stack_push(shm->prefree_list, (uint64_t)curr  - (uint64_t)shm->start_addr); //push finished batch to prefree list
 		}
 	}
-	shm->remove_tlab(this);
 }
 
 int PseudoTLAB::index_from_size(int size){                                                                                                                                                   

@@ -434,13 +434,13 @@ void end_collect_sig(int sig) {
 	//lock_collect2.lock();
 	free_space.store(0); //TODO uncomment this
 	used_.store(0); //TODO uncomment this
-	RemoteSpace::shm->reset_used();
+	//RemoteSpace::shm->reset_used();
 
 	//read(sockfd_collect, &free_space, sizeof(uint64_t));
 	//lock_allocbuffer.lock();
 	//alloc_buffer->free_all();
 	//lock_allocbuffer.unlock();
-	ioctl(fd_for_heap, 0, 0);
+	ioctl(fd_for_heap, 0, 2);
 	opcode msg;
 	msg.type = 'f';
 	lock_remote.lock();
@@ -457,7 +457,7 @@ void end_collect_sig(int sig) {
 	//printf("\n");
 	printf("[téléGC] Collection: Used after: %luM (%lu%%)\n",  used_glob()/(1024*1024), (used_glob()*100)/cap );
 
-	softmax.store(minou(used_glob()*3, cap));
+	softmax.store(minou(used_glob()*4, cap));
 	//softmax.store(maxou(minou(used_glob()*3, cap), (cap*SOFTMAX_PER)/100 ));
 
 	collecting.store(false);
