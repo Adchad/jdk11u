@@ -55,4 +55,19 @@ void EpsilonBarrierSetAssembler::tlab_allocate(MacroAssembler* masm,
   }
   __ verify_tlab();
 
+  //TODO c'est le code pour faire l'alloc en assembleur
+  /*__ cmp(var_size_in_bytes, 65536);
+  __ jcc(Assembler::above, slow_case);
+  __ subq(var_size_in_bytes, 1);
+  __ bsrq(t1, var_size_in_bytes);
+  __ cmpq(var_size_in_bytes, 8);
+  __ leaq(t2, Address(t1, 5));
+  __ sbbq(t1, t1);
+  __ xorq(t2, t1);
+  __ andq(t1, var_size_in_bytes);
+  __ xorq(t1, t2);*/
+
+
+  
+
 }

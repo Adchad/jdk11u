@@ -426,7 +426,7 @@ void RemoteSpace::stw_pre_collect() {
 	SharedMem::spin_unlock(&ticket);
 
 	clock_gettime(CLOCK_MONOTONIC, &end);
-	printf("Collection setup took: %lus\n",  end.tv_sec - start.tv_sec);
+	printf("Collection setup took: %lums\n",  (end.tv_sec - start.tv_sec)*10e3 + (end.tv_nsec - start.tv_nsec)/10e6);
 
 }
 
