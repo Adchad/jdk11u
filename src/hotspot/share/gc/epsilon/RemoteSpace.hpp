@@ -59,6 +59,7 @@ extern std::atomic<uint64_t> used_;
 extern int shm_fd;
 extern int fd_for_heap;
 extern void* epsilon_sh_mem;
+extern struct ticket_lock ticket;
 
 //extern std::atomic<int> test_collect; //TODO remove this
 

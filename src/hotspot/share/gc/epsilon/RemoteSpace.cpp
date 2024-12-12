@@ -43,6 +43,8 @@ std::atomic<bool> collecting;
 std::atomic<size_t> softmax;
 //AllocationBuffer* alloc_buffer;
 std::atomic<uint64_t> free_space;
+struct ticket_lock ticket;
+
 void* start_addr;
 uint64_t cap;
 std::atomic<uint64_t> used_;
@@ -140,9 +142,11 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	shm->initialize(epsilon_sh_mem, this);
 	
 	int ret = madvise(start_addr, cap,  MADV_NOHUGEPAGE );
+	madvise(start_addr, cap,  MADV_RANDOM );
 
 	printf("madvise ret: %d\n",ret);
-
+	
+	SharedMem::init_ticket_lock(&ticket);
 	//pthread_t fsync_thread;
 	//pthread_create(&fsync_thread, NULL,fsync_constantly, NULL);
 	
@@ -171,12 +175,12 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
 	msg->msg_type.type = 'a';
     msg->word_size =  word_size;
 
-    lock_remote.lock();
+    SharedMem::spin_lock(&ticket);
     write(sockfd_remote, msg, sizeof(struct msg_par_allocate));
 
     HeapWord** result = (HeapWord**) malloc(sizeof(HeapWord*));
     read(sockfd_remote, result, sizeof(HeapWord*));
-    lock_remote.unlock();
+    SharedMem::spin_unlock(&ticket);
     std::free(msg);
     HeapWord * allocated = *result;
     //if(allocated == nullptr){
@@ -192,8 +196,8 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 	//printf("Test alloc wait lock");
 	//printf("Tentative d'alloc\n");
 
-	lock_collect.lock();
-	lock_remote.lock();
+	//lock_collect.lock();
+	SharedMem::spin_lock(&ticket);
 	struct msg_par_allocate_klass msg ;
 	msg.msg_type.type = 'k';
     msg.word_size = static_cast<uint32_t>(word_size);
@@ -201,7 +205,7 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 	write(sockfd_remote, &msg, sizeof(struct msg_par_allocate_klass));
     struct msg_alloc_response result ;
     read(sockfd_remote, &result, sizeof(msg_alloc_response));
-	lock_remote.unlock();
+	SharedMem::spin_unlock(&ticket);
 
 	allocated = result.ptr;
 
@@ -245,8 +249,8 @@ HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
 		//return allocated;
     }
 
-	//lock_remote.unlock();
-	lock_collect.unlock();
+	//SharedMem::spin_unlock(&ticket);
+	//lock_collect.unlock();
 
 	//printf("Alloc: %p\n", allocated);
     return allocated;
@@ -370,7 +374,7 @@ void RemoteSpace::stw_pre_collect() {
 
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC, &start);
-	lock_collect.lock();
+	//lock_collect.lock();
 	//test_collect.fetch_add(1);
 	printf("[téléGC] Start of collection: Used: %luM (%lu%%)\n",  used_glob()/(1024*1024), (used_glob()*100)/cap );
 	if(!rp_init){
@@ -391,7 +395,7 @@ void RemoteSpace::stw_pre_collect() {
 	msg.static_base = (uint32_t) InstanceMirrorKlass::offset_of_static_fields();
 	msg.static_length = java_lang_Class::static_oop_field_count_offset();
 
-	lock_remote.lock();
+	SharedMem::spin_lock(&ticket);
 
 	write(sockfd_remote, &msg, sizeof(struct msg_collect));  // on envoie la base et le shift pour la conversion narrowoop en oop
 	getandsend_roots();
@@ -419,18 +423,27 @@ void RemoteSpace::stw_pre_collect() {
 	//	}
 	//	read(sockfd_remote, &msg2, sizeof(deadbeef_req_t));
 	//}	
-	lock_remote.unlock();
+	SharedMem::spin_unlock(&ticket);
 
 	clock_gettime(CLOCK_MONOTONIC, &end);
 	printf("Collection setup took: %lus\n",  end.tv_sec - start.tv_sec);
 
 }
 
+
 void start_collect_sig(int sig) {
 	EpsilonHeap::heap()->vm_collect_impl();
 }
 
+void* flush_wb(void* arg){
+	ioctl(fd_for_heap, 0, 2);
+	collecting.store(false);
+	return NULL;
+}
+
+
 void end_collect_sig(int sig) {
+	pthread_t flush_thread;
 	//lock_collect2.lock();
 	free_space.store(0); //TODO uncomment this
 	used_.store(0); //TODO uncomment this
@@ -440,14 +453,15 @@ void end_collect_sig(int sig) {
 	//lock_allocbuffer.lock();
 	//alloc_buffer->free_all();
 	//lock_allocbuffer.unlock();
-	ioctl(fd_for_heap, 0, 2);
+	//ioctl(fd_for_heap, 0, 2);
+	pthread_create(&flush_thread, NULL, flush_wb, NULL);
 	opcode msg;
 	msg.type = 'f';
-	lock_remote.lock();
+	SharedMem::spin_lock(&ticket);
 	write(sockfd_remote, &msg, sizeof(uint64_t));   //TODO uncomment this
 	read(sockfd_remote, &free_space, sizeof(uint64_t)); //TODO uncomment this
 	//printf("Swept: %lu\n", free_space);
-	lock_remote.unlock();
+	SharedMem::spin_unlock(&ticket);
 
 	CodeCache::gc_epilogue();
 	JvmtiExport::gc_epilogue();
@@ -457,12 +471,12 @@ void end_collect_sig(int sig) {
 	//printf("\n");
 	printf("[téléGC] Collection: Used after: %luM (%lu%%)\n",  used_glob()/(1024*1024), (used_glob()*100)/cap );
 
-	softmax.store(minou(used_glob()*4, cap));
+	softmax.store(minou(used_glob()*2, cap));
 	//softmax.store(maxou(minou(used_glob()*3, cap), (cap*SOFTMAX_PER)/100 ));
 
-	collecting.store(false);
+	//collecting.store(false);
 	//lock_collect2.unlock();
-	lock_collect.unlock();
+	//lock_collect.unlock();
 }
 
 

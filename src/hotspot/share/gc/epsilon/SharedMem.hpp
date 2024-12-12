@@ -125,12 +125,12 @@ public:
 		return 1;
 	}
 
-    void init_ticket_lock(struct ticket_lock* t){ 
+    static void init_ticket_lock(struct ticket_lock* t){ 
         t->ticket.store(0);                       
         t->screen.store(0);                       
     }                                             
                                                   
-    void spin_lock(struct ticket_lock* lock){     
+    static void spin_lock(struct ticket_lock* lock){     
         //ecrire un ticket lock                   
         int my = lock->ticket.fetch_add(1) ;      
         while(lock->screen.load() < my){          
@@ -138,7 +138,7 @@ public:
         }                                         
     }                                             
                                                   
-    void spin_unlock(struct ticket_lock* lock){   
+    static void spin_unlock(struct ticket_lock* lock){   
         lock->screen.fetch_add(1);                
     }
 
