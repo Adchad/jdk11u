@@ -22,6 +22,8 @@ void EpsilonBarrierSetAssembler::tlab_allocate(MacroAssembler* masm,
                                         Register t1,
                                         Register t2,
                                         Label& slow_case) {
+ /* 
+
   assert_different_registers(obj, t1, t2);
   assert_different_registers(obj, var_size_in_bytes, t1);
   Register end = t2;
@@ -54,19 +56,48 @@ void EpsilonBarrierSetAssembler::tlab_allocate(MacroAssembler* masm,
     __ subptr(var_size_in_bytes, obj);
   }
   __ verify_tlab();
+  
 
   //TODO c'est le code pour faire l'alloc en assembleur
-  /*__ cmp(var_size_in_bytes, 65536);
+  //__ print_state();
+  
+  __ cmpq(var_size_in_bytes, 65536);
   __ jcc(Assembler::above, slow_case);
   __ subq(var_size_in_bytes, 1);
   __ bsrq(t1, var_size_in_bytes);
+  __ leaq(t2, Address(0, t1, Address::times_1, 29));
+  __ leaq(t2, Address(0, var_size_in_bytes, Address::times_4));
+  __ xorq(t1, t2);
   __ cmpq(var_size_in_bytes, 8);
-  __ leaq(t2, Address(t1, 5));
-  __ sbbq(t1, t1);
-  __ xorq(t2, t1);
-  __ andq(t1, var_size_in_bytes);
-  __ xorq(t1, t2);*/
+  __ sbbq(obj, obj);
+  __ andq(t1, obj);
+  __ xorq(t1, t2);
+ 
+ // __ print_state();
+  __ movq(t2, Address(thread, Thread::pseudo_tlab_offset()));
+  __ cmpq(t2, 0);
+  __ jcc(Assembler::equal, slow_case);
+  __ movq(obj, t1);
+  __ shlq(t1,12);
+  __ addq(t2, t1);
+  __ movq(obj,Address(t2,0));
+  __ cmpq(Address(0,t2, Address::times_4,4), obj);
+  __ jcc(Assembler::below, slow_case);
+  //__ movq(Address(Address(t2,8), t2), obj );
+  __ shlq(t2, 9);
+  __ addl(obj, 1);
+  __ movl(Address(t2,0),obj);
+  __ movq(t1, Address(t2,obj,Address::times_8, 8));
+  __ movq(obj, Address(t1,0));
 
+ 
+  //__ stop("Je test");
+ */
+
+
+
+
+ __ jmp(slow_case);
 
   
 

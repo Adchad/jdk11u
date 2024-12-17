@@ -22,14 +22,14 @@ enum entry_state {
 
 
 typedef struct batch{
-	uint64_t array[BUFFER_SIZE];
-	uint64_t next1;
-	uint64_t next2;
-    uint64_t prev2; 
-    uint32_t thread_no;
     uint32_t bump;
 	uint32_t end;
 	uint32_t size;
+    uint32_t thread_no;
+	uint64_t next1;
+	uint64_t next2;
+    uint64_t prev2; 
+	uint64_t array[BUFFER_SIZE];
 } batch_t;
 
 struct entry{
@@ -150,10 +150,10 @@ public:
 
 class PseudoTLAB {
 private:
+	batch_t* batch_tab[NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES];
 	SharedMem* shm;
 	int tid;
 	int thread_offset ;
-	batch_t* batch_tab[NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES];
 
 public:
 	uint64_t used_local;

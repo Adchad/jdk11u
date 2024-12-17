@@ -142,7 +142,7 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	shm->initialize(epsilon_sh_mem, this);
 	
 	int ret = madvise(start_addr, cap,  MADV_NOHUGEPAGE );
-	madvise(start_addr, cap,  MADV_RANDOM );
+	madvise(start_addr, cap,  MADV_RANDOM ); //TODO C'est la ligne la plus importante de ma thèse
 
 	printf("madvise ret: %d\n",ret);
 	
@@ -426,7 +426,7 @@ void RemoteSpace::stw_pre_collect() {
 	SharedMem::spin_unlock(&ticket);
 
 	clock_gettime(CLOCK_MONOTONIC, &end);
-	printf("Collection setup took: %lums\n",  (end.tv_sec - start.tv_sec)*10e3 + (end.tv_nsec - start.tv_nsec)/10e6);
+	printf("Collection setup took: %lums\n", (uint64_t)( (end.tv_sec - start.tv_sec)*1e3 + (end.tv_nsec - start.tv_nsec)/1e6));
 
 }
 

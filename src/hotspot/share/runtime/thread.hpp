@@ -352,6 +352,8 @@ class Thread: public ThreadShadow {
 public:
 	void* pseudo_tlab_;
 public:
+	static ByteSize pseudo_tlab_offset()        { return byte_offset_of(Thread, pseudo_tlab_); }
+
 	void* pseudo_tlab(){
 		return pseudo_tlab_;
 	}
