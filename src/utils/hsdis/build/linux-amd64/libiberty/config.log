@@ -1706,7 +1706,7 @@ configure:6389: $? = 0
 configure:6389: result: yes
 configure:6389: checking for tmpnam
 configure:6389: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/ccTf1JjN.o: in function `main':
+/usr/bin/ld: /tmp/ccCxmpCO.o: in function `main':
 conftest.c:(.text+0xa): warning: the use of `tmpnam' is dangerous, better use `mkstemp'
 configure:6389: $? = 0
 configure:6389: result: yes
@@ -1760,7 +1760,7 @@ configure:6389: $? = 0
 configure:6389: result: yes
 configure:6389: checking for setproctitle
 configure:6389: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/cciPz0N0.o: in function `main':
+/usr/bin/ld: /tmp/ccj6DQi3.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `setproctitle'
 collect2: error: ld returned 1 exit status
 configure:6389: $? = 1
@@ -2194,7 +2194,7 @@ configure:6571: checking for working vfork
 configure:6681: result: yes
 configure:6740: checking for _doprnt
 configure:6740: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/ccGcBHU8.o: in function `main':
+/usr/bin/ld: /tmp/cc1aJ5fe.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `_doprnt'
 collect2: error: ld returned 1 exit status
 configure:6740: $? = 1
@@ -2351,13 +2351,13 @@ configure: failed program was:
 configure:6740: result: no
 configure:6752: checking for sys_errlist
 configure:6771: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/ccKDupje.o: in function `main':
+/usr/bin/ld: /tmp/ccB6D1Gj.o: in function `main':
 conftest.c:(.text+0xa): warning: `sys_errlist' is deprecated; use `strerror' or `strerror_r' instead
 configure:6771: $? = 0
 configure:6781: result: yes
 configure:6752: checking for sys_nerr
 configure:6771: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/ccNgP0nz.o: in function `main':
+/usr/bin/ld: /tmp/ccHj5ovD.o: in function `main':
 conftest.c:(.text+0xa): warning: `sys_nerr' is deprecated; use `strerror' or `strerror_r' instead
 configure:6771: $? = 0
 configure:6781: result: yes
@@ -2518,7 +2518,7 @@ configure:6824: $? = 0
 configure:6824: result: yes
 configure:6824: checking for getsysinfo
 configure:6824: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/ccw1PHQk.o: in function `main':
+/usr/bin/ld: /tmp/cci4To0o.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `getsysinfo'
 collect2: error: ld returned 1 exit status
 configure:6824: $? = 1
@@ -2693,7 +2693,7 @@ configure:6824: $? = 0
 configure:6824: result: yes
 configure:6824: checking for pstat_getdynamic
 configure:6824: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/ccLzxwie.o: in function `main':
+/usr/bin/ld: /tmp/ccUQQvUh.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `pstat_getdynamic'
 collect2: error: ld returned 1 exit status
 configure:6824: $? = 1
@@ -2861,7 +2861,7 @@ configure: failed program was:
 configure:6824: result: no
 configure:6824: checking for pstat_getstatic
 configure:6824: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/ccGVKRTB.o: in function `main':
+/usr/bin/ld: /tmp/ccuz0H4G.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `pstat_getstatic'
 collect2: error: ld returned 1 exit status
 configure:6824: $? = 1
@@ -3041,7 +3041,7 @@ configure:6824: $? = 0
 configure:6824: result: yes
 configure:6824: checking for spawnve
 configure:6824: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/ccAbJkcg.o: in function `main':
+/usr/bin/ld: /tmp/ccl6j0Lk.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `spawnve'
 collect2: error: ld returned 1 exit status
 configure:6824: $? = 1
@@ -3212,7 +3212,7 @@ configure: failed program was:
 configure:6824: result: no
 configure:6824: checking for spawnvpe
 configure:6824: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/ccbfGP5C.o: in function `main':
+/usr/bin/ld: /tmp/ccAejSsF.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `spawnvpe'
 collect2: error: ld returned 1 exit status
 configure:6824: $? = 1
@@ -3399,7 +3399,7 @@ configure:6824: $? = 0
 configure:6824: result: yes
 configure:6824: checking for sysmp
 configure:6824: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/cc4y0YPI.o: in function `main':
+/usr/bin/ld: /tmp/cc45WYeL.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `sysmp'
 collect2: error: ld returned 1 exit status
 configure:6824: $? = 1
@@ -3574,7 +3574,7 @@ configure: failed program was:
 configure:6824: result: no
 configure:6824: checking for table
 configure:6824: gcc -o conftest -fPIC -O  -static-libstdc++ -static-libgcc  conftest.c  >&5
-/usr/bin/ld: /tmp/ccjUHSC4.o: in function `main':
+/usr/bin/ld: /tmp/ccbijsob.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `table'
 collect2: error: ld returned 1 exit status
 configure:6824: $? = 1
