@@ -1,27 +1,35 @@
+
+
+build:
+bash configure --disable-warnings-as-errors --with-extra-cxxflags=-std=c++17
+make images
+
+set your JAVA_HOME:
+export JAVA_HOME="~/jdk11u/build/linux-x86_64-normal-server-release/jdk"
+
 You should always run the JVM with max heap = start Heap ( Xmx = Xms )
 
-
 Run command: 
-sudo systemd-run --scope -p MemoryLimit=1536M \
+you need to have the gc running before you run the jvm, and you need to restart the gc every time you run the jvm
+sudo systemd-run --scope -p MemoryLimit=<size_of_cache> \
 							numactl--preferred=0
 							$JAVA_HOME/bin/java\
 							-XX:AllocateHeapAt=/dev/fakeblk\
 							-Xlog:gc=debug \
+							-XX:-OptimizeStringConcat\
 							-XX:+UnlockExperimentalVMOptions\
 							-XX:-UseTLAB\
 							-XX:+UseEpsilonGC\
 							-Xnoclassgc\ 
+							-XX:TieredStopAtLevel=3\
 							-XX:+AlwaysPreTouch\
-							-Xms"$size"g -Xmx"$size"g  <reste de votre commande>
+							-Xms<size_of_heap> -Xmx<size_of_heap>  <java command>
 
-Welcome to the JDK!
-===================
 
-For information about building the JDK, including how to retrieve all
-of the source code, please see either of these files:
 
-  * doc/building.html   (html version)
-  * doc/building.md     (markdown version)
+All the code for the GC is in
+src/hotspot/share/gc/epsilon
 
-See http://openjdk.java.net/ for more information about the OpenJDK
-Community and the JDK.
+Code where device is accessed
+src/hotspot/os/posix/os_posix.cpp:281
+src/hotspot/share/gc/epsilon/RemoteSpace.*pp  each time fd_for_heap is used
