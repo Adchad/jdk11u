@@ -14,6 +14,7 @@
 #include <atomic>
 #include <semaphore.h>
 #include "gc/epsilon/rpcMessages.hpp"
+#include "runtime/thread.hpp"
 
 enum entry_state {
 	UNUSED = 0,
@@ -59,6 +60,7 @@ struct ticket_lock{
 #define SEM_SIZE sizeof(sem_t)
 #define NBR_OF_LINEAR_ENTRIES 8
 #define NBR_OF_EXP_ENTRIES 10 //up to 8192 in size 
+#define OVERFLOW_EXP 64 // to remove a jump in tlab assembly code
 #define LINEAR_ENTRIES_WIDTH 4
 #define START_OF_EXP (LINEAR_ENTRIES_WIDTH-1)*NBR_OF_LINEAR_ENTRIES
 #define NBR_OF_ENTRIES (NBR_OF_LINEAR_ENTRIES*LINEAR_ENTRIES_WIDTH + NBR_OF_EXP_ENTRIES)
@@ -86,6 +88,8 @@ public:
 	RemoteSpace* rs;
 	PseudoTLAB *tlab_list;
 	struct ticket_lock tlab_list_lock;
+	
+	static SharedMem* shm;
 
 //	struct batch_queue* free_list;
 //	struct batch_queue* in_use_list;
@@ -150,19 +154,20 @@ public:
 
 class PseudoTLAB {
 private:
-	batch_t* batch_tab[NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES];
+	batch_t* batch_tab[NBR_OF_LINEAR_ENTRIES + OVERFLOW_EXP];
 	SharedMem* shm;
 	int tid;
 	int thread_offset ;
 
 public:
-	uint64_t used_local;
+	Thread* thread;
 	uint64_t cumulative_time;
 	PseudoTLAB* next;
 	int nb_get_batch;
 	int nb_loops;
 
-	void initialize(SharedMem* shm_);
+	void init_fake_batch_entries(batch_t** b);
+	void initialize(SharedMem* shm_, Thread* thread_);
 	HeapWord* allocate(size_t word_size);
 	//HeapWord* allocate(size_t word_size);
 	void free();

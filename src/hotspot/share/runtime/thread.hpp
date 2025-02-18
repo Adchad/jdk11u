@@ -351,8 +351,10 @@ class Thread: public ThreadShadow {
 #if PSEUDO_TLAB
 public:
 	void* pseudo_tlab_;
+	//uint64_t used_local;	
 public:
 	static ByteSize pseudo_tlab_offset()        { return byte_offset_of(Thread, pseudo_tlab_); }
+	//static ByteSize used_local_offset()        { return byte_offset_of(Thread, used_local); }
 
 	void* pseudo_tlab(){
 		return pseudo_tlab_;

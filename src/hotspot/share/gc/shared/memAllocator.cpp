@@ -309,6 +309,7 @@ HeapWord* MemAllocator::allocate_outside_tlab(Allocation& allocation) const {
 HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {
   assert(UseTLAB, "should use UseTLAB");
   HeapWord* mem = NULL;
+  //printf("Slow\n");
   if(UseEpsilonGC){ 
 	  //size_t true_size = calculate_size(_word_size) ;
 	  //size_t true_size = _word_size + 1;
@@ -318,7 +319,7 @@ HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {
 		if(_thread->pseudo_tlab() == NULL){
 			 SharedMem* shm = ((EpsilonHeap*)_heap)->shm;
 			 PseudoTLAB* ptlab = (PseudoTLAB*) malloc(sizeof(PseudoTLAB));
-			 ptlab->initialize(shm);
+			 ptlab->initialize(shm, _thread);
 			 _thread->set_pseudo_tlab((void*)ptlab);
 		}
 		mem = ((PseudoTLAB*)_thread->pseudo_tlab())->allocate(_word_size);
@@ -332,6 +333,7 @@ HeapWord* MemAllocator::allocate_inside_tlab(Allocation& allocation) const {
 		return allocate_outside_tlab(allocation);
 	  }
   }
+  //printf("Slow\n");
   // Try allocating from an existing TLAB.
   mem = _thread->tlab().allocate(_word_size);
   if (mem != NULL) {

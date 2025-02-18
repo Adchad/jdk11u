@@ -4134,6 +4134,7 @@ void TemplateTable::_new() {
 
   __ get_constant_pool(rarg1);
   __ get_unsigned_2_byte_index_at_bcp(rarg2, 1);
+  //__ warn("Slowjitted");
   call_VM(rax, CAST_FROM_FN_PTR(address, InterpreterRuntime::_new), rarg1, rarg2);
    __ verify_oop(rax);
 

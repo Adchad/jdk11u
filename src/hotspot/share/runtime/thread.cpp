@@ -220,11 +220,13 @@ void JavaThread::smr_delete() {
 // Base class for all threads: VMThread, WatcherThread, ConcurrentMarkSweepThread,
 // JavaThread
 
-
 Thread::Thread() {
 
 #if PSEUDO_TLAB
-  pseudo_tlab_ = NULL;
+  if(UseEpsilonGC){
+ 	 pseudo_tlab_ = malloc(sizeof(PseudoTLAB));
+ 	 ((PseudoTLAB*)pseudo_tlab_)->initialize(SharedMem::shm, this);
+  }
 #endif
   // stack and get_thread
   set_stack_base(NULL);
@@ -1834,6 +1836,7 @@ JavaThread::~JavaThread() {
 void JavaThread::run() {
   // initialize thread-local alloc buffer related fields
   this->initialize_tlab();
+
 
   // used to test validity of stack trace backs
   this->record_base_of_stack_pointer();

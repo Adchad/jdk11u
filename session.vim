@@ -18,8 +18,12 @@ badd +1 SharedMem.cpp
 badd +1 SharedMem.hpp
 badd +1 ../shared/memAllocator.cpp
 badd +1 ../shared/memAllocator.hpp
-badd +0 gc_helper.cpp
-badd +0 gc_helper.hpp
+badd +1 gc_helper.cpp
+badd +1 gc_helper.hpp
+badd +74 epsilonBarrierSetAssembler.cpp
+badd +1 epsilonBarrierSetAssembler.hpp
+badd +1 ../../runtime/thread.hpp
+badd +682 ../../c1/c1_LIRGenerator.cpp
 argglobal
 %argdel
 $argadd RemoteSpace.cpp
@@ -37,8 +41,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 1resize ' . ((&columns * 74 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 117 + 96) / 192)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -49,12 +53,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 24 - ((7 * winheight(0) + 22) / 44)
+let s:l = 25 - ((8 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-24
-normal! 030|
+25
+normal! 0
 wincmd w
 argglobal
 if bufexists("RemoteSpace.cpp") | buffer RemoteSpace.cpp | else | edit RemoteSpace.cpp | endif
@@ -67,15 +71,98 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 66 - ((29 * winheight(0) + 22) / 44)
+let s:l = 398 - ((0 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-66
-normal! 0
+398
+let s:c = 31 - ((12 * winwidth(0) + 58) / 117)
+if s:c > 0
+  exe 'normal! ' . s:c . '|zs' . 31 . '|'
+else
+  normal! 031|
+endif
 wincmd w
-exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 1resize ' . ((&columns * 74 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 117 + 96) / 192)
+tabedit epsilonBarrierSetAssembler.hpp
+set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+1wincmd h
+wincmd w
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+exe 'vert 1resize ' . ((&columns * 74 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 117 + 96) / 192)
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 1 - ((0 * winheight(0) + 22) / 44)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1
+normal! 038|
+wincmd w
+argglobal
+if bufexists("epsilonBarrierSetAssembler.cpp") | buffer epsilonBarrierSetAssembler.cpp | else | edit epsilonBarrierSetAssembler.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 44 - ((5 * winheight(0) + 22) / 44)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+44
+normal! 012|
+wincmd w
+2wincmd w
+exe 'vert 1resize ' . ((&columns * 74 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 117 + 96) / 192)
+tabedit ../../runtime/thread.hpp
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 86 - ((0 * winheight(0) + 22) / 44)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+86
+normal! 018|
 tabedit SharedMem.hpp
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -89,8 +176,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 1resize ' . ((&columns * 98 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 93 + 96) / 192)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -101,12 +188,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 49 - ((32 * winheight(0) + 22) / 44)
+let s:l = 37 - ((36 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-49
-normal! 0
+37
+normal! 032|
 wincmd w
 argglobal
 if bufexists("SharedMem.cpp") | buffer SharedMem.cpp | else | edit SharedMem.cpp | endif
@@ -119,15 +206,15 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 4 - ((0 * winheight(0) + 22) / 44)
+let s:l = 232 - ((0 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-4
-normal! 0
+232
+normal! 019|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 1resize ' . ((&columns * 98 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 93 + 96) / 192)
 tabedit rpcMessages.hpp
 set splitbelow splitright
 set nosplitbelow
@@ -147,11 +234,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 22) / 44)
+let s:l = 7 - ((0 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+7
 normal! 0
 tabedit AllocationBuffer.hpp
 set splitbelow splitright
@@ -166,8 +253,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 1resize ' . ((&columns * 74 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 117 + 96) / 192)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -203,8 +290,8 @@ normal! zt
 56
 normal! 012|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 1resize ' . ((&columns * 74 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 117 + 96) / 192)
 tabedit ../shared/memAllocator.hpp
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -218,8 +305,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 1resize ' . ((&columns * 74 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 117 + 96) / 192)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -248,15 +335,15 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 291 - ((15 * winheight(0) + 22) / 44)
+let s:l = 294 - ((0 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-291
+294
 normal! 07|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 1resize ' . ((&columns * 74 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 117 + 96) / 192)
 tabedit gc_helper.hpp
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -270,8 +357,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 96 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 95 + 96) / 192)
+exe 'vert 1resize ' . ((&columns * 75 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 116 + 96) / 192)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -307,8 +394,8 @@ normal! zt
 1
 normal! 0
 wincmd w
-exe 'vert 1resize ' . ((&columns * 96 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 95 + 96) / 192)
+exe 'vert 1resize ' . ((&columns * 75 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 116 + 96) / 192)
 tabedit epsilonHeap.hpp
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -322,8 +409,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
+exe 'vert 1resize ' . ((&columns * 74 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 117 + 96) / 192)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -359,9 +446,9 @@ normal! zt
 1
 normal! 0
 wincmd w
-exe 'vert 1resize ' . ((&columns * 95 + 96) / 192)
-exe 'vert 2resize ' . ((&columns * 96 + 96) / 192)
-tabnext 6
+exe 'vert 1resize ' . ((&columns * 74 + 96) / 192)
+exe 'vert 2resize ' . ((&columns * 117 + 96) / 192)
+tabnext 2
 set stal=1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

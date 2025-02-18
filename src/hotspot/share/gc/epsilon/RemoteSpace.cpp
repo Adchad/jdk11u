@@ -52,6 +52,7 @@ int fd_for_heap;
 int shm_fd;
 void* epsilon_sh_mem;
 SharedMem* RemoteSpace::shm;
+SharedMem* SharedMem::shm;
 void* fsync_constantly(void* arg);
 //std::atomic<int> test_collect;  //TODO remove this
 
@@ -140,6 +141,7 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	epsilon_sh_mem = setup_shm();
 	shm = (SharedMem*) malloc(sizeof(SharedMem));
 	shm->initialize(epsilon_sh_mem, this);
+	SharedMem::shm = shm;
 	
 	int ret = madvise(start_addr, cap,  MADV_NOHUGEPAGE );
 	madvise(start_addr, cap,  MADV_RANDOM ); //TODO C'est la ligne la plus importante de ma thèse

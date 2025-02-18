@@ -135,7 +135,7 @@ void SharedMem::reset_used(){
 	spin_lock(&tlab_list_lock);
 	PseudoTLAB* curr = tlab_list;
 	while(curr!=nullptr){
-		curr->used_local = 0;
+		//curr->thread->used_local = 0;
 		curr = curr->next;
 	}
 	spin_unlock(&tlab_list_lock);
@@ -170,44 +170,62 @@ void SharedMem::remove_tlab(PseudoTLAB* t){
 	spin_unlock(&tlab_list_lock);
 }
 
-void PseudoTLAB::initialize(SharedMem* shm_){
-	shm = shm_;
-	tid = shm->thread_counter.fetch_add(1);
+
+void PseudoTLAB::init_fake_batch_entries(batch_t** b){
+	b[0] = (batch_t*) malloc(sizeof(batch_t));
+	b[0]->bump = 1;
+	b[0]->end = 0;
+	b[0]->thread_no = 0xffffffff;
+	for(int i = 1; i< NBR_OF_LINEAR_ENTRIES + OVERFLOW_EXP; i++){
+		b[i] = (batch_t*) malloc(sizeof(batch_t));
+		memcpy(b[i], b[0],16);
+	}
+}
+
+void PseudoTLAB::initialize(SharedMem* shm_, Thread* thread_){
+	//SharedMem::shm = SharedMem::shm_;
+	//tid = SharedMem::shm->thread_counter.fetch_add(1);
+	thread = thread_;
 	thread_offset = tid%LINEAR_ENTRIES_WIDTH;
-	used_local=0;
-	memset(batch_tab, 0, (NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES)*sizeof(batch_t*));
+	//thread->used_local=0;
+	//memset(batch_tab, 0, (NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES)*sizeof(batch_t*));
+    init_fake_batch_entries(batch_tab);	
 	cumulative_time=0;
-	shm->add_tlab(this);
+	//SharedMem::shm->add_tlab(this);
 	
 }
 
 HeapWord* PseudoTLAB::allocate(size_t word_size){
 	HeapWord* ret;
 	size_t index = batch_index_from_size(word_size);
-
-	if(batch_tab[index] == NULL){ // if there is no batch
+	//printf("%p;%lu : bump : %u, end: %u\n", this, word_size, batch_tab[index]->bump, batch_tab[index]->end);	
+	//printf("%u,  %lu\n", batch_tab[index]->thread_no, (uint64_t) batch_tab[index]-(uint64_t)start_addr);
+	if(batch_tab[index]->end == 0 || batch_tab[index]->thread_no == 69){ // if there is no batch
+	//printf("%u,  %lu, %lu\n", batch_tab[index]->thread_no, (uint64_t) batch_tab[index]-(uint64_t)start_addr, index);
+		std::free(batch_tab[index]);
 		if(index<=7)
-			batch_tab[index] = shm->get_new_batch(index, thread_offset, this); //get new batch
+			batch_tab[index] = SharedMem::shm->get_new_batch(index, thread_offset, this); //get new batch
 		else
-			batch_tab[index] = shm->get_new_batch_exp(index + START_OF_EXP, this); //get new batch
+			batch_tab[index] = SharedMem::shm->get_new_batch_exp(index + START_OF_EXP, this); //get new batch
 		batch_tab[index]->bump = 0;
 	} else if(batch_tab[index]->bump >= batch_tab[index]->end){ // if batch is finished
+		uint32_t old_end = batch_tab[index]->end;
 		batch_t* temp = batch_tab[index];
-		shm->stack_push(shm->prefree_list, (uint64_t) batch_tab[index] - (uint64_t)shm->start_addr); //push finished batch to prefree list
+		SharedMem::shm->stack_push(SharedMem::shm->prefree_list, (uint64_t) batch_tab[index] - (uint64_t)SharedMem::shm->start_addr); //push finished batch to prefree list
 
 		if(index<=7)
-			batch_tab[index] = shm->get_new_batch(index, thread_offset, this); //get new batch
+			batch_tab[index] = SharedMem::shm->get_new_batch(index, thread_offset, this); //get new batch
 		else
-			batch_tab[index] = shm->get_new_batch_exp(index + START_OF_EXP, this); //get new batch
+			batch_tab[index] = SharedMem::shm->get_new_batch_exp(index + START_OF_EXP, this); //get new batch
 		batch_tab[index]->bump = 0;
-		shm->rs->slow_path_post_alloc(used_local);
-		used_local = 0;
+		SharedMem::shm->rs->slow_path_post_alloc(old_end*word_size);
+		//thread->used_local = 0;
 	}
-
+	
 	ret = (HeapWord*) batch_tab[index]->array[batch_tab[index]->bump]; // allocate from inside the batch
 	batch_tab[index]->bump++;
 	
-	used_local += word_size;
+	//thread->used_local += word_size;
 	return ret;
 
 }
@@ -216,11 +234,11 @@ void PseudoTLAB::free(){
 	batch_t* curr;
 	for(unsigned int i=0; i<NBR_OF_LINEAR_ENTRIES + NBR_OF_EXP_ENTRIES; i++){
 		curr = batch_tab[i];
-		if(curr!=NULL){
-			shm->stack_push(shm->prefree_list, (uint64_t)curr  - (uint64_t)shm->start_addr); //push finished batch to prefree list
+		if(curr!=NULL && curr->thread_no != 0xffffffff){
+			SharedMem::shm->stack_push(SharedMem::shm->prefree_list, (uint64_t)curr  - (uint64_t)SharedMem::shm->start_addr); //push finished batch to prefree list
 		}
 	}
-	shm->remove_tlab(this);
+	//SharedMem::shm->remove_tlab(this);
 }
 
 int PseudoTLAB::index_from_size(int size){                                                                                                                                                   

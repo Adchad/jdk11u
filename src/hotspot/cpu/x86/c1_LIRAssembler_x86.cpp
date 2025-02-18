@@ -1555,6 +1555,7 @@ void LIR_Assembler::emit_opConvert(LIR_OpConvert* op) {
 }
 
 void LIR_Assembler::emit_alloc_obj(LIR_OpAllocObj* op) {
+  //__ warn("all");
   if (op->init_check()) {
     add_debug_info_for_null_check_here(op->stub()->info());
     __ cmpb(Address(op->klass()->as_register(),
@@ -1573,6 +1574,7 @@ void LIR_Assembler::emit_alloc_obj(LIR_OpAllocObj* op) {
 }
 
 void LIR_Assembler::emit_alloc_array(LIR_OpAllocArray* op) {
+  //__ warn("all");
   Register len =  op->len()->as_register();
   LP64_ONLY( __ movslq(len, len); )
 

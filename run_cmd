@@ -1,1 +1,5 @@
 sudo systemd-run --scope -p MemoryLimit=1536M numactl --preferred=0 /home/adam/jdk11u/build/linux-x86_64-normal-server-release/images/jdk/bin/jdb -J-XX:AllocateHeapAt=/dev/fakeblk -J-XX:+UnlockExperimentalVMOptions -J-XX:-UseTLAB -J-XX:+UseEpsilonGC -J-Xnoclassgc -J-XX:-UseCodeCacheFlushing -J-Xmx16g -XX:+AlwaysPreTouch -classpath /home/adam/Spark_benchmark/spark_blk/conf/:/home/adam/Spark_benchmark/spark_blk/jars/* -org.apache.spark.deploy.SparkSubmit --master local[*] -class WordCount /home/adam/Spark_benchmark/spark_run/run.jar
+
+
+//without c2 jit
+sudo systemd-run --scope -p MemoryLimit=400M -p AllowedCPUs=21,22,23,24,25,36,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46 ./build/linux-x86_64-normal-server-release/jdk/bin/java -XX:AllocateHeapAt=/dev/fakeblk -Xlog:gc=debug -XX:-OptimizeStringConcat -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -Xnoclassgc -XX:+AlwaysPreTouch -XX:-ClassUnloading  -XX:TieredStopAtLevel=3 -Xms20g -Xmx20g -XX:-ClassUnloading  -jar ../dacapo-23.11-chopin.jar h2

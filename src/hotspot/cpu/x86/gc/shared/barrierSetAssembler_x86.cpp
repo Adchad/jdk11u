@@ -236,6 +236,8 @@ void BarrierSetAssembler::tlab_allocate(MacroAssembler* masm,
 #endif
   }
 
+  //__ warn("Fast");
+  
   __ verify_tlab();
 
   __ movptr(obj, Address(thread, JavaThread::tlab_top_offset()));
@@ -291,6 +293,7 @@ void BarrierSetAssembler::eden_allocate(MacroAssembler* masm,
     __ jcc(Assembler::notEqual, retry);
     incr_allocated_bytes(masm, thread, var_size_in_bytes, con_size_in_bytes, thread->is_valid() ? noreg : t1);
   }
+
 }
 
 void BarrierSetAssembler::incr_allocated_bytes(MacroAssembler* masm, Register thread,
