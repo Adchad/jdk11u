@@ -45,6 +45,8 @@ std::atomic<size_t> softmax;
 std::atomic<uint64_t> free_space;
 struct ticket_lock ticket;
 
+std::atomic<bool> initialized;
+
 void* start_addr;
 uint64_t cap;
 std::atomic<uint64_t> used_;
@@ -59,6 +61,7 @@ void* fsync_constantly(void* arg);
 
 
 RemoteSpace::RemoteSpace() : ContiguousSpace() {
+	initialized.store(false);
 	if(sockfd_remote < 0){
 	    sockfd_remote = socket(AF_INET, SOCK_STREAM, 0);
 	    if (sockfd_remote < 0)
@@ -152,6 +155,7 @@ void RemoteSpace::initialize(MemRegion mr, bool clear_space, bool mangle_space) 
 	//pthread_t fsync_thread;
 	//pthread_create(&fsync_thread, NULL,fsync_constantly, NULL);
 	
+	initialized.store(true);
 }
 
 void* fsync_constantly(void* arg){
@@ -171,6 +175,8 @@ void RemoteSpace::post_initialize(){
 }
 
 HeapWord *RemoteSpace::par_allocate(size_t word_size) {
+	while(!initialized.load())
+		sleep(1);
     counter++;
     struct msg_par_allocate * msg = (struct msg_par_allocate*) calloc(1,sizeof(struct msg_par_allocate));
 
@@ -194,6 +200,8 @@ HeapWord *RemoteSpace::par_allocate(size_t word_size) {
 
 
 HeapWord *RemoteSpace::par_allocate_klass(size_t word_size, Klass* klass) {
+	while(!initialized.load())
+		sleep(1);
 	HeapWord* allocated;
 	//printf("Test alloc wait lock");
 	//printf("Tentative d'alloc\n");

@@ -1,0 +1,1807 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007fae20b84722, pid=25009, tid=25041
+#
+# JRE version: OpenJDK Runtime Environment (11.0.16) (build 11.0.16-internal+0-adhoc.adam.jdk11u)
+# Java VM: OpenJDK 64-Bit Server VM (11.0.16-internal+0-adhoc.adam.jdk11u, mixed mode, tiered, compressed oops, epsilon gc, linux-amd64)
+# Problematic frame:
+# J 1861 c2 java.lang.invoke.MethodType$ConcurrentWeakInternSet.get(Ljava/lang/Object;)Ljava/lang/Object; java.base (54 bytes) @ 0x00007fae20b84722 [0x00007fae20b845c0+0x0000000000000162]
+#
+# No core dump will be written. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugreport.java.com/bugreport/crash.jsp
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -XX:AllocateHeapAt=/dev/fakeblk -Xlog:gc=debug -XX:-OptimizeStringConcat -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -Xnoclassgc -XX:-ClassUnloading -Xms16g -Xmx16g -XX:-ClassUnloading ../dacapo-23.11-chopin.jar tradebeans
+
+Host: AMD Opteron 23xx (Gen 3 Class Opteron), 48 cores, 1G, Debian GNU/Linux 11 (bullseye)
+Time: Tue Mar 18 13:52:15 2025 CET elapsed time: 8.922123 seconds (0d 0h 0m 8s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007fac6c088000):  JavaThread "ServerService Thread Pool -- 5" [_thread_in_Java, id=25041, stack(0x00007fac984fa000,0x00007fac985fb000)]
+
+Stack: [0x00007fac984fa000,0x00007fac985fb000],  sp=0x00007fac985f8da0,  free space=1019k
+Native frames: (J=compiled Java code, A=aot compiled Java code, j=interpreted, Vv=VM code, C=native code)
+J 1861 c2 java.lang.invoke.MethodType$ConcurrentWeakInternSet.get(Ljava/lang/Object;)Ljava/lang/Object; java.base (54 bytes) @ 0x00007fae20b84722 [0x00007fae20b845c0+0x0000000000000162]
+J 2204 c2 java.lang.invoke.MethodType.makeImpl(Ljava/lang/Class;[Ljava/lang/Class;Z)Ljava/lang/invoke/MethodType; java.base (108 bytes) @ 0x00007fae20bb7090 [0x00007fae20bb6fc0+0x00000000000000d0]
+J 1886 c1 java.lang.invoke.MethodHandleNatives.findMethodHandleType(Ljava/lang/Class;[Ljava/lang/Class;)Ljava/lang/invoke/MethodType; java.base (7 bytes) @ 0x00007fae19931714 [0x00007fae199316c0+0x0000000000000054]
+v  ~StubRoutines::call_stub
+V  [libjvm.so+0x87b9d3]  JavaCalls::call_helper(JavaValue*, methodHandle const&, JavaCallArguments*, Thread*)+0x353
+V  [libjvm.so+0x87a91a]  JavaCalls::call_static(JavaValue*, Klass*, Symbol*, Symbol*, JavaCallArguments*, Thread*)+0xea
+V  [libjvm.so+0xd3f3da]  SystemDictionary::find_method_handle_type(Symbol*, Klass*, Thread*)+0x61a
+V  [libjvm.so+0xd406be]  SystemDictionary::find_method_handle_invoker(Klass*, Symbol*, Symbol*, Klass*, Handle*, Handle*, Thread*)+0x5e
+V  [libjvm.so+0xa625c9]  LinkResolver::resolve_handle_call(CallInfo&, LinkInfo const&, Thread*)+0x259
+V  [libjvm.so+0xa685f6]  LinkResolver::resolve_invoke(CallInfo&, Handle, constantPoolHandle const&, int, Bytecodes::Code, Thread*)+0x176
+V  [libjvm.so+0x8733e6]  InterpreterRuntime::resolve_invokehandle(JavaThread*)+0x136
+V  [libjvm.so+0x87581d]  InterpreterRuntime::resolve_from_cache(JavaThread*, Bytecodes::Code)+0x18d
+j  java.util.concurrent.FutureTask.setException(Ljava/lang/Throwable;)V+6 java.base
+j  java.util.concurrent.FutureTask.run()V+59 java.base
+j  org.jboss.threads.ContextClassLoaderSavingRunnable.run()V+17
+j  org.jboss.threads.EnhancedQueueExecutor.safeRun(Ljava/lang/Runnable;)V+39
+j  org.jboss.threads.EnhancedQueueExecutor$ThreadBody.doRunTask(Ljava/lang/Runnable;)V+48
+j  org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run()V+39
+j  java.lang.Thread.run()V+11 java.base
+j  org.jboss.threads.JBossThread.run()V+12
+v  ~StubRoutines::call_stub
+V  [libjvm.so+0x87b9d3]  JavaCalls::call_helper(JavaValue*, methodHandle const&, JavaCallArguments*, Thread*)+0x353
+V  [libjvm.so+0x879ee6]  JavaCalls::call_virtual(JavaValue*, Handle, Klass*, Symbol*, Symbol*, Thread*)+0x1a6
+V  [libjvm.so+0x92502d]  thread_entry(JavaThread*, Thread*)+0x6d
+V  [libjvm.so+0xd79ec3]  JavaThread::thread_main_inner()+0x133
+V  [libjvm.so+0xd7686c]  Thread::call_run()+0x13c
+V  [libjvm.so+0xbe9446]  thread_native_entry(Thread*)+0xe6
+
+
+siginfo: si_signo: 11 (SIGSEGV), si_code: 1 (SEGV_MAPERR), si_addr: 0x0000000000000028
+
+Register to memory mapping:
+
+RAX=0x000000040835e060 is an unallocated location in the heap
+RBX=0x000000040835e048 is an unallocated location in the heap
+RCX=0x0000000000000003 is an unknown value
+RDX=0x0000000408547440 is an unallocated location in the heap
+RSP=0x00007fac985f8da0 is pointing into the stack for thread: 0x00007fac6c088000
+RBP=0x000000005e13a364 is an unknown value
+RSI=0x0000000000000028 is an unknown value
+RDI=0x0000000000000002 is an unknown value
+R8 =0x00000000dc8ae3e9 is an unknown value
+R9 =0x0000000080045ed0 is an unknown value
+R10=0x0000000000000001 is an unknown value
+R11=0x0000000000000005 is an unknown value
+R12=0x0 is NULL
+R13=0x00007fac985f8ed0 is pointing into the stack for thread: 0x00007fac6c088000
+R14=0x000000040835e060 is an unallocated location in the heap
+R15=0x00007fac6c088000 is a thread
+
+
+Registers:
+RAX=0x000000040835e060, RBX=0x000000040835e048, RCX=0x0000000000000003, RDX=0x0000000408547440
+RSP=0x00007fac985f8da0, RBP=0x000000005e13a364, RSI=0x0000000000000028, RDI=0x0000000000000002
+R8 =0x00000000dc8ae3e9, R9 =0x0000000080045ed0, R10=0x0000000000000001, R11=0x0000000000000005
+R12=0x0000000000000000, R13=0x00007fac985f8ed0, R14=0x000000040835e060, R15=0x00007fac6c088000
+RIP=0x00007fae20b84722, EFLAGS=0x0000000000010206, CSGSFS=0x002b000000000033, ERR=0x0000000000000004
+  TRAPNO=0x000000000000000e
+
+Top of Stack: (sp=0x00007fac985f8da0)
+0x00007fac985f8da0:   80045ed00000c7a0 00007fae3018bbdc
+0x00007fac985f8db0:   00007fac985f8db0 0000000000000000
+0x00007fac985f8dc0:   00007fae2e8d3518 0000000000000000
+0x00007fac985f8dd0:   0000000400380200 00007fae190f6025 
+
+Instructions: (pc=0x00007fae20b84722)
+0x00007fae20b84622:   18 01 00 00 4d 8b d6 49 83 c2 20 4d 3b 97 28 01
+0x00007fae20b84632:   00 00 0f 83 9f 06 00 00 4d 89 97 18 01 00 00 41
+0x00007fae20b84642:   0f 18 82 00 01 00 00 41 ba 18 12 04 00 49 bc 00
+0x00007fae20b84652:   00 00 00 08 00 00 00 4d 03 d4 4d 33 e4 4d 8b 92
+0x00007fae20b84662:   b8 00 00 00 4d 89 16 41 c7 46 08 18 12 04 00 49
+0x00007fae20b84672:   c7 46 10 00 00 00 00 49 c7 46 18 00 00 00 00 4c
+0x00007fae20b84682:   8b d2 49 c1 ea 03 45 89 56 0c 41 c7 46 10 5c 80
+0x00007fae20b84692:   02 80 f0 83 44 24 c0 00 41 81 fb a0 c7 00 00 0f
+0x00007fae20b846a2:   85 8d 06 00 00 48 8b ea 44 8b 55 0c 45 85 d2 0f
+0x00007fae20b846b2:   84 5d 06 00 00 4b 8d 34 d4 4c 8b 16 4d 8b da 49
+0x00007fae20b846c2:   83 e3 07 49 83 fb 01 0f 85 eb 05 00 00 49 c1 ea
+0x00007fae20b846d2:   08 45 8b c2 41 81 e0 ff ff ff 7f 45 85 c0 0f 84
+0x00007fae20b846e2:   d4 05 00 00 44 8b 5d 10 43 8b 4c dc 0c 41 83 c0
+0x00007fae20b846f2:   1f 85 c9 76 68 8b d9 ff cb 3b d9 0f 83 5d 06 00
+0x00007fae20b84702:   00 4b 8d 1c dc 33 ff 0f 1f 80 00 00 00 00 44 8b
+0x00007fae20b84712:   5c bb 10 45 85 db 0f 84 ea 05 00 00 4b 8d 34 dc
+0x00007fae20b84722:   4c 8b 1e 41 8b e8 c1 e5 05 41 2b e8 4d 8b d3 49
+0x00007fae20b84732:   83 e2 07 49 83 fa 01 0f 85 40 05 00 00 49 c1 eb
+0x00007fae20b84742:   08 45 8b c3 41 81 e0 ff ff ff 7f 45 85 c0 0f 84
+0x00007fae20b84752:   29 05 00 00 44 03 c5 ff c7 3b f9 7c b1 45 89 46
+0x00007fae20b84762:   1c 47 8b 5c cc 08 41 81 fb 18 90 01 00 0f 85 d7
+0x00007fae20b84772:   05 00 00 4f 8d 14 cc 41 8b 5a 28 85 db 0f 84 fc
+0x00007fae20b84782:   02 00 00 41 8b 4c dc 0c 45 8b d0 41 c1 ea 10 45
+0x00007fae20b84792:   33 d0 41 81 e2 ff ff ff 7f 85 c9 0f 86 f9 05 00
+0x00007fae20b847a2:   00 4d 8d 1c dc ff c9 41 23 ca 4c 63 c1 47 8b 5c
+0x00007fae20b847b2:   83 10 45 85 db 0f 84 c4 02 00 00 43 8b 6c dc 0c
+0x00007fae20b847c2:   41 3b ea 0f 84 20 01 00 00 85 ed 0f 8c 2d 06 00
+0x00007fae20b847d2:   00 47 8b 44 dc 18 45 85 c0 0f 84 a0 02 00 00 4f
+0x00007fae20b847e2:   8d 1c c4 ba 01 00 00 00 41 8b 4b 0c 4d 8b 87 08
+0x00007fae20b847f2:   01 00 00 41 85 00 41 3b ca 0f 85 0f 04 00 00 41
+0x00007fae20b84802:   8b 6b 10 4c 8b c5 49 c1 e0 03 4d 3b c6 0f 84 60
+0x00007fae20b84812:   02 00 00 45 8b 44 ec 08 41 81 f8 18 12 04 00 0f 
+
+
+Stack slot to memory mapping:
+stack at sp + 0 slots: 0x80045ed00000c7a0 is an unknown value
+stack at sp + 1 slots: 0x00007fae3018bbdc: <offset 0x0000000000c96bdc> in /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so at 0x00007fae2f4f5000
+stack at sp + 2 slots: 0x00007fac985f8db0 is pointing into the stack for thread: 0x00007fac6c088000
+stack at sp + 3 slots: 0x0 is NULL
+stack at sp + 4 slots: {method} {0x00007fae2e8d3518} 'findMethodHandleType' '(Ljava/lang/Class;[Ljava/lang/Class;)Ljava/lang/invoke/MethodType;' in 'java/lang/invoke/MethodHandleNatives'
+stack at sp + 5 slots: 0x0 is NULL
+stack at sp + 6 slots: 0x0000000400380200 is an unallocated location in the heap
+stack at sp + 7 slots: 0x00007fae190f6025 is at code_begin+37 in 
+[CodeBlob (0x00007fae190f5f90)]
+Framesize: 2
+Runtime Stub (0x00007fae190f5f90): _new_instance_Java
+----------------------------------------------------------------------
+_new_instance_Java
+ at  [0x00007fae190f6000, 0x00007fae190f6068]  832 bytes
+[Disassembling for mach='i386:x86-64']
+  0x00007fae190f6000: sub    $0x8,%rsp
+  0x00007fae190f6007: mov    %rbp,(%rsp)
+  0x00007fae190f600b: mov    %rsp,0x330(%r15)
+  0x00007fae190f6012: mov    %rsi,%rdi
+  0x00007fae190f6015: mov    %r15,%rsi
+  0x00007fae190f6018: movabs $0x7fae3018bad0,%r10
+  0x00007fae190f6022: callq  *%r10
+  0x00007fae190f6025: movq   $0x0,0x330(%r15)
+  0x00007fae190f6030: movq   $0x0,0x338(%r15)
+  0x00007fae190f603b: mov    0x390(%r15),%rax
+  0x00007fae190f6042: movq   $0x0,0x390(%r15)
+  0x00007fae190f604d: mov    0x8(%r15),%r10
+  0x00007fae190f6051: test   %r10,%r10
+  0x00007fae190f6054: jne    0x00007fae190f6058
+  0x00007fae190f6056: pop    %rbp
+  0x00007fae190f6057: retq   
+  0x00007fae190f6058: xor    %ebx,%ebx
+  0x00007fae190f605a: movabs $0x7fae19000c00,%r10
+  0x00007fae190f6064: pop    %rbp
+  0x00007fae190f6065: jmpq   *%r10
+
+----------------------------------------------------------------------
+java/lang/invoke/MethodType$ConcurrentWeakInternSet.get(Ljava/lang/Object;)Ljava/lang/Object;  [0x00007fae20b845c0, 0x00007fae20b85198]  3032 bytes
+[Entry Point]
+[Constants]
+  # {method} {0x00007fae2eb1abe0} 'get' '(Ljava/lang/Object;)Ljava/lang/Object;' in 'java/lang/invoke/MethodType$ConcurrentWeakInternSet'
+  # this:     rsi:rsi   = 'java/lang/invoke/MethodType$ConcurrentWeakInternSet'
+  # parm0:    rdx:rdx   = 'java/lang/Object'
+  #           [sp+0x50]  (sp of caller)
+  0x00007fae20b845c0: mov    0x8(%rsi),%r10d
+  0x00007fae20b845c4: movabs $0x800000000,%r12
+  0x00007fae20b845ce: add    %r12,%r10
+  0x00007fae20b845d1: xor    %r12,%r12
+  0x00007fae20b845d4: cmp    %r10,%rax
+  0x00007fae20b845d7: jne    0x00007fae1904b080  ;   {runtime_call ic_miss_stub}
+  0x00007fae20b845dd: data16 xchg %ax,%ax
+[Verified Entry Point]
+  0x00007fae20b845e0: mov    %eax,-0x14000(%rsp)
+  0x00007fae20b845e7: push   %rbp
+  0x00007fae20b845e8: sub    $0x40,%rsp
+  0x00007fae20b845ec: mov    %rsi,%rbp
+  0x00007fae20b845ef: mov    0x8(%rdx),%r11d    ; implicit exception: dispatches to 0x00007fae20b84ff0
+  0x00007fae20b845f3: mov    %rsi,%r10
+  0x00007fae20b845f6: mov    0x10(%rsi),%ebp
+  0x00007fae20b845f9: mov    0x8(%r12,%rbp,8),%r8d  ; implicit exception: dispatches to 0x00007fae20b84fc8
+  0x00007fae20b845fe: cmp    $0x1bbd8,%r8d      ;   {metadata('java/lang/ref/ReferenceQueue')}
+  0x00007fae20b84605: jne    0x00007fae20b84d20
+  0x00007fae20b8460b: lea    (%r12,%rbp,8),%r8
+  0x00007fae20b8460f: mov    0x18(%r8),%ebp
+  0x00007fae20b84613: test   %ebp,%ebp
+  0x00007fae20b84615: jne    0x00007fae20b84d80
+  0x00007fae20b8461b: mov    0xc(%rsi),%r9d
+  0x00007fae20b8461f: mov    0x118(%r15),%r14
+  0x00007fae20b84626: mov    %r14,%r10
+  0x00007fae20b84629: add    $0x20,%r10
+  0x00007fae20b8462d: cmp    0x128(%r15),%r10
+  0x00007fae20b84634: jae    0x00007fae20b84cd9
+  0x00007fae20b8463a: mov    %r10,0x118(%r15)
+  0x00007fae20b84641: prefetchnta 0x100(%r10)
+  0x00007fae20b84649: mov    $0x41218,%r10d     ;   {metadata('java/lang/invoke/MethodType$ConcurrentWeakInternSet$WeakEntry')}
+  0x00007fae20b8464f: movabs $0x800000000,%r12
+  0x00007fae20b84659: add    %r12,%r10
+  0x00007fae20b8465c: xor    %r12,%r12
+  0x00007fae20b8465f: mov    0xb8(%r10),%r10
+  0x00007fae20b84666: mov    %r10,(%r14)
+  0x00007fae20b84669: movl   $0x41218,0x8(%r14)  ;   {metadata('java/lang/invoke/MethodType$ConcurrentWeakInternSet$WeakEntry')}
+  0x00007fae20b84671: movq   $0x0,0x10(%r14)
+  0x00007fae20b84679: movq   $0x0,0x18(%r14)
+  0x00007fae20b84681: mov    %rdx,%r10
+  0x00007fae20b84684: shr    $0x3,%r10
+  0x00007fae20b84688: mov    %r10d,0xc(%r14)
+  0x00007fae20b8468c: movl   $0x8002805c,0x10(%r14)  ;   {oop(a 'java/lang/ref/ReferenceQueue$Null'{0x00000004001402e0})}
+  0x00007fae20b84694: lock addl $0x0,-0x40(%rsp)
+  0x00007fae20b8469a: cmp    $0xc7a0,%r11d      ;   {metadata('java/lang/invoke/MethodType')}
+  0x00007fae20b846a1: jne    0x00007fae20b84d34
+  0x00007fae20b846a7: mov    %rdx,%rbp
+  0x00007fae20b846aa: mov    0xc(%rbp),%r10d
+  0x00007fae20b846ae: test   %r10d,%r10d
+  0x00007fae20b846b1: je     0x00007fae20b84d14
+  0x00007fae20b846b7: lea    (%r12,%r10,8),%rsi
+  0x00007fae20b846bb: mov    (%rsi),%r10
+  0x00007fae20b846be: mov    %r10,%r11
+  0x00007fae20b846c1: and    $0x7,%r11
+  0x00007fae20b846c5: cmp    $0x1,%r11
+  0x00007fae20b846c9: jne    0x00007fae20b84cba
+  0x00007fae20b846cf: shr    $0x8,%r10
+  0x00007fae20b846d3: mov    %r10d,%r8d
+  0x00007fae20b846d6: and    $0x7fffffff,%r8d
+  0x00007fae20b846dd: test   %r8d,%r8d
+  0x00007fae20b846e0: je     0x00007fae20b84cba
+  0x00007fae20b846e6: mov    0x10(%rbp),%r11d
+  0x00007fae20b846ea: mov    0xc(%r12,%r11,8),%ecx  ; implicit exception: dispatches to 0x00007fae20b84fd4
+  0x00007fae20b846ef: add    $0x1f,%r8d
+  0x00007fae20b846f3: test   %ecx,%ecx
+  0x00007fae20b846f5: jbe    0x00007fae20b8475f
+  0x00007fae20b846f7: mov    %ecx,%ebx
+  0x00007fae20b846f9: dec    %ebx
+  0x00007fae20b846fb: cmp    %ecx,%ebx
+  0x00007fae20b846fd: jae    0x00007fae20b84d60
+  0x00007fae20b84703: lea    (%r12,%r11,8),%rbx
+  0x00007fae20b84707: xor    %edi,%edi
+  0x00007fae20b84709: nopl   0x0(%rax)
+  0x00007fae20b84710: mov    0x10(%rbx,%rdi,4),%r11d
+  0x00007fae20b84715: test   %r11d,%r11d
+  0x00007fae20b84718: je     0x00007fae20b84d08
+  0x00007fae20b8471e: lea    (%r12,%r11,8),%rsi
+  0x00007fae20b84722: mov    (%rsi),%r11
+  0x00007fae20b84725: mov    %r8d,%ebp
+  0x00007fae20b84728: shl    $0x5,%ebp
+  0x00007fae20b8472b: sub    %r8d,%ebp
+  0x00007fae20b8472e: mov    %r11,%r10
+  0x00007fae20b84731: and    $0x7,%r10
+  0x00007fae20b84735: cmp    $0x1,%r10
+  0x00007fae20b84739: jne    0x00007fae20b84c7f
+  0x00007fae20b8473f: shr    $0x8,%r11
+  0x00007fae20b84743: mov    %r11d,%r8d
+  0x00007fae20b84746: and    $0x7fffffff,%r8d
+  0x00007fae20b8474d: test   %r8d,%r8d
+  0x00007fae20b84750: je     0x00007fae20b84c7f
+  0x00007fae20b84756: add    %ebp,%r8d
+  0x00007fae20b84759: inc    %edi
+  0x00007fae20b8475b: cmp    %ecx,%edi
+  0x00007fae20b8475d: jl     0x00007fae20b84710
+  0x00007fae20b8475f: mov    %r8d,0x1c(%r14)
+  0x00007fae20b84763: mov    0x8(%r12,%r9,8),%r11d  ; implicit exception: dispatches to 0x00007fae20b84fe0
+  0x00007fae20b84768: cmp    $0x19018,%r11d     ;   {metadata('java/util/concurrent/ConcurrentHashMap')}
+  0x00007fae20b8476f: jne    0x00007fae20b84d4c
+  0x00007fae20b84775: lea    (%r12,%r9,8),%r10
+  0x00007fae20b84779: mov    0x28(%r10),%ebx
+  0x00007fae20b8477d: test   %ebx,%ebx
+  0x00007fae20b8477f: je     0x00007fae20b84a81
+  0x00007fae20b84785: mov    0xc(%r12,%rbx,8),%ecx
+  0x00007fae20b8478a: mov    %r8d,%r10d
+  0x00007fae20b8478d: shr    $0x10,%r10d
+  0x00007fae20b84791: xor    %r8d,%r10d
+  0x00007fae20b84794: and    $0x7fffffff,%r10d
+  0x00007fae20b8479b: test   %ecx,%ecx
+  0x00007fae20b8479d: jbe    0x00007fae20b84d9c
+  0x00007fae20b847a3: lea    (%r12,%rbx,8),%r11
+  0x00007fae20b847a7: dec    %ecx
+  0x00007fae20b847a9: and    %r10d,%ecx
+  0x00007fae20b847ac: movslq %ecx,%r8
+  0x00007fae20b847af: mov    0x10(%r11,%r8,4),%r11d
+  0x00007fae20b847b4: test   %r11d,%r11d
+  0x00007fae20b847b7: je     0x00007fae20b84a81
+  0x00007fae20b847bd: mov    0xc(%r12,%r11,8),%ebp
+  0x00007fae20b847c2: cmp    %r10d,%ebp
+  0x00007fae20b847c5: je     0x00007fae20b848eb
+  0x00007fae20b847cb: test   %ebp,%ebp
+  0x00007fae20b847cd: jl     0x00007fae20b84e00
+  0x00007fae20b847d3: mov    0x18(%r12,%r11,8),%r8d
+  0x00007fae20b847d8: test   %r8d,%r8d
+  0x00007fae20b847db: je     0x00007fae20b84a81
+  0x00007fae20b847e1: lea    (%r12,%r8,8),%r11
+  0x00007fae20b847e5: mov    $0x1,%edx
+  0x00007fae20b847ea: mov    0xc(%r11),%ecx
+  0x00007fae20b847ee: mov    0x108(%r15),%r8    ; ImmutableOopMap{r11=Oop r14=Oop }
+                                                ;*if_icmpne {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@127 (line 946)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+
+  0x00007fae20b847f5: test   %eax,(%r8)         ;   {poll}
+  0x00007fae20b847f8: cmp    %r10d,%ecx
+  0x00007fae20b847fb: jne    0x00007fae20b84c10
+  0x00007fae20b84801: mov    0x10(%r11),%ebp
+  0x00007fae20b84805: mov    %rbp,%r8
+  0x00007fae20b84808: shl    $0x3,%r8
+  0x00007fae20b8480c: cmp    %r14,%r8
+  0x00007fae20b8480f: je     0x00007fae20b84a75
+  0x00007fae20b84815: mov    0x8(%r12,%rbp,8),%r8d  ; implicit exception: dispatches to 0x00007fae20b85060
+  0x00007fae20b8481a: cmp    $0x41218,%r8d      ;   {metadata('java/lang/invoke/MethodType$ConcurrentWeakInternSet$WeakEntry')}
+  0x00007fae20b84821: jne    0x00007fae20b84f60
+  0x00007fae20b84827: lea    (%r12,%rbp,8),%rbx
+  0x00007fae20b8482b: mov    0xc(%rbx),%ecx
+  0x00007fae20b8482e: mov    0xc(%r14),%ebp
+  0x00007fae20b84832: mov    0x8(%r12,%rcx,8),%r8d  ; implicit exception: dispatches to 0x00007fae20b85078
+  0x00007fae20b84837: mov    0x8(%r12,%rbp,8),%r9d  ; implicit exception: dispatches to 0x00007fae20b8509c
+  0x00007fae20b8483c: cmp    $0xc7a0,%r9d       ;   {metadata('java/lang/invoke/MethodType')}
+  0x00007fae20b84843: jne    0x00007fae20b84de4
+  0x00007fae20b84849: lea    (%r12,%rbp,8),%rdi
+  0x00007fae20b8484d: lea    (%r12,%rcx,8),%r9
+  0x00007fae20b84851: cmp    %r9,%rdi
+  0x00007fae20b84854: je     0x00007fae20b84a75
+  0x00007fae20b8485a: cmp    $0xc7a0,%r8d       ;   {metadata('java/lang/invoke/MethodType')}
+  0x00007fae20b84861: jne    0x00007fae20b84f9c
+  0x00007fae20b84867: mov    0xc(%rdi),%ecx
+  0x00007fae20b8486a: mov    0xc(%r9),%ebp
+  0x00007fae20b8486e: cmp    %ebp,%ecx
+  0x00007fae20b84870: jne    0x00007fae20b84e94
+  0x00007fae20b84876: mov    0x10(%r9),%ebx
+  0x00007fae20b8487a: mov    0x10(%rdi),%edi
+  0x00007fae20b8487d: cmp    %ebx,%edi
+  0x00007fae20b8487f: je     0x00007fae20b84a75
+  0x00007fae20b84885: mov    0xc(%r12,%rdi,8),%eax  ; implicit exception: dispatches to 0x00007fae20b85100
+  0x00007fae20b8488a: mov    0xc(%r12,%rbx,8),%r8d  ; implicit exception: dispatches to 0x00007fae20b85120
+  0x00007fae20b8488f: cmp    %eax,%r8d
+  0x00007fae20b84892: jne    0x00007fae20b84bfa
+  0x00007fae20b84898: test   %eax,%eax
+  0x00007fae20b8489a: jbe    0x00007fae20b84a75
+  0x00007fae20b848a0: mov    %eax,%r13d
+  0x00007fae20b848a3: dec    %r13d
+  0x00007fae20b848a6: cmp    %eax,%r13d
+  0x00007fae20b848a9: jae    0x00007fae20b84e70
+  0x00007fae20b848af: test   %r8d,%r8d
+  0x00007fae20b848b2: jbe    0x00007fae20b84e70
+  0x00007fae20b848b8: cmp    %r8d,%r13d
+  0x00007fae20b848bb: jae    0x00007fae20b84e70
+  0x00007fae20b848c1: mov    0x10(%r12,%rbx,8),%r9d
+  0x00007fae20b848c6: mov    0x10(%r12,%rdi,8),%r8d
+  0x00007fae20b848cb: cmp    %r9d,%r8d
+  0x00007fae20b848ce: jne    0x00007fae20b84c54
+  0x00007fae20b848d4: lea    (%r12,%rbx,8),%rcx
+  0x00007fae20b848d8: lea    (%r12,%rdi,8),%rsi
+  0x00007fae20b848dc: cmp    $0x1,%r13d
+  0x00007fae20b848e0: jle    0x00007fae20b84a57
+  0x00007fae20b848e6: jmpq   0x00007fae20b849e4
+  0x00007fae20b848eb: mov    0x10(%r12,%r11,8),%ebp
+  0x00007fae20b848f0: mov    %rbp,%r8
+  0x00007fae20b848f3: shl    $0x3,%r8
+  0x00007fae20b848f7: cmp    %r14,%r8
+  0x00007fae20b848fa: je     0x00007fae20b84b36
+  0x00007fae20b84900: mov    0x8(%r12,%rbp,8),%r9d  ; implicit exception: dispatches to 0x00007fae20b85000
+  0x00007fae20b84905: cmp    $0x41218,%r9d      ;   {metadata('java/lang/invoke/MethodType$ConcurrentWeakInternSet$WeakEntry')}
+  0x00007fae20b8490c: jne    0x00007fae20b84f44
+  0x00007fae20b84912: lea    (%r12,%rbp,8),%rcx
+  0x00007fae20b84916: mov    0xc(%rcx),%r8d
+  0x00007fae20b8491a: mov    0xc(%r14),%ebp
+  0x00007fae20b8491e: mov    0x8(%r12,%r8,8),%esi  ; implicit exception: dispatches to 0x00007fae20b85018
+  0x00007fae20b84923: mov    0x8(%r12,%rbp,8),%r9d  ; implicit exception: dispatches to 0x00007fae20b8503c
+  0x00007fae20b84928: cmp    $0xc7a0,%r9d       ;   {metadata('java/lang/invoke/MethodType')}
+  0x00007fae20b8492f: jne    0x00007fae20b84dc4
+  0x00007fae20b84935: lea    (%r12,%rbp,8),%rbx
+  0x00007fae20b84939: lea    (%r12,%r8,8),%r9
+  0x00007fae20b8493d: cmp    %r9,%rbx
+  0x00007fae20b84940: je     0x00007fae20b84b36
+  0x00007fae20b84946: cmp    $0xc7a0,%esi       ;   {metadata('java/lang/invoke/MethodType')}
+  0x00007fae20b8494c: jne    0x00007fae20b84f7c
+  0x00007fae20b84952: mov    0xc(%rbx),%r8d
+  0x00007fae20b84956: mov    0xc(%r9),%ebp
+  0x00007fae20b8495a: cmp    %ebp,%r8d
+  0x00007fae20b8495d: jne    0x00007fae20b84e46
+  0x00007fae20b84963: mov    0x10(%r9),%ecx
+  0x00007fae20b84967: mov    0x10(%rbx),%ebx
+  0x00007fae20b8496a: cmp    %ecx,%ebx
+  0x00007fae20b8496c: je     0x00007fae20b84b36
+  0x00007fae20b84972: mov    0xc(%r12,%rbx,8),%r8d  ; implicit exception: dispatches to 0x00007fae20b850c0
+  0x00007fae20b84977: mov    0xc(%r12,%rcx,8),%r9d  ; implicit exception: dispatches to 0x00007fae20b850e0
+  0x00007fae20b8497c: cmp    %r8d,%r9d
+  0x00007fae20b8497f: jne    0x00007fae20b84bb6
+  0x00007fae20b84985: test   %r8d,%r8d
+  0x00007fae20b84988: jbe    0x00007fae20b84b36
+  0x00007fae20b8498e: mov    %r8d,%esi
+  0x00007fae20b84991: dec    %esi
+  0x00007fae20b84993: cmp    %r8d,%esi
+  0x00007fae20b84996: jae    0x00007fae20b84e18
+  0x00007fae20b8499c: test   %r9d,%r9d
+  0x00007fae20b8499f: jbe    0x00007fae20b84e18
+  0x00007fae20b849a5: cmp    %r9d,%esi
+  0x00007fae20b849a8: jae    0x00007fae20b84e18
+  0x00007fae20b849ae: mov    0x10(%r12,%rcx,8),%r9d
+  0x00007fae20b849b3: mov    0x10(%r12,%rbx,8),%r13d
+  0x00007fae20b849b8: cmp    %r9d,%r13d
+  0x00007fae20b849bb: jne    0x00007fae20b84c26
+  0x00007fae20b849c1: lea    (%r12,%rcx,8),%rdx
+  0x00007fae20b849c5: lea    (%r12,%rbx,8),%rax
+  0x00007fae20b849c9: cmp    $0x1,%esi
+  0x00007fae20b849cc: jle    0x00007fae20b84e3c
+  0x00007fae20b849d2: lea    (%r12,%r11,8),%rbp
+  0x00007fae20b849d6: mov    $0x1,%edi
+  0x00007fae20b849db: jmpq   0x00007fae20b84a92
+  0x00007fae20b849e0: mov    (%rsp),%r10d
+  0x00007fae20b849e4: mov    %eax,%r8d
+  0x00007fae20b849e7: sub    %edx,%r8d
+  0x00007fae20b849ea: dec    %r8d
+  0x00007fae20b849ed: mov    $0x7d0,%r9d
+  0x00007fae20b849f3: cmp    %r9d,%r8d
+  0x00007fae20b849f6: cmovg  %r9d,%r8d
+  0x00007fae20b849fa: add    %edx,%r8d
+  0x00007fae20b849fd: mov    %r10d,(%rsp)
+  0x00007fae20b84a01: nopl   0x0(%rax,%rax,1)
+  0x00007fae20b84a09: nopl   0x0(%rax)
+  0x00007fae20b84a10: mov    0x10(%rcx,%rdx,4),%r9d
+  0x00007fae20b84a15: mov    0x10(%rsi,%rdx,4),%r10d
+  0x00007fae20b84a1a: mov    %r10d,%ebp
+  0x00007fae20b84a1d: cmp    %r9d,%r10d
+  0x00007fae20b84a20: jne    0x00007fae20b84bcc
+  0x00007fae20b84a26: mov    0x14(%rcx,%rdx,4),%r9d
+  0x00007fae20b84a2b: mov    0x14(%rsi,%rdx,4),%r10d
+  0x00007fae20b84a30: mov    %r10d,%ebp
+  0x00007fae20b84a33: cmp    %r9d,%r10d
+  0x00007fae20b84a36: jne    0x00007fae20b84be4
+  0x00007fae20b84a3c: add    $0x2,%edx
+  0x00007fae20b84a3f: cmp    %r8d,%edx
+  0x00007fae20b84a42: jl     0x00007fae20b84a10
+  0x00007fae20b84a44: mov    0x108(%r15),%r10   ; ImmutableOopMap{r11=Oop rcx=Oop rbx=NarrowOop rdi=NarrowOop rsi=Oop r14=Oop }
+                                                ;*goto {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.Arrays::equals@52 (line 3186)
+                                                ; - java.lang.invoke.MethodType::equals@19 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+
+  0x00007fae20b84a4b: test   %eax,(%r10)        ;   {poll}
+  0x00007fae20b84a4e: cmp    %r13d,%edx
+  0x00007fae20b84a51: jl     0x00007fae20b849e0
+  0x00007fae20b84a53: mov    (%rsp),%r10d
+  0x00007fae20b84a57: cmp    %eax,%edx
+  0x00007fae20b84a59: jge    0x00007fae20b84a75
+  0x00007fae20b84a5b: nop
+  0x00007fae20b84a5c: mov    0x10(%rcx,%rdx,4),%r9d
+  0x00007fae20b84a61: mov    0x10(%rsi,%rdx,4),%r8d
+  0x00007fae20b84a66: cmp    %r9d,%r8d
+  0x00007fae20b84a69: jne    0x00007fae20b84c68
+  0x00007fae20b84a6f: inc    %edx
+  0x00007fae20b84a71: cmp    %eax,%edx
+  0x00007fae20b84a73: jl     0x00007fae20b84a5c
+  0x00007fae20b84a75: mov    0x14(%r11),%ebp
+  0x00007fae20b84a79: test   %ebp,%ebp
+  0x00007fae20b84a7b: jne    0x00007fae20b84b43
+  0x00007fae20b84a81: xor    %eax,%eax
+  0x00007fae20b84a83: jmpq   0x00007fae20b84b69
+  0x00007fae20b84a88: mov    0x4(%rsp),%r10d
+  0x00007fae20b84a8d: mov    0x8(%rsp),%r11d
+  0x00007fae20b84a92: mov    %r8d,%r13d
+  0x00007fae20b84a95: sub    %edi,%r13d
+  0x00007fae20b84a98: dec    %r13d
+  0x00007fae20b84a9b: mov    $0x7d0,%r9d
+  0x00007fae20b84aa1: cmp    %r9d,%r13d
+  0x00007fae20b84aa4: cmovg  %r9d,%r13d
+  0x00007fae20b84aa8: add    %edi,%r13d
+  0x00007fae20b84aab: mov    %r10d,0x4(%rsp)
+  0x00007fae20b84ab0: mov    %r11d,0x8(%rsp)
+  0x00007fae20b84ab5: data16 data16 nopw 0x0(%rax,%rax,1)
+  0x00007fae20b84ac0: mov    0x10(%rdx,%rdi,4),%r9d
+  0x00007fae20b84ac5: mov    0x10(%rax,%rdi,4),%r10d
+  0x00007fae20b84aca: mov    %r10d,(%rsp)
+  0x00007fae20b84ace: cmp    %r9d,%r10d
+  0x00007fae20b84ad1: jne    0x00007fae20b84b79
+  0x00007fae20b84ad7: mov    0x14(%rdx,%rdi,4),%r9d
+  0x00007fae20b84adc: mov    0x14(%rax,%rdi,4),%r11d
+  0x00007fae20b84ae1: mov    %r11d,(%rsp)
+  0x00007fae20b84ae5: mov    %r11d,%r10d
+  0x00007fae20b84ae8: cmp    %r9d,%r10d
+  0x00007fae20b84aeb: jne    0x00007fae20b84b97
+  0x00007fae20b84af1: add    $0x2,%edi
+  0x00007fae20b84af4: cmp    %r13d,%edi
+  0x00007fae20b84af7: jl     0x00007fae20b84ac0
+  0x00007fae20b84af9: mov    0x108(%r15),%r10   ; ImmutableOopMap{rcx=NarrowOop rbx=NarrowOop rdx=Oop rax=Oop rbp=Oop r14=Oop [8]=NarrowOop }
+                                                ;*goto {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.Arrays::equals@52 (line 3186)
+                                                ; - java.lang.invoke.MethodType::equals@19 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+
+  0x00007fae20b84b00: test   %eax,(%r10)        ;   {poll}
+  0x00007fae20b84b03: cmp    %esi,%edi
+  0x00007fae20b84b05: jl     0x00007fae20b84a88
+  0x00007fae20b84b0b: mov    0x4(%rsp),%r10d
+  0x00007fae20b84b10: mov    0x8(%rsp),%r11d
+  0x00007fae20b84b15: cmp    %r8d,%edi
+  0x00007fae20b84b18: jge    0x00007fae20b84b36
+  0x00007fae20b84b1a: xchg   %ax,%ax
+  0x00007fae20b84b1c: mov    0x10(%rdx,%rdi,4),%r9d
+  0x00007fae20b84b21: mov    0x10(%rax,%rdi,4),%r13d
+  0x00007fae20b84b26: cmp    %r9d,%r13d
+  0x00007fae20b84b29: jne    0x00007fae20b84c3d
+  0x00007fae20b84b2f: inc    %edi
+  0x00007fae20b84b31: cmp    %r8d,%edi
+  0x00007fae20b84b34: jl     0x00007fae20b84b1c
+  0x00007fae20b84b36: mov    0x14(%r12,%r11,8),%ebp
+  0x00007fae20b84b3b: test   %ebp,%ebp
+  0x00007fae20b84b3d: je     0x00007fae20b84a81
+  0x00007fae20b84b43: mov    0x8(%r12,%rbp,8),%r10d
+  0x00007fae20b84b48: cmp    $0x41218,%r10d     ;   {metadata('java/lang/invoke/MethodType$ConcurrentWeakInternSet$WeakEntry')}
+  0x00007fae20b84b4f: jne    0x00007fae20b84fbc
+  0x00007fae20b84b55: lea    (%r12,%rbp,8),%r10
+  0x00007fae20b84b59: mov    0xc(%r10),%ebp
+  0x00007fae20b84b5d: test   %ebp,%ebp
+  0x00007fae20b84b5f: je     0x00007fae20b84db8
+  0x00007fae20b84b65: lea    (%r12,%rbp,8),%rax
+  0x00007fae20b84b69: add    $0x40,%rsp
+  0x00007fae20b84b6d: pop    %rbp
+  0x00007fae20b84b6e: mov    0x108(%r15),%r10
+  0x00007fae20b84b75: test   %eax,(%r10)        ;   {poll_return}
+  0x00007fae20b84b78: retq   
+  0x00007fae20b84b79: test   %r10d,%r10d
+  0x00007fae20b84b7c: je     0x00007fae20b84ebe
+  0x00007fae20b84b82: cmp    %r9d,%r10d
+  0x00007fae20b84b85: je     0x00007fae20b84ad7
+  0x00007fae20b84b8b: mov    0x4(%rsp),%r10d
+  0x00007fae20b84b90: mov    0x8(%rsp),%r11d
+  0x00007fae20b84b95: jmp    0x00007fae20b84bb6
+  0x00007fae20b84b97: test   %r10d,%r10d
+  0x00007fae20b84b9a: je     0x00007fae20b84ebc
+  0x00007fae20b84ba0: mov    %r10d,%r11d
+  0x00007fae20b84ba3: cmp    %r9d,%r11d
+  0x00007fae20b84ba6: je     0x00007fae20b84af1
+  0x00007fae20b84bac: mov    0x4(%rsp),%r10d
+  0x00007fae20b84bb1: mov    0x8(%rsp),%r11d
+  0x00007fae20b84bb6: mov    $0xffffff4d,%esi
+  0x00007fae20b84bbb: mov    %r14,%rbp
+  0x00007fae20b84bbe: mov    %r11d,(%rsp)
+  0x00007fae20b84bc2: mov    %r10d,0x4(%rsp)
+  0x00007fae20b84bc7: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=NarrowOop }
+                                                ;*ifeq {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::equals@22 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84bcc: test   %r10d,%r10d
+  0x00007fae20b84bcf: je     0x00007fae20b84f02
+  0x00007fae20b84bd5: cmp    %r9d,%ebp
+  0x00007fae20b84bd8: je     0x00007fae20b84a26
+  0x00007fae20b84bde: mov    (%rsp),%r10d
+  0x00007fae20b84be2: jmp    0x00007fae20b84bfa
+  0x00007fae20b84be4: test   %r10d,%r10d
+  0x00007fae20b84be7: je     0x00007fae20b84f00
+  0x00007fae20b84bed: cmp    %r9d,%ebp
+  0x00007fae20b84bf0: je     0x00007fae20b84a3c
+  0x00007fae20b84bf6: mov    (%rsp),%r10d
+  0x00007fae20b84bfa: mov    $0xffffff4d,%esi
+  0x00007fae20b84bff: mov    %r14,%rbp
+  0x00007fae20b84c02: mov    %r11,(%rsp)
+  0x00007fae20b84c06: mov    %r10d,0x8(%rsp)
+  0x00007fae20b84c0b: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=Oop }
+                                                ;*ifeq {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::equals@22 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84c10: mov    0x18(%r11),%r11d
+  0x00007fae20b84c14: test   %r11d,%r11d
+  0x00007fae20b84c17: je     0x00007fae20b84a81
+  0x00007fae20b84c1d: shl    $0x3,%r11
+  0x00007fae20b84c21: jmpq   0x00007fae20b847ea
+  0x00007fae20b84c26: test   %r13d,%r13d
+  0x00007fae20b84c29: je     0x00007fae20b84f3c
+  0x00007fae20b84c2f: cmp    %r9d,%r13d
+  0x00007fae20b84c32: je     0x00007fae20b849c1
+  0x00007fae20b84c38: jmpq   0x00007fae20b84bb6
+  0x00007fae20b84c3d: test   %r13d,%r13d
+  0x00007fae20b84c40: je     0x00007fae20b84ecc
+  0x00007fae20b84c46: cmp    %r9d,%r13d
+  0x00007fae20b84c49: je     0x00007fae20b84b2f
+  0x00007fae20b84c4f: jmpq   0x00007fae20b84bb6
+  0x00007fae20b84c54: test   %r8d,%r8d
+  0x00007fae20b84c57: je     0x00007fae20b84f40
+  0x00007fae20b84c5d: cmp    %r9d,%r8d
+  0x00007fae20b84c60: je     0x00007fae20b848d4
+  0x00007fae20b84c66: jmp    0x00007fae20b84bfa
+  0x00007fae20b84c68: test   %r8d,%r8d
+  0x00007fae20b84c6b: je     0x00007fae20b84f09
+  0x00007fae20b84c71: cmp    %r9d,%r8d
+  0x00007fae20b84c74: je     0x00007fae20b84a6f
+  0x00007fae20b84c7a: jmpq   0x00007fae20b84bfa
+  0x00007fae20b84c7f: mov    %edi,0x18(%rsp)
+  0x00007fae20b84c83: mov    %rbx,0x10(%rsp)
+  0x00007fae20b84c88: mov    %ecx,0x4(%rsp)
+  0x00007fae20b84c8c: mov    %r14,0x8(%rsp)
+  0x00007fae20b84c91: mov    %r9d,(%rsp)
+  0x00007fae20b84c95: xchg   %ax,%ax
+  0x00007fae20b84c97: callq  0x00007fae20ac8ae8  ; ImmutableOopMap{[0]=NarrowOop [8]=Oop [16]=Oop }
+                                                ;*invokevirtual hashCode {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::hashCode@40 (line 814)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::<init>@7 (line 1333)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@25 (line 1279)
+                                                ;   {optimized virtual_call}
+  0x00007fae20b84c9c: mov    (%rsp),%r9d
+  0x00007fae20b84ca0: mov    0x8(%rsp),%r14
+  0x00007fae20b84ca5: mov    %eax,%r8d
+  0x00007fae20b84ca8: mov    0x4(%rsp),%ecx
+  0x00007fae20b84cac: mov    0x10(%rsp),%rbx
+  0x00007fae20b84cb1: mov    0x18(%rsp),%edi
+  0x00007fae20b84cb5: jmpq   0x00007fae20b84756
+  0x00007fae20b84cba: mov    %r14,0x8(%rsp)
+  0x00007fae20b84cbf: mov    %r9d,(%rsp)
+  0x00007fae20b84cc3: callq  0x00007fae20ac8ae8  ; ImmutableOopMap{rbp=Oop [0]=NarrowOop [8]=Oop }
+                                                ;*invokevirtual hashCode {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::hashCode@6 (line 812)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::<init>@7 (line 1333)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@25 (line 1279)
+                                                ;   {optimized virtual_call}
+  0x00007fae20b84cc8: mov    (%rsp),%r9d
+  0x00007fae20b84ccc: mov    0x8(%rsp),%r14
+  0x00007fae20b84cd1: mov    %eax,%r8d
+  0x00007fae20b84cd4: jmpq   0x00007fae20b846e6
+  0x00007fae20b84cd9: mov    %r9d,0x4(%rsp)
+  0x00007fae20b84cde: mov    %r11d,(%rsp)
+  0x00007fae20b84ce2: mov    %rdx,%rbp
+  0x00007fae20b84ce5: movabs $0x800041218,%rsi  ;   {metadata('java/lang/invoke/MethodType$ConcurrentWeakInternSet$WeakEntry')}
+  0x00007fae20b84cef: callq  0x00007fae190f6000  ; ImmutableOopMap{rbp=Oop [4]=NarrowOop }
+                                                ;*new {reexecute=0 rethrow=0 return_oop=1}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@20 (line 1279)
+                                                ;   {runtime_call _new_instance_Java}
+  0x00007fae20b84cf4: mov    %rbp,%rdx
+  0x00007fae20b84cf7: mov    (%rsp),%r11d
+  0x00007fae20b84cfb: mov    0x4(%rsp),%r9d
+  0x00007fae20b84d00: mov    %rax,%r14
+  0x00007fae20b84d03: jmpq   0x00007fae20b84681
+  0x00007fae20b84d08: mov    $0xfffffff6,%esi
+  0x00007fae20b84d0d: xchg   %ax,%ax
+  0x00007fae20b84d0f: callq  0x00007fae19049e00  ; ImmutableOopMap{}
+                                                ;*invokevirtual hashCode {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::hashCode@40 (line 814)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::<init>@7 (line 1333)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@25 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84d14: mov    $0xfffffff6,%esi
+  0x00007fae20b84d19: xchg   %ax,%ax
+  0x00007fae20b84d1b: callq  0x00007fae19049e00  ; ImmutableOopMap{}
+                                                ;*invokevirtual hashCode {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::hashCode@6 (line 812)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::<init>@7 (line 1333)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@25 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84d20: mov    $0xffffffde,%esi
+  0x00007fae20b84d25: mov    %rdx,0x8(%rsp)
+  0x00007fae20b84d2a: mov    %r10,0x10(%rsp)
+  0x00007fae20b84d2f: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [8]=Oop [16]=Oop }
+                                                ;*invokevirtual poll {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::expungeStaleElements@4 (line 1317)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@13 (line 1277)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84d34: mov    $0xffffffde,%esi
+  0x00007fae20b84d39: mov    %r9d,%ebp
+  0x00007fae20b84d3c: mov    %r14,0x8(%rsp)
+  0x00007fae20b84d41: mov    %rdx,0x10(%rsp)
+  0x00007fae20b84d46: nop
+  0x00007fae20b84d47: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [8]=Oop [16]=Oop }
+                                                ;*invokevirtual hashCode {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::<init>@7 (line 1333)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@25 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84d4c: mov    $0xffffffde,%esi
+  0x00007fae20b84d51: mov    %r9d,%ebp
+  0x00007fae20b84d54: mov    %r14,(%rsp)
+  0x00007fae20b84d58: data16 xchg %ax,%ax
+  0x00007fae20b84d5b: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [0]=Oop }
+                                                ;*invokeinterface get {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84d60: mov    $0xffffff7e,%esi
+  0x00007fae20b84d65: mov    %r9d,%ebp
+  0x00007fae20b84d68: mov    %r14,0x8(%rsp)
+  0x00007fae20b84d6d: mov    %r8d,0x10(%rsp)
+  0x00007fae20b84d72: mov    %r11d,0x14(%rsp)
+  0x00007fae20b84d77: mov    %ecx,0x1c(%rsp)
+  0x00007fae20b84d7b: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [8]=Oop [20]=NarrowOop }
+                                                ;*if_icmpge {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::hashCode@25 (line 813)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::<init>@7 (line 1333)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@25 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84d80: mov    $0xffffff4d,%esi
+  0x00007fae20b84d85: mov    %rdx,0x8(%rsp)
+  0x00007fae20b84d8a: mov    %r10,0x10(%rsp)
+  0x00007fae20b84d8f: mov    %r8,0x18(%rsp)
+  0x00007fae20b84d94: data16 xchg %ax,%ax
+  0x00007fae20b84d97: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [8]=Oop [16]=Oop [24]=Oop }
+                                                ;*ifnonnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.ref.ReferenceQueue::poll@4 (line 117)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::expungeStaleElements@4 (line 1317)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@13 (line 1277)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84d9c: mov    $0xffffff4d,%esi
+  0x00007fae20b84da1: mov    %r14,%rbp
+  0x00007fae20b84da4: mov    %ebx,(%rsp)
+  0x00007fae20b84da7: mov    %r10d,0x8(%rsp)
+  0x00007fae20b84dac: mov    %ecx,0xc(%rsp)
+  0x00007fae20b84db0: data16 xchg %ax,%ax
+  0x00007fae20b84db3: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=NarrowOop }
+                                                ;*ifle {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@23 (line 937)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84db8: mov    $0xffffff4d,%esi
+  0x00007fae20b84dbd: xchg   %ax,%ax
+  0x00007fae20b84dbf: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop }
+                                                ;*ifnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@47 (line 1282)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84dc4: mov    $0xffffffde,%esi
+  0x00007fae20b84dc9: mov    %r14,(%rsp)
+  0x00007fae20b84dcd: mov    %r11d,0x8(%rsp)
+  0x00007fae20b84dd2: mov    %r10d,0xc(%rsp)
+  0x00007fae20b84dd7: mov    %r8d,0x10(%rsp)
+  0x00007fae20b84ddc: data16 xchg %ax,%ax
+  0x00007fae20b84ddf: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [0]=Oop [8]=NarrowOop [16]=NarrowOop }
+                                                ;*invokevirtual equals {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84de4: mov    $0xffffffde,%esi
+  0x00007fae20b84de9: mov    %r14,(%rsp)
+  0x00007fae20b84ded: mov    %r11,0x8(%rsp)
+  0x00007fae20b84df2: mov    %r10d,0x10(%rsp)
+  0x00007fae20b84df7: mov    %ecx,0x14(%rsp)
+  0x00007fae20b84dfb: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [0]=Oop [8]=Oop [20]=NarrowOop }
+                                                ;*invokevirtual equals {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84e00: mov    $0xffffff4d,%esi
+  0x00007fae20b84e05: mov    %r14,(%rsp)
+  0x00007fae20b84e09: mov    %r11d,0x8(%rsp)
+  0x00007fae20b84e0e: mov    %r10d,0xc(%rsp)
+  0x00007fae20b84e13: callq  0x00007fae19049e00  ; ImmutableOopMap{[0]=Oop [8]=NarrowOop }
+                                                ;*ifge {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@86 (line 943)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84e18: mov    $0xffffff7e,%esi
+  0x00007fae20b84e1d: mov    %r14,%rbp
+  0x00007fae20b84e20: mov    %r11d,(%rsp)
+  0x00007fae20b84e24: mov    %r10d,0x4(%rsp)
+  0x00007fae20b84e29: mov    %ebx,0x8(%rsp)
+  0x00007fae20b84e2d: mov    %ecx,0xc(%rsp)
+  0x00007fae20b84e31: mov    %r8d,0x14(%rsp)
+  0x00007fae20b84e36: nop
+  0x00007fae20b84e37: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=NarrowOop [8]=NarrowOop [12]=NarrowOop }
+                                                ;*if_icmpge {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.Arrays::equals@32 (line 3186)
+                                                ; - java.lang.invoke.MethodType::equals@19 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84e3c: mov    $0x1,%edi
+  0x00007fae20b84e41: jmpq   0x00007fae20b84b15
+  0x00007fae20b84e46: mov    $0xffffff4d,%esi
+  0x00007fae20b84e4b: mov    %r14,(%rsp)
+  0x00007fae20b84e4f: mov    %r11d,0x8(%rsp)
+  0x00007fae20b84e54: mov    %r10d,0xc(%rsp)
+  0x00007fae20b84e59: mov    %rbx,0x10(%rsp)
+  0x00007fae20b84e5e: mov    %r9,0x18(%rsp)
+  0x00007fae20b84e63: mov    %r8d,0x20(%rsp)
+  0x00007fae20b84e68: data16 xchg %ax,%ax
+  0x00007fae20b84e6b: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [0]=Oop [8]=NarrowOop [16]=Oop [24]=Oop [32]=NarrowOop }
+                                                ;*if_acmpne {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::equals@8 (line 796)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84e70: mov    $0xffffff7e,%esi
+  0x00007fae20b84e75: mov    %r14,%rbp
+  0x00007fae20b84e78: mov    %r11,(%rsp)
+  0x00007fae20b84e7c: mov    %r10d,0x8(%rsp)
+  0x00007fae20b84e81: mov    %edi,0xc(%rsp)
+  0x00007fae20b84e85: mov    %ebx,0x10(%rsp)
+  0x00007fae20b84e89: mov    %eax,0x18(%rsp)
+  0x00007fae20b84e8d: xchg   %ax,%ax
+  0x00007fae20b84e8f: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=Oop [12]=NarrowOop [16]=NarrowOop }
+                                                ;*if_icmpge {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.Arrays::equals@32 (line 3186)
+                                                ; - java.lang.invoke.MethodType::equals@19 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84e94: mov    $0xffffff4d,%esi
+  0x00007fae20b84e99: mov    %r14,(%rsp)
+  0x00007fae20b84e9d: mov    %r11,0x8(%rsp)
+  0x00007fae20b84ea2: mov    %r10d,0x10(%rsp)
+  0x00007fae20b84ea7: mov    %rdi,0x18(%rsp)
+  0x00007fae20b84eac: mov    %r9,0x20(%rsp)
+  0x00007fae20b84eb1: mov    %ecx,0x14(%rsp)
+  0x00007fae20b84eb5: xchg   %ax,%ax
+  0x00007fae20b84eb7: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [0]=Oop [8]=Oop [20]=NarrowOop [24]=Oop [32]=Oop }
+                                                ;*if_acmpne {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::equals@8 (line 796)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84ebc: inc    %edi
+  0x00007fae20b84ebe: mov    0x4(%rsp),%r10d
+  0x00007fae20b84ec3: mov    0x8(%rsp),%r11d
+  0x00007fae20b84ec8: mov    (%rsp),%r13d
+  0x00007fae20b84ecc: mov    $0xffffff4d,%esi
+  0x00007fae20b84ed1: mov    %r14,%rbp
+  0x00007fae20b84ed4: mov    %r11d,(%rsp)
+  0x00007fae20b84ed8: mov    %r10d,0x4(%rsp)
+  0x00007fae20b84edd: mov    %ebx,0x8(%rsp)
+  0x00007fae20b84ee1: mov    %ecx,0xc(%rsp)
+  0x00007fae20b84ee5: mov    %r8d,0x10(%rsp)
+  0x00007fae20b84eea: mov    %edi,0x14(%rsp)
+  0x00007fae20b84eee: mov    %r9d,0x1c(%rsp)
+  0x00007fae20b84ef3: mov    %r13d,0x20(%rsp)
+  0x00007fae20b84ef8: data16 xchg %ax,%ax
+  0x00007fae20b84efb: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=NarrowOop [8]=NarrowOop [12]=NarrowOop [28]=NarrowOop [32]=NarrowOop }
+                                                ;*ifnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.Objects::equals@6 (line 77)
+                                                ; - java.util.Arrays::equals@41 (line 3187)
+                                                ; - java.lang.invoke.MethodType::equals@19 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84f00: inc    %edx
+  0x00007fae20b84f02: mov    (%rsp),%r10d
+  0x00007fae20b84f06: mov    %ebp,%r8d
+  0x00007fae20b84f09: mov    $0xffffff4d,%esi
+  0x00007fae20b84f0e: mov    %r14,%rbp
+  0x00007fae20b84f11: mov    %r11,(%rsp)
+  0x00007fae20b84f15: mov    %r10d,0x8(%rsp)
+  0x00007fae20b84f1a: mov    %edi,0xc(%rsp)
+  0x00007fae20b84f1e: mov    %ebx,0x10(%rsp)
+  0x00007fae20b84f22: mov    %eax,0x14(%rsp)
+  0x00007fae20b84f26: mov    %edx,0x18(%rsp)
+  0x00007fae20b84f2a: mov    %r9d,0x20(%rsp)
+  0x00007fae20b84f2f: mov    %r8d,0x24(%rsp)
+  0x00007fae20b84f34: data16 xchg %ax,%ax
+  0x00007fae20b84f37: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=Oop [12]=NarrowOop [16]=NarrowOop [32]=NarrowOop [36]=NarrowOop }
+                                                ;*ifnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.Objects::equals@6 (line 77)
+                                                ; - java.util.Arrays::equals@41 (line 3187)
+                                                ; - java.lang.invoke.MethodType::equals@19 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84f3c: xor    %edi,%edi
+  0x00007fae20b84f3e: jmp    0x00007fae20b84ecc
+  0x00007fae20b84f40: xor    %edx,%edx
+  0x00007fae20b84f42: jmp    0x00007fae20b84f09
+  0x00007fae20b84f44: mov    $0xffffffde,%esi
+  0x00007fae20b84f49: mov    %r11d,0x8(%rsp)
+  0x00007fae20b84f4e: mov    %r10d,0xc(%rsp)
+  0x00007fae20b84f53: mov    %r14,0x10(%rsp)
+  0x00007fae20b84f58: data16 xchg %ax,%ax
+  0x00007fae20b84f5b: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [8]=NarrowOop [16]=Oop }
+                                                ;*instanceof {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@1 (line 1338)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84f60: mov    $0xffffffde,%esi
+  0x00007fae20b84f65: mov    %r11,0x8(%rsp)
+  0x00007fae20b84f6a: mov    %r10d,0x10(%rsp)
+  0x00007fae20b84f6f: mov    %r14,0x18(%rsp)
+  0x00007fae20b84f74: data16 xchg %ax,%ax
+  0x00007fae20b84f77: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [8]=Oop [24]=Oop }
+                                                ;*instanceof {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@1 (line 1338)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84f7c: mov    $0xffffffde,%esi
+  0x00007fae20b84f81: mov    %r14,%rbp
+  0x00007fae20b84f84: mov    %r11d,(%rsp)
+  0x00007fae20b84f88: mov    %r10d,0x4(%rsp)
+  0x00007fae20b84f8d: mov    %rbx,0x8(%rsp)
+  0x00007fae20b84f92: mov    %r8d,0x14(%rsp)
+  0x00007fae20b84f97: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=NarrowOop [8]=Oop [20]=NarrowOop }
+                                                ;*instanceof {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::equals@6 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84f9c: mov    $0xffffffde,%esi
+  0x00007fae20b84fa1: mov    %r14,%rbp
+  0x00007fae20b84fa4: mov    %r11,(%rsp)
+  0x00007fae20b84fa8: mov    %r10d,0x8(%rsp)
+  0x00007fae20b84fad: mov    %rdi,0x10(%rsp)
+  0x00007fae20b84fb2: mov    %ecx,0x18(%rsp)
+  0x00007fae20b84fb6: nop
+  0x00007fae20b84fb7: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=Oop [16]=Oop [24]=NarrowOop }
+                                                ;*instanceof {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::equals@6 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84fbc: mov    $0xffffffde,%esi
+  0x00007fae20b84fc1: xchg   %ax,%ax
+  0x00007fae20b84fc3: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop }
+                                                ;*checkcast {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@33 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84fc8: mov    $0xfffffff6,%esi
+  0x00007fae20b84fcd: xchg   %ax,%ax
+  0x00007fae20b84fcf: callq  0x00007fae19049e00  ; ImmutableOopMap{}
+                                                ;*invokevirtual poll {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::expungeStaleElements@4 (line 1317)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@13 (line 1277)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84fd4: mov    $0xfffffff6,%esi
+  0x00007fae20b84fd9: xchg   %ax,%ax
+  0x00007fae20b84fdb: callq  0x00007fae19049e00  ; ImmutableOopMap{}
+                                                ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType::hashCode@17 (line 813)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::<init>@7 (line 1333)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@25 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84fe0: mov    $0xfffffff6,%esi
+  0x00007fae20b84fe5: mov    %r14,%rbp
+  0x00007fae20b84fe8: data16 xchg %ax,%ax
+  0x00007fae20b84feb: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop }
+                                                ;*invokeinterface get {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b84ff0: mov    $0xffffff4d,%esi
+  0x00007fae20b84ff5: mov    %rdx,0x8(%rsp)
+  0x00007fae20b84ffa: nop
+  0x00007fae20b84ffb: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [8]=Oop }
+                                                ;*ifnonnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@1 (line 1276)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b85000: mov    $0xffffff4d,%esi
+  0x00007fae20b85005: mov    %r14,(%rsp)
+  0x00007fae20b85009: mov    %r11d,0x8(%rsp)
+  0x00007fae20b8500e: mov    %r10d,0xc(%rsp)
+  0x00007fae20b85013: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [0]=Oop [8]=NarrowOop }
+                                                ;*ifnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@67 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b85018: mov    $0xffffff4d,%esi
+  0x00007fae20b8501d: mov    %r11d,0x8(%rsp)
+  0x00007fae20b85022: mov    %r10d,0xc(%rsp)
+  0x00007fae20b85027: mov    %r14,0x10(%rsp)
+  0x00007fae20b8502c: mov    %rcx,0x18(%rsp)
+  0x00007fae20b85031: mov    %r8d,0x24(%rsp)
+  0x00007fae20b85036: nop
+  0x00007fae20b85037: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [8]=NarrowOop [16]=Oop [24]=Oop [36]=NarrowOop }
+                                                ;*ifnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@21 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b8503c: mov    $0xffffff4d,%esi
+  0x00007fae20b85041: mov    %r11d,0x8(%rsp)
+  0x00007fae20b85046: mov    %r10d,0xc(%rsp)
+  0x00007fae20b8504b: mov    %r14,0x10(%rsp)
+  0x00007fae20b85050: mov    %rcx,0x18(%rsp)
+  0x00007fae20b85055: mov    %r8d,0x20(%rsp)
+  0x00007fae20b8505a: nop
+  0x00007fae20b8505b: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [8]=NarrowOop [16]=Oop [24]=Oop [32]=NarrowOop }
+                                                ;*ifnonnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@25 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b85060: mov    $0xffffff4d,%esi
+  0x00007fae20b85065: mov    %r14,(%rsp)
+  0x00007fae20b85069: mov    %r11,0x8(%rsp)
+  0x00007fae20b8506e: mov    %r10d,0x10(%rsp)
+  0x00007fae20b85073: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [0]=Oop [8]=Oop }
+                                                ;*ifnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@143 (line 946)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b85078: mov    $0xffffff4d,%esi
+  0x00007fae20b8507d: mov    %r11,0x8(%rsp)
+  0x00007fae20b85082: mov    %r10d,0x10(%rsp)
+  0x00007fae20b85087: mov    %r14,0x18(%rsp)
+  0x00007fae20b8508c: mov    %rbx,0x20(%rsp)
+  0x00007fae20b85091: mov    %ecx,0x28(%rsp)
+  0x00007fae20b85095: xchg   %ax,%ax
+  0x00007fae20b85097: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [8]=Oop [24]=Oop [32]=Oop [40]=NarrowOop }
+                                                ;*ifnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@21 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b8509c: mov    $0xffffff4d,%esi
+  0x00007fae20b850a1: mov    %r11,0x8(%rsp)
+  0x00007fae20b850a6: mov    %r10d,0x10(%rsp)
+  0x00007fae20b850ab: mov    %r14,0x18(%rsp)
+  0x00007fae20b850b0: mov    %rbx,0x20(%rsp)
+  0x00007fae20b850b5: mov    %ecx,0x14(%rsp)
+  0x00007fae20b850b9: xchg   %ax,%ax
+  0x00007fae20b850bb: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=NarrowOop [8]=Oop [20]=NarrowOop [24]=Oop [32]=Oop }
+                                                ;*ifnonnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@25 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b850c0: mov    $0xffffff4d,%esi
+  0x00007fae20b850c5: mov    %r14,%rbp
+  0x00007fae20b850c8: mov    %r11d,(%rsp)
+  0x00007fae20b850cc: mov    %r10d,0x4(%rsp)
+  0x00007fae20b850d1: mov    %ecx,0xc(%rsp)
+  0x00007fae20b850d5: mov    %ebx,0x10(%rsp)
+  0x00007fae20b850d9: xchg   %ax,%ax
+  0x00007fae20b850db: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=NarrowOop [12]=NarrowOop [16]=NarrowOop }
+                                                ;*ifnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.Arrays::equals@8 (line 3179)
+                                                ; - java.lang.invoke.MethodType::equals@19 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b850e0: mov    $0xffffff4d,%esi
+  0x00007fae20b850e5: mov    %r14,%rbp
+  0x00007fae20b850e8: mov    %r11d,(%rsp)
+  0x00007fae20b850ec: mov    %r10d,0x4(%rsp)
+  0x00007fae20b850f1: mov    %ebx,0x8(%rsp)
+  0x00007fae20b850f5: mov    %ecx,0x10(%rsp)
+  0x00007fae20b850f9: xchg   %ax,%ax
+  0x00007fae20b850fb: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=NarrowOop [8]=NarrowOop [16]=NarrowOop }
+                                                ;*ifnonnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.Arrays::equals@12 (line 3179)
+                                                ; - java.lang.invoke.MethodType::equals@19 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@73 (line 940)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b85100: mov    $0xffffff4d,%esi
+  0x00007fae20b85105: mov    %r14,%rbp
+  0x00007fae20b85108: mov    %r11,(%rsp)
+  0x00007fae20b8510c: mov    %r10d,0x8(%rsp)
+  0x00007fae20b85111: mov    %ebx,0x10(%rsp)
+  0x00007fae20b85115: mov    %edi,0x14(%rsp)
+  0x00007fae20b85119: xchg   %ax,%ax
+  0x00007fae20b8511b: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=Oop [16]=NarrowOop [20]=NarrowOop }
+                                                ;*ifnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.Arrays::equals@8 (line 3179)
+                                                ; - java.lang.invoke.MethodType::equals@19 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b85120: mov    $0xffffff4d,%esi
+  0x00007fae20b85125: mov    %r14,%rbp
+  0x00007fae20b85128: mov    %r11,(%rsp)
+  0x00007fae20b8512c: mov    %r10d,0x8(%rsp)
+  0x00007fae20b85131: mov    %edi,0xc(%rsp)
+  0x00007fae20b85135: mov    %ebx,0x14(%rsp)
+  0x00007fae20b85139: xchg   %ax,%ax
+  0x00007fae20b8513b: callq  0x00007fae19049e00  ; ImmutableOopMap{rbp=Oop [0]=Oop [12]=NarrowOop [20]=NarrowOop }
+                                                ;*ifnonnull {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.Arrays::equals@12 (line 3179)
+                                                ; - java.lang.invoke.MethodType::equals@19 (line 797)
+                                                ; - java.lang.invoke.MethodType::equals@17 (line 792)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry::equals@43 (line 1341)
+                                                ; - java.util.concurrent.ConcurrentHashMap::get@149 (line 947)
+                                                ; - java.lang.invoke.MethodType$ConcurrentWeakInternSet::get@28 (line 1279)
+                                                ;   {runtime_call UncommonTrapBlob}
+  0x00007fae20b85140: mov    %rax,%rsi
+  0x00007fae20b85143: jmp    0x00007fae20b8514a
+  0x00007fae20b85145: jmp    0x00007fae20b85147
+  0x00007fae20b85147: mov    %rax,%rsi
+  0x00007fae20b8514a: add    $0x40,%rsp
+  0x00007fae20b8514e: pop    %rbp
+  0x00007fae20b8514f: jmpq   0x00007fae190f9600  ;   {runtime_call _rethrow_Java}
+  0x00007fae20b85154: hlt    
+  0x00007fae20b85155: hlt    
+  0x00007fae20b85156: hlt    
+  0x00007fae20b85157: hlt    
+  0x00007fae20b85158: hlt    
+  0x00007fae20b85159: hlt    
+  0x00007fae20b8515a: hlt    
+  0x00007fae20b8515b: hlt    
+  0x00007fae20b8515c: hlt    
+  0x00007fae20b8515d: hlt    
+  0x00007fae20b8515e: hlt    
+  0x00007fae20b8515f: hlt    
+[Stub Code]
+  0x00007fae20b85160: movabs $0x0,%rbx          ;   {no_reloc}
+  0x00007fae20b8516a: jmpq   0x00007fae20b8516a  ;   {runtime_call}
+  0x00007fae20b8516f: movabs $0x0,%rbx          ;   {static_stub}
+  0x00007fae20b85179: jmpq   0x00007fae20b85179  ;   {runtime_call}
+[Exception Handler]
+  0x00007fae20b8517e: jmpq   0x00007fae19060100  ;   {runtime_call ExceptionBlob}
+[Deopt Handler Code]
+  0x00007fae20b85183: callq  0x00007fae20b85188
+  0x00007fae20b85188: subq   $0x5,(%rsp)
+  0x00007fae20b8518d: jmpq   0x00007fae1904a3a0  ;   {runtime_call DeoptimizationBlob}
+  0x00007fae20b85192: hlt    
+  0x00007fae20b85193: hlt    
+  0x00007fae20b85194: hlt    
+  0x00007fae20b85195: hlt    
+  0x00007fae20b85196: hlt    
+  0x00007fae20b85197: hlt    
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007fac6c010ef0, length=29, elements={
+0x00007fae28027800, 0x00007fae2818d000, 0x00007fae281dc800, 0x00007fae281de800,
+0x00007fae2827e000, 0x00007fae282c9000, 0x00007fae28313800, 0x00007fae2835e000,
+0x00007fae283fe800, 0x00007fae2879a000, 0x00007fae288f3000, 0x00007fae294ce000,
+0x00007fae297c3800, 0x00007fac60016000, 0x00007fac54001800, 0x00007fac54005800,
+0x00007fac5404e800, 0x00007fac54096000, 0x00007fac540de000, 0x00007fac4c18f800,
+0x00007fac4c19a800, 0x00007fac80353800, 0x00007fac6c4f8000, 0x00007fac6c250800,
+0x00007fac6c095000, 0x00007fac6c088000, 0x00007fac6c083000, 0x00007fac6c305000,
+0x00007fac6c010800
+}
+
+Java Threads: ( => current thread )
+  0x00007fae28027800 JavaThread "main" [_thread_blocked, id=25010, stack(0x00007fae2f2a6000,0x00007fae2f3a7000)]
+  0x00007fae2818d000 JavaThread "Reference Handler" daemon [_thread_blocked, id=25012, stack(0x00007fae2e56d000,0x00007fae2e66e000)]
+  0x00007fae281dc800 JavaThread "Finalizer" daemon [_thread_blocked, id=25013, stack(0x00007fae2e46c000,0x00007fae2e56d000)]
+  0x00007fae281de800 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=25014, stack(0x00007fae2e084000,0x00007fae2e185000)]
+  0x00007fae2827e000 JavaThread "Service Thread" daemon [_thread_blocked, id=25015, stack(0x00007fae2df83000,0x00007fae2e084000)]
+  0x00007fae282c9000 JavaThread "C2 CompilerThread0" daemon [_thread_in_native, id=25016, stack(0x00007fae2de82000,0x00007fae2df83000)]
+  0x00007fae28313800 JavaThread "C1 CompilerThread0" daemon [_thread_blocked, id=25017, stack(0x00007fae2dd81000,0x00007fae2de82000)]
+  0x00007fae2835e000 JavaThread "Sweeper thread" daemon [_thread_blocked, id=25018, stack(0x00007fae2dc80000,0x00007fae2dd81000)]
+  0x00007fae283fe800 JavaThread "Common-Cleaner" daemon [_thread_blocked, id=25019, stack(0x00007fae2db53000,0x00007fae2dc54000)]
+  0x00007fae2879a000 JavaThread "Thread-0" [_thread_blocked, id=25025, stack(0x00007fae2d549000,0x00007fae2d64a000)]
+  0x00007fae288f3000 JavaThread "Reference Reaper" daemon [_thread_blocked, id=25026, stack(0x00007fae2d248000,0x00007fae2d349000)]
+  0x00007fae294ce000 JavaThread "MSC service thread 1-1" [_thread_blocked, id=25027, stack(0x00007fae2d951000,0x00007fae2da52000)]
+  0x00007fae297c3800 JavaThread "MSC service thread 1-2" [_thread_blocked, id=25028, stack(0x00007fae2c65a000,0x00007fae2c75b000)]
+  0x00007fac60016000 JavaThread "MSC service thread 1-3" [_thread_blocked, id=25029, stack(0x00007fae2c559000,0x00007fae2c65a000)]
+  0x00007fac54001800 JavaThread "MSC service thread 1-4" [_thread_blocked, id=25030, stack(0x00007fae2c458000,0x00007fae2c559000)]
+  0x00007fac54005800 JavaThread "MSC service thread 1-5" [_thread_blocked, id=25031, stack(0x00007fae2c357000,0x00007fae2c458000)]
+  0x00007fac5404e800 JavaThread "MSC service thread 1-6" [_thread_blocked, id=25032, stack(0x00007fae2c256000,0x00007fae2c357000)]
+  0x00007fac54096000 JavaThread "MSC service thread 1-7" [_thread_blocked, id=25033, stack(0x00007fae2c155000,0x00007fae2c256000)]
+  0x00007fac540de000 JavaThread "MSC service thread 1-8" [_thread_blocked, id=25034, stack(0x00007fae2c054000,0x00007fae2c155000)]
+  0x00007fac4c18f800 JavaThread "Controller Boot Thread" [_thread_in_vm, id=25035, stack(0x00007fac989ff000,0x00007fac98c00000)]
+  0x00007fac4c19a800 JavaThread "ServerService Thread Pool -- 1" [_thread_blocked, id=25036, stack(0x00007fae2da52000,0x00007fae2db53000)]
+  0x00007fac80353800 JavaThread "C2 CompilerThread1" daemon [_thread_blocked, id=25037, stack(0x00007fac988fe000,0x00007fac989ff000)]
+  0x00007fac6c4f8000 JavaThread "ServerService Thread Pool -- 2" [_thread_in_vm, id=25038, stack(0x00007fac987fd000,0x00007fac988fe000)]
+  0x00007fac6c250800 JavaThread "ServerService Thread Pool -- 3" [_thread_blocked, id=25039, stack(0x00007fac986fc000,0x00007fac987fd000)]
+  0x00007fac6c095000 JavaThread "ServerService Thread Pool -- 4" [_thread_in_vm, id=25040, stack(0x00007fac985fb000,0x00007fac986fc000)]
+=>0x00007fac6c088000 JavaThread "ServerService Thread Pool -- 5" [_thread_in_Java, id=25041, stack(0x00007fac984fa000,0x00007fac985fb000)]
+  0x00007fac6c083000 JavaThread "ServerService Thread Pool -- 6" [_thread_in_vm, id=25042, stack(0x00007fac983f9000,0x00007fac984fa000)]
+  0x00007fac6c305000 JavaThread "ServerService Thread Pool -- 7" [_thread_blocked, id=25043, stack(0x00007fac982f8000,0x00007fac983f9000)]
+  0x00007fac6c010800 JavaThread "ServerService Thread Pool -- 8" [_thread_blocked, id=25044, stack(0x00007fac981f7000,0x00007fac982f8000)]
+
+Other Threads:
+  0x00007fae2802f800 VMThread "VM Thread" [stack: 0x00007fae2e670000,0x00007fae2e770000] [id=25011] _threads_hazard_ptr=0x00007fac6c010ef0
+  0x00007fae285b8000 WatcherThread [stack: 0x00007fae2d851000,0x00007fae2d951000] [id=25022]
+
+Threads with active compile tasks:
+C2 CompilerThread0     8966 2730 % !   4       org.jboss.modules.Module::addExportedPaths @ 1263 (1429 bytes)
+C2 CompilerThread1     8966 2860 % !   4       org.jboss.modules.xml.MXParser::parseComment @ 80 (486 bytes)
+
+VM state:synchronizing (normal execution)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00007fae280241f0] Safepoint_lock - owner thread: 0x00007fae2802f800
+[0x00007fae28024280] Threads_lock - owner thread: 0x00007fae2802f800
+
+Heap address: 0x0000000400000000, size: 16384 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+Narrow klass base: 0x0000000800000000, Narrow klass shift: 0
+Compressed class space size: 1073741824 Address: 0x0000000800000000
+
+Heap:
+Epsilon Heap
+Allocation space:
+ Metaspace       used 28048K, capacity 29910K, committed 30184K, reserved 1075200K
+  class space    used 3010K, capacity 3621K, committed 3628K, reserved 1048576K
+
+
+Polling page: 0x00007fae3092b000
+
+Metaspace:
+
+Usage:
+  Non-class:     25.67 MB capacity,    24.45 MB ( 95%) used,     1.13 MB (  4%) free+waste,    94.50 KB ( <1%) overhead. 
+      Class:      3.54 MB capacity,     2.94 MB ( 83%) used,   560.02 KB ( 15%) free+waste,    50.62 KB (  1%) overhead. 
+       Both:     29.21 MB capacity,    27.39 MB ( 94%) used,     1.68 MB (  6%) free+waste,   145.12 KB ( <1%) overhead. 
+
+Virtual space:
+  Non-class space:       26.00 MB reserved,      25.93 MB (>99%) committed 
+      Class space:        1.00 GB reserved,       3.54 MB ( <1%) committed 
+             Both:        1.03 GB reserved,      29.48 MB (  3%) committed 
+
+Chunk freelists:
+   Non-Class:  15.00 KB
+       Class:  1.00 KB
+        Both:  16.00 KB
+
+MaxMetaspaceSize: unlimited
+CompressedClassSpaceSize: 1.00 GB
+Initial GC threshold: 20.80 MB
+Current GC threshold: 29.55 MB
+CDS: off
+
+CodeHeap 'non-profiled nmethods': size=120032Kb used=1212Kb max_used=1212Kb free=118820Kb
+ bounds [0x00007fae20ac8000, 0x00007fae20d38000, 0x00007fae28000000]
+CodeHeap 'profiled nmethods': size=120028Kb used=5856Kb max_used=5856Kb free=114172Kb
+ bounds [0x00007fae19591000, 0x00007fae19b51000, 0x00007fae20ac8000]
+CodeHeap 'non-nmethods': size=5700Kb used=1260Kb max_used=1283Kb free=4439Kb
+ bounds [0x00007fae19000000, 0x00007fae19270000, 0x00007fae19591000]
+ total_blobs=3404 nmethods=2856 adapters=463
+ compilation: enabled
+              stopped_count=0, restarted_count=0
+ full_count=0
+
+Compilation events (20 events):
+Event: 8.901 Thread 0x00007fae28313800 nmethod 2850 0x00007fae20bf6a10 code [0x00007fae20bf6bc0, 0x00007fae20bf6c70]
+Event: 8.901 Thread 0x00007fae28313800 2851       1       com.sun.org.apache.xerces.internal.util.XMLAttributesImpl::getLength (5 bytes)
+Event: 8.902 Thread 0x00007fae28313800 nmethod 2851 0x00007fae20bf6d10 code [0x00007fae20bf6ec0, 0x00007fae20bf6f70]
+Event: 8.902 Thread 0x00007fae28313800 2852       3       org.jboss.dmr.ModelNode::<init> (17 bytes)
+Event: 8.902 Thread 0x00007fae28313800 nmethod 2852 0x00007fae19b46410 code [0x00007fae19b465c0, 0x00007fae19b46730]
+Event: 8.902 Thread 0x00007fae28313800 2853       3       org.jboss.dmr.ModelNode::checkProtect (16 bytes)
+Event: 8.902 Thread 0x00007fae28313800 nmethod 2853 0x00007fae19b46810 code [0x00007fae19b469e0, 0x00007fae19b46c40]
+Event: 8.909 Thread 0x00007fae28313800 2854       3       com.sun.org.apache.xerces.internal.impl.XMLEntityScanner::peekChar (63 bytes)
+Event: 8.909 Thread 0x00007fae28313800 nmethod 2854 0x00007fae19b46d10 code [0x00007fae19b46ee0, 0x00007fae19b47160]
+Event: 8.909 Thread 0x00007fae28313800 2855       3       com.sun.org.apache.xerces.internal.utils.XMLSecurityManager::isOverLimit (111 bytes)
+Event: 8.910 Thread 0x00007fae28313800 nmethod 2855 0x00007fae19b47290 code [0x00007fae19b474a0, 0x00007fae19b47ad0]
+Event: 8.910 Thread 0x00007fae28313800 2856       3       com.sun.org.apache.xerces.internal.utils.XMLSecurityManager::isOverLimit (10 bytes)
+Event: 8.910 Thread 0x00007fae28313800 nmethod 2856 0x00007fae19b47e10 code [0x00007fae19b47fc0, 0x00007fae19b48100]
+Event: 8.911 Thread 0x00007fae28313800 2857       3       com.sun.org.apache.xerces.internal.impl.XMLStreamReaderImpl::hasNext (25 bytes)
+Event: 8.911 Thread 0x00007fae28313800 nmethod 2857 0x00007fae19b48210 code [0x00007fae19b483c0, 0x00007fae19b48570]
+Event: 8.911 Thread 0x00007fae28313800 2858       3       org.jboss.dmr.ModelValue::<init> (10 bytes)
+Event: 8.912 Thread 0x00007fae28313800 nmethod 2858 0x00007fae19b48610 code [0x00007fae19b487c0, 0x00007fae19b48910]
+Event: 8.913 Thread 0x00007fae28313800 2859       3       com.sun.org.apache.xerces.internal.impl.XMLEntityScanner::skipChar (142 bytes)
+Event: 8.913 Thread 0x00007fae28313800 nmethod 2859 0x00007fae19b48a10 code [0x00007fae19b48be0, 0x00007fae19b48ed0]
+Event: 8.921 Thread 0x00007fac80353800 2860 % !   4       org.jboss.modules.xml.MXParser::parseComment @ 80 (486 bytes)
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (20 events):
+Event: 8.054 Thread 0x00007fae297c3800 Uncommon trap: trap_request=0xffffff4d fr.pc=0x00007fae20b3a0bc relative=0x00000000000010dc
+Event: 8.054 Thread 0x00007fae297c3800 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007fae20b3a0bc method=sun.nio.ch.Util$BufferCache.get(I)Ljava/nio/ByteBuffer; @ 25 c2
+Event: 8.054 Thread 0x00007fae297c3800 DEOPT PACKING pc=0x00007fae20b3a0bc sp=0x00007fae2c753110
+Event: 8.054 Thread 0x00007fae297c3800 DEOPT UNPACKING pc=0x00007fae19049e9f sp=0x00007fae2c752f30 mode 2
+Event: 8.179 Thread 0x00007fac54096000 Uncommon trap: trap_request=0xffffff4d fr.pc=0x00007fae20b99930 relative=0x0000000000000610
+Event: 8.179 Thread 0x00007fac54096000 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007fae20b99930 method=java.lang.ThreadLocal.get()Ljava/lang/Object; @ 11 c2
+Event: 8.179 Thread 0x00007fac54096000 DEOPT PACKING pc=0x00007fae20b99930 sp=0x00007fae2c253010
+Event: 8.179 Thread 0x00007fac54096000 DEOPT UNPACKING pc=0x00007fae19049e9f sp=0x00007fae2c252e40 mode 2
+Event: 8.181 Thread 0x00007fac54096000 Uncommon trap: trap_request=0xffffffc6 fr.pc=0x00007fae20bc2b38 relative=0x0000000000000918
+Event: 8.181 Thread 0x00007fac54096000 Uncommon trap: reason=bimorphic_or_optimized_type_check action=maybe_recompile pc=0x00007fae20bc2b38 method=java.util.HashMap.putVal(ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/lang/Object; @ 152 c2
+Event: 8.181 Thread 0x00007fac54096000 DEOPT PACKING pc=0x00007fae20bc2b38 sp=0x00007fae2c2541a0
+Event: 8.181 Thread 0x00007fac54096000 DEOPT UNPACKING pc=0x00007fae19049e9f sp=0x00007fae2c254110 mode 2
+Event: 8.214 Thread 0x00007fac54005800 Uncommon trap: trap_request=0xffffff4d fr.pc=0x00007fae20ae1ac4 relative=0x0000000000000104
+Event: 8.214 Thread 0x00007fac54005800 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007fae20ae1ac4 method=java.util.HashMap.hash(Ljava/lang/Object;)I @ 1 c2
+Event: 8.214 Thread 0x00007fac54005800 DEOPT PACKING pc=0x00007fae20ae1ac4 sp=0x00007fae2c44f5f0
+Event: 8.214 Thread 0x00007fac54005800 DEOPT UNPACKING pc=0x00007fae19049e9f sp=0x00007fae2c44f4e0 mode 2
+Event: 8.920 Thread 0x00007fac6c088000 Uncommon trap: trap_request=0xfffffff6 fr.pc=0x00007fae20aec8cc relative=0x000000000000028c
+Event: 8.920 Thread 0x00007fac6c088000 Uncommon trap: reason=null_check action=maybe_recompile pc=0x00007fae20aec8cc method=java.lang.AbstractStringBuilder.ensureCapacityInternal(I)V @ 4 c2
+Event: 8.920 Thread 0x00007fac6c088000 DEOPT PACKING pc=0x00007fae20aec8cc sp=0x00007fac985f9300
+Event: 8.920 Thread 0x00007fac6c088000 DEOPT UNPACKING pc=0x00007fae19049e9f sp=0x00007fac985f92d8 mode 2
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (20 events):
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x00000004062927b0}> (0x00000004062927b0) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000406292870}> (0x0000000406292870) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000406292930}> (0x0000000406292930) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x00000004062929f0}> (0x00000004062929f0) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000406292ab0}> (0x0000000406292ab0) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000406292b70}> (0x0000000406292b70) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000407f70e30}> (0x0000000407f70e30) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000407f70ef0}> (0x0000000407f70ef0) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000407f70fb0}> (0x0000000407f70fb0) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000407f71070}> (0x0000000407f71070) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000407f71130}> (0x0000000407f71130) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000407f711f0}> (0x0000000407f711f0) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000407f712b0}> (0x0000000407f712b0) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000407f71370}> (0x0000000407f71370) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.753 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000407f71430}> (0x0000000407f71430) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.754 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000407f714f0}> (0x0000000407f714f0) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.754 Thread 0x00007fae28027800 Exception <a 'sun/nio/fs/UnixException'{0x0000000407f715b0}> (0x0000000407f715b0) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.778 Thread 0x00007fae28027800 Exception <a 'java/net/ConnectException'{0x00000004080a4588}> (0x00000004080a4588) thrown at [src/hotspot/share/prims/jni.cpp, line 617]
+Event: 8.920 Thread 0x00007fac6c088000 Implicit null exception at 0x00007fae20aec675 to 0x00007fae20aec8c0
+Event: 8.921 Thread 0x00007fac6c088000 Implicit null exception at 0x00007fae20b84722 to 0x0000000000000000
+
+Events (20 events):
+Event: 8.915 Executing VM operation: RevokeBias
+Event: 8.915 Thread 0x00007fac6c250800 Thread added: 0x00007fac6c250800
+Event: 8.915 Protecting memory [0x00007fac986fc000,0x00007fac98700000] with protection modes 0
+Event: 8.915 Executing VM operation: RevokeBias done
+Event: 8.915 Executing VM operation: RevokeBias
+Event: 8.915 Thread 0x00007fac6c095000 Thread added: 0x00007fac6c095000
+Event: 8.915 Protecting memory [0x00007fac985fb000,0x00007fac985ff000] with protection modes 0
+Event: 8.916 Executing VM operation: RevokeBias done
+Event: 8.916 Executing VM operation: RevokeBias
+Event: 8.916 Thread 0x00007fac6c088000 Thread added: 0x00007fac6c088000
+Event: 8.916 Protecting memory [0x00007fac984fa000,0x00007fac984fe000] with protection modes 0
+Event: 8.916 Executing VM operation: RevokeBias done
+Event: 8.917 Executing VM operation: RevokeBias
+Event: 8.917 Thread 0x00007fac6c083000 Thread added: 0x00007fac6c083000
+Event: 8.919 Protecting memory [0x00007fac983f9000,0x00007fac983fd000] with protection modes 0
+Event: 8.920 Executing VM operation: RevokeBias done
+Event: 8.920 Executing VM operation: RevokeBias
+Event: 8.921 Executing VM operation: RevokeBias done
+Event: 8.921 Thread 0x00007fac6c305000 Thread added: 0x00007fac6c305000
+Event: 8.921 Protecting memory [0x00007fac982f8000,0x00007fac982fc000] with protection modes 0
+
+
+Dynamic libraries:
+400000000-800000000 rw-s 00000000 00:05 501                              /dev/fakeblk
+800000000-80038b000 rw-p 00000000 00:00 0 
+80038b000-840000000 ---p 00000000 00:00 0 
+55bf4df2a000-55bf4df2b000 r--p 00000000 fe:01 575715                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/bin/java
+55bf4df2b000-55bf4df2c000 r-xp 00001000 fe:01 575715                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/bin/java
+55bf4df2c000-55bf4df2d000 r--p 00002000 fe:01 575715                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/bin/java
+55bf4df2d000-55bf4df2e000 r--p 00002000 fe:01 575715                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/bin/java
+55bf4df2e000-55bf4df2f000 rw-p 00003000 fe:01 575715                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/bin/java
+55bf4ed91000-55bf4edb2000 rw-p 00000000 00:00 0                          [heap]
+7fac1c000000-7fac1c021000 rw-p 00000000 00:00 0 
+7fac1c021000-7fac20000000 ---p 00000000 00:00 0 
+7fac23b79000-7fac23be2000 r--p 00000000 fe:01 843671                     /usr/lib/hsdis-amd64.so
+7fac23be2000-7fac23c89000 r-xp 00069000 fe:01 843671                     /usr/lib/hsdis-amd64.so
+7fac23c89000-7fac23cd3000 r--p 00110000 fe:01 843671                     /usr/lib/hsdis-amd64.so
+7fac23cd3000-7fac23d9d000 r--p 00159000 fe:01 843671                     /usr/lib/hsdis-amd64.so
+7fac23d9d000-7fac23da4000 rw-p 00223000 fe:01 843671                     /usr/lib/hsdis-amd64.so
+7fac23da4000-7fac24000000 rw-p 00000000 00:00 0 
+7fac24000000-7fac24021000 rw-p 00000000 00:00 0 
+7fac24021000-7fac28000000 ---p 00000000 00:00 0 
+7fac28000000-7fac28021000 rw-p 00000000 00:00 0 
+7fac28021000-7fac2c000000 ---p 00000000 00:00 0 
+7fac2c000000-7fac2c021000 rw-p 00000000 00:00 0 
+7fac2c021000-7fac30000000 ---p 00000000 00:00 0 
+7fac30000000-7fac30154000 rw-p 00000000 00:00 0 
+7fac30154000-7fac34000000 ---p 00000000 00:00 0 
+7fac34000000-7fac34021000 rw-p 00000000 00:00 0 
+7fac34021000-7fac38000000 ---p 00000000 00:00 0 
+7fac38000000-7fac38021000 rw-p 00000000 00:00 0 
+7fac38021000-7fac3c000000 ---p 00000000 00:00 0 
+7fac3c000000-7fac3c021000 rw-p 00000000 00:00 0 
+7fac3c021000-7fac40000000 ---p 00000000 00:00 0 
+7fac40000000-7fac40021000 rw-p 00000000 00:00 0 
+7fac40021000-7fac44000000 ---p 00000000 00:00 0 
+7fac44000000-7fac44021000 rw-p 00000000 00:00 0 
+7fac44021000-7fac48000000 ---p 00000000 00:00 0 
+7fac48000000-7fac48021000 rw-p 00000000 00:00 0 
+7fac48021000-7fac4c000000 ---p 00000000 00:00 0 
+7fac4c000000-7fac4c222000 rw-p 00000000 00:00 0 
+7fac4c222000-7fac50000000 ---p 00000000 00:00 0 
+7fac50000000-7fac50021000 rw-p 00000000 00:00 0 
+7fac50021000-7fac54000000 ---p 00000000 00:00 0 
+7fac54000000-7fac54175000 rw-p 00000000 00:00 0 
+7fac54175000-7fac58000000 ---p 00000000 00:00 0 
+7fac58000000-7fac58021000 rw-p 00000000 00:00 0 
+7fac58021000-7fac5c000000 ---p 00000000 00:00 0 
+7fac5c000000-7fac5c021000 rw-p 00000000 00:00 0 
+7fac5c021000-7fac60000000 ---p 00000000 00:00 0 
+7fac60000000-7fac60119000 rw-p 00000000 00:00 0 
+7fac60119000-7fac64000000 ---p 00000000 00:00 0 
+7fac64000000-7fac64021000 rw-p 00000000 00:00 0 
+7fac64021000-7fac68000000 ---p 00000000 00:00 0 
+7fac68000000-7fac68021000 rw-p 00000000 00:00 0 
+7fac68021000-7fac6c000000 ---p 00000000 00:00 0 
+7fac6c000000-7fac6c8dd000 rw-p 00000000 00:00 0 
+7fac6c8dd000-7fac70000000 ---p 00000000 00:00 0 
+7fac70000000-7fac70119000 rw-p 00000000 00:00 0 
+7fac70119000-7fac74000000 ---p 00000000 00:00 0 
+7fac74000000-7fac74021000 rw-p 00000000 00:00 0 
+7fac74021000-7fac78000000 ---p 00000000 00:00 0 
+7fac78000000-7fac78021000 rw-p 00000000 00:00 0 
+7fac78021000-7fac7c000000 ---p 00000000 00:00 0 
+7fac7c000000-7fac7ca40000 rw-p 00000000 00:00 0 
+7fac7ca40000-7fac80000000 ---p 00000000 00:00 0 
+7fac80000000-7fac805a6000 rw-p 00000000 00:00 0 
+7fac805a6000-7fac84000000 ---p 00000000 00:00 0 
+7fac84000000-7fac84021000 rw-p 00000000 00:00 0 
+7fac84021000-7fac88000000 ---p 00000000 00:00 0 
+7fac88000000-7fac88021000 rw-p 00000000 00:00 0 
+7fac88021000-7fac8c000000 ---p 00000000 00:00 0 
+7fac8c000000-7fac8c021000 rw-p 00000000 00:00 0 
+7fac8c021000-7fac90000000 ---p 00000000 00:00 0 
+7fac90000000-7fac90021000 rw-p 00000000 00:00 0 
+7fac90021000-7fac94000000 ---p 00000000 00:00 0 
+7fac94000000-7fac94091000 rw-p 00000000 00:00 0 
+7fac94091000-7fac98000000 ---p 00000000 00:00 0 
+7fac981f7000-7fac981fb000 ---p 00000000 00:00 0 
+7fac981fb000-7fac982f8000 rw-p 00000000 00:00 0 
+7fac982f8000-7fac982fc000 ---p 00000000 00:00 0 
+7fac982fc000-7fac983f9000 rw-p 00000000 00:00 0 
+7fac983f9000-7fac983fd000 ---p 00000000 00:00 0 
+7fac983fd000-7fac984fa000 rw-p 00000000 00:00 0 
+7fac984fa000-7fac984fe000 ---p 00000000 00:00 0 
+7fac984fe000-7fac985fb000 rw-p 00000000 00:00 0 
+7fac985fb000-7fac985ff000 ---p 00000000 00:00 0 
+7fac985ff000-7fac986fc000 rw-p 00000000 00:00 0 
+7fac986fc000-7fac98700000 ---p 00000000 00:00 0 
+7fac98700000-7fac987fd000 rw-p 00000000 00:00 0 
+7fac987fd000-7fac98801000 ---p 00000000 00:00 0 
+7fac98801000-7fac988fe000 rw-p 00000000 00:00 0 
+7fac988fe000-7fac98902000 ---p 00000000 00:00 0 
+7fac98902000-7fac989ff000 rw-p 00000000 00:00 0 
+7fac989ff000-7fac98a03000 ---p 00000000 00:00 0 
+7fac98a03000-7fac98dff000 rw-p 00000000 00:00 0 
+7fac98dff000-7fac98e00000 ---p 00000000 00:00 0 
+7fac98e00000-7fac98ff0000 rw-p 00000000 00:00 0 
+7fac98ff0000-7fac99000000 ---p 00000000 00:00 0 
+7fac99000000-7fae19000000 rw-s 00000000 00:18 12                         /dev/shm/prout
+7fae19000000-7fae19270000 rwxp 00000000 00:00 0 
+7fae19270000-7fae19591000 ---p 00000000 00:00 0 
+7fae19591000-7fae19b51000 rwxp 00000000 00:00 0 
+7fae19b51000-7fae20ac8000 ---p 00000000 00:00 0 
+7fae20ac8000-7fae20d38000 rwxp 00000000 00:00 0 
+7fae20d38000-7fae28000000 ---p 00000000 00:00 0 
+7fae28000000-7fae29972000 rw-p 00000000 00:00 0 
+7fae29972000-7fae2c000000 ---p 00000000 00:00 0 
+7fae2c054000-7fae2c058000 ---p 00000000 00:00 0 
+7fae2c058000-7fae2c155000 rw-p 00000000 00:00 0 
+7fae2c155000-7fae2c159000 ---p 00000000 00:00 0 
+7fae2c159000-7fae2c256000 rw-p 00000000 00:00 0 
+7fae2c256000-7fae2c25a000 ---p 00000000 00:00 0 
+7fae2c25a000-7fae2c357000 rw-p 00000000 00:00 0 
+7fae2c357000-7fae2c35b000 ---p 00000000 00:00 0 
+7fae2c35b000-7fae2c458000 rw-p 00000000 00:00 0 
+7fae2c458000-7fae2c45c000 ---p 00000000 00:00 0 
+7fae2c45c000-7fae2c559000 rw-p 00000000 00:00 0 
+7fae2c559000-7fae2c55d000 ---p 00000000 00:00 0 
+7fae2c55d000-7fae2c65a000 rw-p 00000000 00:00 0 
+7fae2c65a000-7fae2c65e000 ---p 00000000 00:00 0 
+7fae2c65e000-7fae2c75b000 rw-p 00000000 00:00 0 
+7fae2c7e8000-7fae2c7ef000 r--s 00000000 fe:01 789188                     /usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache
+7fae2c7ef000-7fae2c9ef000 rw-p 00000000 00:00 0 
+7fae2c9ef000-7fae2cbef000 rw-p 00000000 00:00 0 
+7fae2cbef000-7fae2cbf9000 r--p 00000000 fe:01 576813                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libsunec.so
+7fae2cbf9000-7fae2cc22000 r-xp 0000a000 fe:01 576813                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libsunec.so
+7fae2cc22000-7fae2cc31000 r--p 00033000 fe:01 576813                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libsunec.so
+7fae2cc31000-7fae2cc36000 r--p 00041000 fe:01 576813                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libsunec.so
+7fae2cc36000-7fae2cc38000 rw-p 00046000 fe:01 576813                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libsunec.so
+7fae2cc38000-7fae2ce38000 rw-p 00000000 00:00 0 
+7fae2ce38000-7fae2ce3a000 r--p 00000000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7fae2ce3a000-7fae2ce3d000 r-xp 00002000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7fae2ce3d000-7fae2ce3e000 r--p 00005000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7fae2ce3e000-7fae2ce3f000 ---p 00006000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7fae2ce3f000-7fae2ce40000 r--p 00006000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7fae2ce40000-7fae2ce41000 rw-p 00007000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7fae2ce41000-7fae2d041000 rw-p 00000000 00:00 0 
+7fae2d041000-7fae2d044000 r--p 00000000 fe:01 575908                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement.so
+7fae2d044000-7fae2d045000 r-xp 00003000 fe:01 575908                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement.so
+7fae2d045000-7fae2d046000 r--p 00004000 fe:01 575908                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement.so
+7fae2d046000-7fae2d047000 r--p 00004000 fe:01 575908                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement.so
+7fae2d047000-7fae2d048000 rw-p 00005000 fe:01 575908                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement.so
+7fae2d048000-7fae2d248000 rw-p 00000000 00:00 0 
+7fae2d248000-7fae2d24c000 ---p 00000000 00:00 0 
+7fae2d24c000-7fae2d549000 rw-p 00000000 00:00 0 
+7fae2d549000-7fae2d54d000 ---p 00000000 00:00 0 
+7fae2d54d000-7fae2d64a000 rw-p 00000000 00:00 0 
+7fae2d64a000-7fae2d64b000 r--p 00000000 fe:01 575355                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libextnet.so
+7fae2d64b000-7fae2d64c000 r-xp 00001000 fe:01 575355                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libextnet.so
+7fae2d64c000-7fae2d64d000 r--p 00002000 fe:01 575355                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libextnet.so
+7fae2d64d000-7fae2d64e000 r--p 00002000 fe:01 575355                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libextnet.so
+7fae2d64e000-7fae2d64f000 rw-p 00003000 fe:01 575355                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libextnet.so
+7fae2d64f000-7fae2d84f000 rw-p 00000000 00:00 0 
+7fae2d84f000-7fae2d850000 ---p 00000000 00:00 0 
+7fae2d850000-7fae2d951000 rw-p 00000000 00:00 0 
+7fae2d951000-7fae2d955000 ---p 00000000 00:00 0 
+7fae2d955000-7fae2da52000 rw-p 00000000 00:00 0 
+7fae2da52000-7fae2da56000 ---p 00000000 00:00 0 
+7fae2da56000-7fae2db53000 rw-p 00000000 00:00 0 
+7fae2db53000-7fae2db57000 ---p 00000000 00:00 0 
+7fae2db57000-7fae2dc54000 rw-p 00000000 00:00 0 
+7fae2dc54000-7fae2dc58000 r--p 00000000 fe:01 574849                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnet.so
+7fae2dc58000-7fae2dc67000 r-xp 00004000 fe:01 574849                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnet.so
+7fae2dc67000-7fae2dc6b000 r--p 00013000 fe:01 574849                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnet.so
+7fae2dc6b000-7fae2dc6c000 r--p 00016000 fe:01 574849                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnet.so
+7fae2dc6c000-7fae2dc6d000 rw-p 00017000 fe:01 574849                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnet.so
+7fae2dc6d000-7fae2dc74000 r--p 00000000 fe:01 574856                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnio.so
+7fae2dc74000-7fae2dc7b000 r-xp 00007000 fe:01 574856                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnio.so
+7fae2dc7b000-7fae2dc7e000 r--p 0000e000 fe:01 574856                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnio.so
+7fae2dc7e000-7fae2dc7f000 r--p 00010000 fe:01 574856                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnio.so
+7fae2dc7f000-7fae2dc80000 rw-p 00011000 fe:01 574856                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnio.so
+7fae2dc80000-7fae2dc84000 ---p 00000000 00:00 0 
+7fae2dc84000-7fae2dd81000 rw-p 00000000 00:00 0 
+7fae2dd81000-7fae2dd85000 ---p 00000000 00:00 0 
+7fae2dd85000-7fae2de82000 rw-p 00000000 00:00 0 
+7fae2de82000-7fae2de86000 ---p 00000000 00:00 0 
+7fae2de86000-7fae2df83000 rw-p 00000000 00:00 0 
+7fae2df83000-7fae2df87000 ---p 00000000 00:00 0 
+7fae2df87000-7fae2e084000 rw-p 00000000 00:00 0 
+7fae2e084000-7fae2e088000 ---p 00000000 00:00 0 
+7fae2e088000-7fae2e185000 rw-p 00000000 00:00 0 
+7fae2e185000-7fae2e46c000 r--p 00000000 fe:01 786832                     /usr/lib/locale/locale-archive
+7fae2e46c000-7fae2e470000 ---p 00000000 00:00 0 
+7fae2e470000-7fae2e56d000 rw-p 00000000 00:00 0 
+7fae2e56d000-7fae2e571000 ---p 00000000 00:00 0 
+7fae2e571000-7fae2e66e000 rw-p 00000000 00:00 0 
+7fae2e66e000-7fae2e66f000 ---p 00000000 00:00 0 
+7fae2e66f000-7fae2f04c000 rw-p 00000000 00:00 0 
+7fae2f04c000-7fae2f051000 rw-p 00000000 00:00 0 
+7fae2f051000-7fae2f137000 ---p 00000000 00:00 0 
+7fae2f137000-7fae2f143000 rw-p 00000000 00:00 0 
+7fae2f143000-7fae2f222000 ---p 00000000 00:00 0 
+7fae2f222000-7fae2f227000 rw-p 00000000 00:00 0 
+7fae2f227000-7fae2f22e000 ---p 00000000 00:00 0 
+7fae2f22e000-7fae2f231000 r--p 00000000 fe:01 787101                     /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7fae2f231000-7fae2f238000 r-xp 00003000 fe:01 787101                     /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7fae2f238000-7fae2f23a000 r--p 0000a000 fe:01 787101                     /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7fae2f23a000-7fae2f23b000 r--p 0000b000 fe:01 787101                     /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7fae2f23b000-7fae2f23c000 rw-p 0000c000 fe:01 787101                     /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7fae2f23c000-7fae2f242000 rw-p 00000000 00:00 0 
+7fae2f246000-7fae2f248000 r--p 00000000 fe:01 574842                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libzip.so
+7fae2f248000-7fae2f24c000 r-xp 00002000 fe:01 574842                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libzip.so
+7fae2f24c000-7fae2f24e000 r--p 00006000 fe:01 574842                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libzip.so
+7fae2f24e000-7fae2f24f000 r--p 00007000 fe:01 574842                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libzip.so
+7fae2f24f000-7fae2f250000 rw-p 00008000 fe:01 574842                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libzip.so
+7fae2f250000-7fae2f258000 rw-s 00000000 fe:01 2359338                    /tmp/hsperfdata_root/25009
+7fae2f258000-7fae2f25c000 r--p 00000000 fe:01 574846                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjimage.so
+7fae2f25c000-7fae2f26f000 r-xp 00004000 fe:01 574846                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjimage.so
+7fae2f26f000-7fae2f275000 r--p 00017000 fe:01 574846                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjimage.so
+7fae2f275000-7fae2f277000 r--p 0001c000 fe:01 574846                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjimage.so
+7fae2f277000-7fae2f278000 rw-p 0001e000 fe:01 574846                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjimage.so
+7fae2f278000-7fae2f286000 r--p 00000000 fe:01 574823                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjava.so
+7fae2f286000-7fae2f29c000 r-xp 0000e000 fe:01 574823                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjava.so
+7fae2f29c000-7fae2f2a3000 r--p 00024000 fe:01 574823                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjava.so
+7fae2f2a3000-7fae2f2a4000 r--p 0002a000 fe:01 574823                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjava.so
+7fae2f2a4000-7fae2f2a5000 rw-p 0002b000 fe:01 574823                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjava.so
+7fae2f2a5000-7fae2f2a6000 rw-p 00000000 00:00 0 
+7fae2f2a6000-7fae2f2aa000 ---p 00000000 00:00 0 
+7fae2f2aa000-7fae2f3a7000 rw-p 00000000 00:00 0 
+7fae2f3a7000-7fae2f3b4000 r--p 00000000 fe:01 787094                     /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7fae2f3b4000-7fae2f44e000 r-xp 0000d000 fe:01 787094                     /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7fae2f44e000-7fae2f4e9000 r--p 000a7000 fe:01 787094                     /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7fae2f4e9000-7fae2f4ea000 r--p 00141000 fe:01 787094                     /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7fae2f4ea000-7fae2f4eb000 rw-p 00142000 fe:01 787094                     /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7fae2f4eb000-7fae2f4ed000 r--p 00000000 fe:01 787107                     /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7fae2f4ed000-7fae2f4f1000 r-xp 00002000 fe:01 787107                     /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7fae2f4f1000-7fae2f4f3000 r--p 00006000 fe:01 787107                     /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7fae2f4f3000-7fae2f4f4000 r--p 00007000 fe:01 787107                     /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7fae2f4f4000-7fae2f4f5000 rw-p 00008000 fe:01 787107                     /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7fae2f4f5000-7fae2f772000 r--p 00000000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7fae2f772000-7fae30364000 r-xp 0027d000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7fae30364000-7fae305b9000 r--p 00e6f000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7fae305b9000-7fae305ba000 ---p 010c4000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7fae305ba000-7fae3067d000 r--p 010c4000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7fae3067d000-7fae306b7000 rw-p 01187000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7fae306b7000-7fae30710000 rw-p 00000000 00:00 0 
+7fae30710000-7fae30716000 r--p 00000000 fe:01 787105                     /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7fae30716000-7fae30726000 r-xp 00006000 fe:01 787105                     /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7fae30726000-7fae3072c000 r--p 00016000 fe:01 787105                     /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7fae3072c000-7fae3072d000 r--p 0001b000 fe:01 787105                     /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7fae3072d000-7fae3072e000 rw-p 0001c000 fe:01 787105                     /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7fae3072e000-7fae30732000 rw-p 00000000 00:00 0 
+7fae30732000-7fae30733000 r--p 00000000 fe:01 787091                     /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7fae30733000-7fae30735000 r-xp 00001000 fe:01 787091                     /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7fae30735000-7fae30736000 r--p 00003000 fe:01 787091                     /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7fae30736000-7fae30737000 r--p 00003000 fe:01 787091                     /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7fae30737000-7fae30738000 rw-p 00004000 fe:01 787091                     /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7fae30738000-7fae3073b000 r--p 00000000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7fae3073b000-7fae3074c000 r-xp 00003000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7fae3074c000-7fae30752000 r--p 00014000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7fae30752000-7fae30753000 ---p 0001a000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7fae30753000-7fae30754000 r--p 0001a000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7fae30754000-7fae30755000 rw-p 0001b000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7fae30755000-7fae30777000 r--p 00000000 fe:01 787090                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7fae30777000-7fae308d0000 r-xp 00022000 fe:01 787090                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7fae308d0000-7fae3091f000 r--p 0017b000 fe:01 787090                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7fae3091f000-7fae30923000 r--p 001c9000 fe:01 787090                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7fae30923000-7fae30925000 rw-p 001cd000 fe:01 787090                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7fae30925000-7fae30929000 rw-p 00000000 00:00 0 
+7fae3092b000-7fae3092c000 ---p 00000000 00:00 0 
+7fae3092c000-7fae3092d000 r--p 00000000 00:00 0 
+7fae3092d000-7fae30932000 r--p 00000000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7fae30932000-7fae30939000 r-xp 00005000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7fae30939000-7fae3093b000 r--p 0000c000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7fae3093b000-7fae3093c000 ---p 0000e000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7fae3093c000-7fae3093e000 r--p 0000e000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7fae3093e000-7fae3093f000 rw-p 00010000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7fae3093f000-7fae30942000 r--p 00000000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7fae30942000-7fae3094c000 r-xp 00003000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7fae3094c000-7fae3094f000 r--p 0000d000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7fae3094f000-7fae30950000 ---p 00010000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7fae30950000-7fae30951000 r--p 00010000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7fae30951000-7fae30952000 rw-p 00011000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7fae30952000-7fae30954000 rw-p 00000000 00:00 0 
+7fae30954000-7fae30955000 r--p 00000000 fe:01 786446                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7fae30955000-7fae30975000 r-xp 00001000 fe:01 786446                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7fae30975000-7fae3097d000 r--p 00021000 fe:01 786446                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7fae3097e000-7fae3097f000 r--p 00029000 fe:01 786446                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7fae3097f000-7fae30980000 rw-p 0002a000 fe:01 786446                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7fae30980000-7fae30981000 rw-p 00000000 00:00 0 
+7ffe41284000-7ffe412a5000 rw-p 00000000 00:00 0                          [stack]
+7ffe41301000-7ffe41305000 r--p 00000000 00:00 0                          [vvar]
+7ffe41305000-7ffe41307000 r-xp 00000000 00:00 0                          [vdso]
+
+
+VM Arguments:
+jvm_args: -XX:AllocateHeapAt=/dev/fakeblk -Xlog:gc=debug -XX:-OptimizeStringConcat -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -Xnoclassgc -XX:-ClassUnloading -Xms16g -Xmx16g -XX:-ClassUnloading 
+java_command: ../dacapo-23.11-chopin.jar tradebeans
+java_class_path (initial): ../dacapo-23.11-chopin.jar
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+    ccstr AllocateHeapAt                           = /dev/fakeblk                              {product} {command line}
+     intx CICompilerCount                          = 4                                         {product} {ergonomic}
+     bool ClassUnloading                           = false                                     {product} {command line}
+     bool ClassUnloadingWithConcurrentMark         = false                                     {product} {command line}
+   size_t InitialHeapSize                          = 17179869184                               {product} {command line}
+   size_t MaxHeapSize                              = 17179869184                               {product} {command line}
+   size_t MinHeapDeltaBytes                        = 172032                                    {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 5836300                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122910970                              {pd product} {ergonomic}
+     bool OptimizeStringConcat                     = false                                  {C2 product} {command line}
+    uintx ProfiledCodeHeapSize                     = 122910970                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+     bool UnlockExperimentalVMOptions              = true                                 {experimental} {command line}
+     bool UseCompressedClassPointers               = true                                 {lp64_product} {ergonomic}
+     bool UseCompressedOops                        = true                                 {lp64_product} {ergonomic}
+     bool UseEpsilonGC                             = true                                 {experimental} {command line}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning,gc=debug uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+SHELL=/bin/bash
+LANG=en_US.UTF-8
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0xde4640], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGBUS: [libjvm.so+0xde4640], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGFPE: [libjvm.so+0xde4640], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGPIPE: [libjvm.so+0xbdf380], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGXFSZ: [libjvm.so+0xbdf380], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGILL: [libjvm.so+0xde4640], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGUSR2: [libjvm.so+0x2d1670], sa_mask[0]=00000000000100000000000000000000, sa_flags=SA_RESTART
+SIGHUP: [libjvm.so+0xbdfab0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGINT: [libjvm.so+0xbdfab0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGTERM: [libjvm.so+0xbdfab0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGQUIT: [libjvm.so+0xbdfab0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+
+
+---------------  S Y S T E M  ---------------
+
+OS:PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+NAME="Debian GNU/Linux"
+VERSION_ID="11"
+VERSION="11 (bullseye)"
+VERSION_CODENAME=bullseye
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+uname:Linux 5.10.0-28-amd64 #1 SMP Debian 5.10.209-2 (2024-01-31) x86_64
+OS uptime: 16 days 15:16 hours
+libc:glibc 2.31 NPTL 2.31 
+rlimit (soft/hard): STACK 8192k/infinity , CORE 0k/infinity , NPROC 256990/256990 , NOFILE 1048576/1048576 , AS infinity/infinity , CPU infinity/infinity , DATA infinity/infinity , FSIZE infinity/infinity , MEMLOCK 8229866k/8229866k
+load average:5.79 5.17 2.75
+
+/proc/meminfo:
+MemTotal:       65838928 kB
+MemFree:        24508052 kB
+MemAvailable:   26353828 kB
+Buffers:          340500 kB
+Cached:         33428988 kB
+SwapCached:        30312 kB
+Active:         32009028 kB
+Inactive:        1961372 kB
+Active(anon):   31469076 kB
+Inactive(anon):   191052 kB
+Active(file):     539952 kB
+Inactive(file):  1770320 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:        998396 kB
+SwapFree:         944724 kB
+Dirty:            193164 kB
+Writeback:             4 kB
+AnonPages:        175860 kB
+Mapped:         31759004 kB
+Shmem:          31458584 kB
+KReclaimable:     266208 kB
+Slab:            5952912 kB
+SReclaimable:     266208 kB
+SUnreclaim:      5686704 kB
+KernelStack:        9760 kB
+PageTables:        79884 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    33917860 kB
+Committed_AS:   32532880 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:      560108 kB
+VmallocChunk:          0 kB
+Percpu:            38784 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+FileHugePages:         0 kB
+FilePmdMapped:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+DirectMap4k:      501612 kB
+DirectMap2M:    42489856 kB
+DirectMap1G:    26214400 kB
+
+/sys/kernel/mm/transparent_hugepage/enabled:
+always [madvise] never
+/sys/kernel/mm/transparent_hugepage/defrag (defrag/compaction efforts parameter):
+always defer defer+madvise [madvise] never
+
+Process Memory:
+Virtual Size: 26488280K (peak: 26549152K)
+Resident Set Size: 6640676K (peak: 6640676K) (anon: 94640K, file: 254580K, shmem: 6291456K)
+Swapped out: 0K
+C-Heap outstanding allocations: 59263K, retained: 6216K (may have wrapped)
+glibc malloc tunables: (default)
+
+/proc/sys/kernel/threads-max (system-wide limit on the number of threads):
+513981
+/proc/sys/vm/max_map_count (maximum number of memory map areas a process may have):
+65530
+/proc/sys/kernel/pid_max (system-wide limit on number of process identifiers):
+4194304
+
+container (cgroup) information:
+container_type: cgroupv2
+cpu_cpuset_cpus: 21-25,27-31,36
+cpu_memory_nodes: not supported
+active_processor_count: 11
+cpu_quota: not supported
+cpu_period: not supported
+cpu_shares: not supported
+memory_limit_in_bytes: 1572864000
+memory_and_swap_limit_in_bytes: unlimited
+memory_soft_limit_in_bytes: unlimited
+memory_usage_in_bytes: 681242624
+memory_max_usage_in_bytes: not supported
+
+KVM virtualization detected
+Steal ticks since vm start: 0
+Steal ticks percentage since vm start:  0.000
+
+CPU:total 48 (initial active 11) (1 cores per cpu, 1 threads per core) family 16 model 2 stepping 3 microcode 0x1000065, cmov, cx8, fxsr, mmx, sse, sse2, sse3, popcnt, mmxext, 3dnowpref, lzcnt, sse4a, tsc
+CPU Model and flags from /proc/cpuinfo:
+model name	: AMD Opteron 23xx (Gen 3 Class Opteron)
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm 3dnowext 3dnow rep_good nopl cpuid extd_apicid tsc_known_freq pni cx16 x2apic popcnt tsc_deadline_timer hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw vmmcall arat
+Online cpus:
+0-47
+Offline cpus:
+
+BIOS frequency limitation:
+<Not Available>
+Frequency switch latency (ns):
+<Not Available>
+Available cpu frequencies:
+<Not Available>
+Current governor:
+<Not Available>
+Core performance/turbo boost:
+<Not Available>
+
+Memory: 4k page, physical 1536000k(870724k free), swap 998396k(944724k free)
+
+vm_info: OpenJDK 64-Bit Server VM (11.0.16-internal+0-adhoc.adam.jdk11u) for linux-amd64 JRE (11.0.16-internal+0-adhoc.adam.jdk11u), built on Feb 18 2025 08:46:00 by "adam" with gcc 10.2.1 20210110
+
+END.

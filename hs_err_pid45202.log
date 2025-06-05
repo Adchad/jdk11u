@@ -1,0 +1,2333 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f2f5dc0b349, pid=45202, tid=45314
+#
+# JRE version: OpenJDK Runtime Environment (11.0.16) (build 11.0.16-internal+0-adhoc.adam.jdk11u)
+# Java VM: OpenJDK 64-Bit Server VM (11.0.16-internal+0-adhoc.adam.jdk11u, mixed mode, tiered, epsilon gc, linux-amd64)
+# Problematic frame:
+# J 271 c1 java.util.concurrent.ConcurrentHashMap.putVal(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object; java.base (432 bytes) @ 0x00007f2f5dc0b349 [0x00007f2f5dc0af80+0x00000000000003c9]
+#
+# No core dump will be written. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugreport.java.com/bugreport/crash.jsp
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -XX:AllocateHeapAt=/dev/fakeblk -Xlog:gc=debug -XX:-OptimizeStringConcat -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -Xnoclassgc -XX:+AlwaysPreTouch -XX:-ClassUnloading -XX:TieredStopAtLevel=3 -Xms32g -Xmx32g -XX:-ClassUnloading ../dacapo-23.11-chopin.jar tradebeans -s vlarge
+
+Host: AMD Opteron 23xx (Gen 3 Class Opteron), 48 cores, 1G, Debian GNU/Linux 11 (bullseye)
+Time: Thu Apr  3 15:16:02 2025 CEST elapsed time: 397.451757 seconds (0d 0h 6m 37s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007f257c196000):  JavaThread "ServerService Thread Pool -- 29" [_thread_in_Java, id=45314, stack(0x00007f25a64f0000,0x00007f25a65f1000)]
+
+Stack: [0x00007f25a64f0000,0x00007f25a65f1000],  sp=0x00007f25a65ef6a0,  free space=1021k
+Native frames: (J=compiled Java code, A=aot compiled Java code, j=interpreted, Vv=VM code, C=native code)
+J 271 c1 java.util.concurrent.ConcurrentHashMap.putVal(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object; java.base (432 bytes) @ 0x00007f2f5dc0b349 [0x00007f2f5dc0af80+0x00000000000003c9]
+J 679 c1 java.util.concurrent.ConcurrentHashMap.put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; java.base (8 bytes) @ 0x00007f2f5dccf7bc [0x00007f2f5dccf740+0x000000000000007c]
+J 1609 c1 java.util.Collections$SetFromMap.add(Ljava/lang/Object;)Z java.base (22 bytes) @ 0x00007f2f5def7e64 [0x00007f2f5def7d60+0x0000000000000104]
+j  org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run()V+28
+j  java.lang.Thread.run()V+11 java.base
+j  org.jboss.threads.JBossThread.run()V+12
+v  ~StubRoutines::call_stub
+V  [libjvm.so+0x87ba43]  JavaCalls::call_helper(JavaValue*, methodHandle const&, JavaCallArguments*, Thread*)+0x353
+V  [libjvm.so+0x879f56]  JavaCalls::call_virtual(JavaValue*, Handle, Klass*, Symbol*, Symbol*, Thread*)+0x1a6
+V  [libjvm.so+0x92509d]  thread_entry(JavaThread*, Thread*)+0x6d
+V  [libjvm.so+0xd79f33]  JavaThread::thread_main_inner()+0x133
+V  [libjvm.so+0xd768dc]  Thread::call_run()+0x13c
+V  [libjvm.so+0xbe94b6]  thread_native_entry(Thread*)+0xe6
+
+
+siginfo: si_signo: 11 (SIGSEGV), si_code: 1 (SEGV_MAPERR), si_addr: 0x0000000000000009
+
+Register to memory mapping:
+
+RAX=0x00007f2f710ec328 is a pointer to class: 
+java.util.concurrent.ConcurrentHashMap$Node {0x00007f2f710ec328}
+RBX=0x00007f276708c000 is an unallocated location in the heap
+RCX=0x0000000000000003 is an unknown value
+RDX=0x0000000000000038 is an unknown value
+RSP=0x00007f25a65ef6a0 is pointing into the stack for thread: 0x00007f257c196000
+RBP=0x00007f25a65ef8c0 is pointing into the stack for thread: 0x00007f257c196000
+RSI=0x0000000000000001 is an unknown value
+RDI=0x00000000000d7a28 is an unknown value
+R8 =0x000000001c34fb20 is an unknown value
+R9 =0x0000000000000004 is an unknown value
+R10=0x0000000000000018 is an unknown value
+R11=0x00007f2f714f6bd0 is pointing into metadata
+R12=0x00007f25a65efd40 is pointing into the stack for thread: 0x00007f257c196000
+R13=0x00000000000001f8 is an unknown value
+R14=0x0000000000003d43 is an unknown value
+R15=0x00007f257c196000 is a thread
+
+
+Registers:
+RAX=0x00007f2f710ec328, RBX=0x00007f276708c000, RCX=0x0000000000000003, RDX=0x0000000000000038
+RSP=0x00007f25a65ef6a0, RBP=0x00007f25a65ef8c0, RSI=0x0000000000000001, RDI=0x00000000000d7a28
+R8 =0x000000001c34fb20, R9 =0x0000000000000004, R10=0x0000000000000018, R11=0x00007f2f714f6bd0
+R12=0x00007f25a65efd40, R13=0x00000000000001f8, R14=0x0000000000003d43, R15=0x00007f257c196000
+RIP=0x00007f2f5dc0b349, EFLAGS=0x0000000000010202, CSGSFS=0x002b000000000033, ERR=0x0000000000000004
+  TRAPNO=0x000000000000000e
+
+Top of Stack: (sp=0x00007f25a65ef6a0)
+0x00007f25a65ef6a0:   00007f25a65efd80 00007f25a65efcc0
+0x00007f25a65ef6b0:   0000000000000000 00007f25a65ef7f0
+0x00007f25a65ef6c0:   0000000400000008 0000003000000010
+0x00007f25a65ef6d0:   00007f25a65efe00 00007f25a65efd20 
+
+Instructions: (pc=0x00007f2f5dc0b349)
+0x00007f2f5dc0b249:   ff c9 44 23 8c 24 c8 00 00 00 48 b9 d0 6b 4f 71
+0x00007f2f5dc0b259:   2f 7f 00 00 48 83 81 68 02 00 00 01 48 b9 08 1e
+0x00007f2f5dc0b269:   1d 71 2f 7f 00 00 8b 91 00 01 00 00 83 c2 08 89
+0x00007f2f5dc0b279:   91 00 01 00 00 81 e2 f8 ff 7f 00 83 fa 00 0f 84
+0x00007f2f5dc0b289:   aa 17 00 00 49 63 d1 b9 03 00 00 00 48 d3 e2 49
+0x00007f2f5dc0b299:   ba 18 00 00 00 00 00 00 00 49 03 d2 48 be 08 1e
+0x00007f2f5dc0b2a9:   1d 71 2f 7f 00 00 48 8d b6 78 01 00 00 48 8b fb
+0x00007f2f5dc0b2b9:   48 8b 7f 08 48 33 7e 08 48 f7 c7 fc ff ff ff 74
+0x00007f2f5dc0b2c9:   11 48 f7 c7 02 00 00 00 75 08 48 81 4e 08 02 00
+0x00007f2f5dc0b2d9:   00 00 48 be 50 00 06 5d 27 7f 00 00 48 bf 08 1e
+0x00007f2f5dc0b2e9:   1d 71 2f 7f 00 00 48 83 87 40 01 00 00 01 48 be
+0x00007f2f5dc0b2f9:   70 26 1d 71 2f 7f 00 00 8b be 00 01 00 00 83 c7
+0x00007f2f5dc0b309:   08 89 be 00 01 00 00 81 e7 f8 ff 7f 00 83 ff 00
+0x00007f2f5dc0b319:   0f 84 39 17 00 00 48 8b 34 13 48 83 fe 00 75 16
+0x00007f2f5dc0b329:   48 bf 08 1e 1d 71 2f 7f 00 00 80 8f 89 01 00 00
+0x00007f2f5dc0b339:   01 e9 bb 00 00 00 48 b8 28 c3 0e 71 2f 7f 00 00
+0x00007f2f5dc0b349:   48 8b 7e 08 48 3b 47 38 0f 85 87 00 00 00 48 bf
+0x00007f2f5dc0b359:   08 1e 1d 71 2f 7f 00 00 48 8b 46 08 48 3b 87 a0
+0x00007f2f5dc0b369:   01 00 00 75 0d 48 83 87 a8 01 00 00 01 e9 7f 00
+0x00007f2f5dc0b379:   00 00 48 3b 87 b0 01 00 00 75 0d 48 83 87 b8 01
+0x00007f2f5dc0b389:   00 00 01 e9 69 00 00 00 48 81 bf a0 01 00 00 00
+0x00007f2f5dc0b399:   00 00 00 75 17 48 89 87 a0 01 00 00 48 c7 87 a8
+0x00007f2f5dc0b3a9:   01 00 00 01 00 00 00 e9 45 00 00 00 48 81 bf b0
+0x00007f2f5dc0b3b9:   01 00 00 00 00 00 00 75 17 48 89 87 b0 01 00 00
+0x00007f2f5dc0b3c9:   48 c7 87 b8 01 00 00 01 00 00 00 e9 21 00 00 00
+0x00007f2f5dc0b3d9:   e9 1c 00 00 00 48 bf 08 1e 1d 71 2f 7f 00 00 48
+0x00007f2f5dc0b3e9:   83 af 90 01 00 00 01 e9 84 16 00 00 e9 00 00 00
+0x00007f2f5dc0b3f9:   00 48 8b fe 48 89 bc 24 d0 00 00 00 48 83 ff 00
+0x00007f2f5dc0b409:   48 be d0 6b 4f 71 2f 7f 00 00 48 b8 78 02 00 00
+0x00007f2f5dc0b419:   00 00 00 00 0f 85 0a 00 00 00 48 b8 88 02 00 00
+0x00007f2f5dc0b429:   00 00 00 00 48 8b 0c 06 48 8d 49 01 48 89 0c 06
+0x00007f2f5dc0b439:   4c 8b c2 0f 85 f8 01 00 00 8b b4 24 c8 00 00 00 
+
+
+Stack slot to memory mapping:
+stack at sp + 0 slots: 0x00007f25a65efd80 is pointing into the stack for thread: 0x00007f257c196000
+stack at sp + 1 slots: 0x00007f25a65efcc0 is pointing into the stack for thread: 0x00007f257c196000
+stack at sp + 2 slots: 0x0 is NULL
+stack at sp + 3 slots: 0x00007f25a65ef7f0 is pointing into the stack for thread: 0x00007f257c196000
+stack at sp + 4 slots: 0x0000000400000008 is an unknown value
+stack at sp + 5 slots: 0x0000003000000010 is an unknown value
+stack at sp + 6 slots: 0x00007f25a65efe00 is pointing into the stack for thread: 0x00007f257c196000
+stack at sp + 7 slots: 0x00007f25a65efd20 is pointing into the stack for thread: 0x00007f257c196000
+
+----------------------------------------------------------------------
+java/util/concurrent/ConcurrentHashMap.putVal(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;  [0x00007f2f5dc0af80, 0x00007f2f5dc0cdb0]  7728 bytes
+[Disassembling for mach='i386:x86-64']
+[Entry Point]
+[Constants]
+  # {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap'
+  # this:     rsi:rsi   = 'java/util/concurrent/ConcurrentHashMap'
+  # parm0:    rdx:rdx   = 'java/lang/Object'
+  # parm1:    rcx:rcx   = 'java/lang/Object'
+  # parm2:    r8        = boolean
+  #           [sp+0x140]  (sp of caller)
+  0x00007f2f5dc0af80: data16 data16 nopw 0x0(%rax,%rax,1)
+  0x00007f2f5dc0af8b: data16 data16 nopw 0x0(%rax,%rax,1)
+  0x00007f2f5dc0af96: cmp    0x8(%rsi),%rax
+  0x00007f2f5dc0af9a: jne    0x00007f2f5d04b080  ;   {runtime_call ic_miss_stub}
+[Verified Entry Point]
+  0x00007f2f5dc0afa0: mov    %eax,-0x14000(%rsp)
+  0x00007f2f5dc0afa7: push   %rbp
+  0x00007f2f5dc0afa8: sub    $0x130,%rsp
+  0x00007f2f5dc0afaf: mov    %rsi,0xa8(%rsp)
+  0x00007f2f5dc0afb7: mov    %rdx,0xb0(%rsp)
+  0x00007f2f5dc0afbf: mov    %rcx,0xb8(%rsp)
+  0x00007f2f5dc0afc7: mov    %r8d,0xc0(%rsp)
+  0x00007f2f5dc0afcf: movabs $0x7f2f714f6bd0,%rdi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0afd9: mov    0x100(%rdi),%ebx
+  0x00007f2f5dc0afdf: add    $0x8,%ebx
+  0x00007f2f5dc0afe2: mov    %ebx,0x100(%rdi)
+  0x00007f2f5dc0afe8: and    $0x1ff8,%ebx
+  0x00007f2f5dc0afee: cmp    $0x0,%ebx
+  0x00007f2f5dc0aff1: je     0x00007f2f5dc0c9eb
+  0x00007f2f5dc0aff7: cmp    $0x0,%rdx
+  0x00007f2f5dc0affb: movabs $0x7f2f714f6bd0,%rdi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b005: movabs $0x140,%rbx
+  0x00007f2f5dc0b00f: je     0x00007f2f5dc0b01f
+  0x00007f2f5dc0b015: movabs $0x150,%rbx
+  0x00007f2f5dc0b01f: mov    (%rdi,%rbx,1),%rax
+  0x00007f2f5dc0b023: lea    0x1(%rax),%rax
+  0x00007f2f5dc0b027: mov    %rax,(%rdi,%rbx,1)
+  0x00007f2f5dc0b02b: je     0x00007f2f5dc0c8bc
+  0x00007f2f5dc0b031: cmp    $0x0,%rcx
+  0x00007f2f5dc0b035: movabs $0x7f2f714f6bd0,%rdi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b03f: movabs $0x170,%rbx
+  0x00007f2f5dc0b049: je     0x00007f2f5dc0b059
+  0x00007f2f5dc0b04f: movabs $0x160,%rbx
+  0x00007f2f5dc0b059: mov    (%rdi,%rbx,1),%rax
+  0x00007f2f5dc0b05d: lea    0x1(%rax),%rax
+  0x00007f2f5dc0b061: mov    %rax,(%rdi,%rbx,1)
+  0x00007f2f5dc0b065: je     0x00007f2f5dc0c8bc
+  0x00007f2f5dc0b06b: cmp    (%rdx),%rax        ; implicit exception: dispatches to 0x00007f2f5dc0ca0c
+  0x00007f2f5dc0b06e: mov    %rdx,%rdi
+  0x00007f2f5dc0b071: movabs $0x7f2f714f6bd0,%rbx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b07b: mov    0x8(%rdi),%rdi
+  0x00007f2f5dc0b07f: cmp    0x1a0(%rbx),%rdi
+  0x00007f2f5dc0b086: jne    0x00007f2f5dc0b095
+  0x00007f2f5dc0b088: addq   $0x1,0x1a8(%rbx)
+  0x00007f2f5dc0b090: jmpq   0x00007f2f5dc0b0fb
+  0x00007f2f5dc0b095: cmp    0x1b0(%rbx),%rdi
+  0x00007f2f5dc0b09c: jne    0x00007f2f5dc0b0ab
+  0x00007f2f5dc0b09e: addq   $0x1,0x1b8(%rbx)
+  0x00007f2f5dc0b0a6: jmpq   0x00007f2f5dc0b0fb
+  0x00007f2f5dc0b0ab: cmpq   $0x0,0x1a0(%rbx)
+  0x00007f2f5dc0b0b6: jne    0x00007f2f5dc0b0cf
+  0x00007f2f5dc0b0b8: mov    %rdi,0x1a0(%rbx)
+  0x00007f2f5dc0b0bf: movq   $0x1,0x1a8(%rbx)
+  0x00007f2f5dc0b0ca: jmpq   0x00007f2f5dc0b0fb
+  0x00007f2f5dc0b0cf: cmpq   $0x0,0x1b0(%rbx)
+  0x00007f2f5dc0b0da: jne    0x00007f2f5dc0b0f3
+  0x00007f2f5dc0b0dc: mov    %rdi,0x1b0(%rbx)
+  0x00007f2f5dc0b0e3: movq   $0x1,0x1b8(%rbx)
+  0x00007f2f5dc0b0ee: jmpq   0x00007f2f5dc0b0fb
+  0x00007f2f5dc0b0f3: addq   $0x1,0x190(%rbx)
+  0x00007f2f5dc0b0fb: mov    %rdx,%rsi
+  0x00007f2f5dc0b0fe: nopl   0x0(%rax)
+  0x00007f2f5dc0b105: movabs $0xffffffffffffffff,%rax
+  0x00007f2f5dc0b10f: callq  0x00007f2f5d103f10  ; ImmutableOopMap{[168]=Oop [184]=Oop [176]=Oop }
+                                                ;*invokevirtual hashCode {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@17 (line 1012)
+                                                ;   {virtual_call}
+  0x00007f2f5dc0b114: movabs $0x7f2f714f6bd0,%rsi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b11e: addq   $0x1,0x1c8(%rsi)
+  0x00007f2f5dc0b126: movabs $0x7f2f713935f0,%rsi  ;   {metadata(method data for {method} {0x00007f2f710d8cf8} 'spread' '(I)I' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b130: mov    0x100(%rsi),%edi
+  0x00007f2f5dc0b136: add    $0x8,%edi
+  0x00007f2f5dc0b139: mov    %edi,0x100(%rsi)
+  0x00007f2f5dc0b13f: and    $0x7ffff8,%edi
+  0x00007f2f5dc0b145: cmp    $0x0,%edi
+  0x00007f2f5dc0b148: je     0x00007f2f5dc0ca11
+  0x00007f2f5dc0b14e: mov    %rax,%rsi
+  0x00007f2f5dc0b151: shr    $0x10,%esi
+  0x00007f2f5dc0b154: xor    %rax,%rsi
+  0x00007f2f5dc0b157: and    $0x7fffffff,%esi
+  0x00007f2f5dc0b15d: mov    %esi,0xc8(%rsp)
+  0x00007f2f5dc0b164: mov    0xa8(%rsp),%rdi
+  0x00007f2f5dc0b16c: mov    0x38(%rdi),%rbx
+  0x00007f2f5dc0b170: mov    $0x0,%eax
+  0x00007f2f5dc0b175: mov    %eax,0xc4(%rsp)
+  0x00007f2f5dc0b17c: nopl   0x0(%rax)
+  0x00007f2f5dc0b180: cmp    $0x0,%rbx
+  0x00007f2f5dc0b184: movabs $0x7f2f714f6bd0,%r9  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b18e: movabs $0x1d8,%r11
+  0x00007f2f5dc0b198: je     0x00007f2f5dc0b1a8
+  0x00007f2f5dc0b19e: movabs $0x1e8,%r11
+  0x00007f2f5dc0b1a8: mov    (%r9,%r11,1),%r13
+  0x00007f2f5dc0b1ac: lea    0x1(%r13),%r13
+  0x00007f2f5dc0b1b0: mov    %r13,(%r9,%r11,1)
+  0x00007f2f5dc0b1b4: je     0x00007f2f5dc0b1f8
+  0x00007f2f5dc0b1ba: mov    0x10(%rbx),%r9d    ; implicit exception: dispatches to 0x00007f2f5dc0ca32
+  0x00007f2f5dc0b1be: cmp    $0x0,%r9d
+  0x00007f2f5dc0b1c2: movabs $0x7f2f714f6bd0,%r11  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b1cc: movabs $0x1f8,%r13
+  0x00007f2f5dc0b1d6: jne    0x00007f2f5dc0b1e6
+  0x00007f2f5dc0b1dc: movabs $0x208,%r13
+  0x00007f2f5dc0b1e6: mov    (%r11,%r13,1),%r14
+  0x00007f2f5dc0b1ea: lea    0x1(%r14),%r14
+  0x00007f2f5dc0b1ee: mov    %r14,(%r11,%r13,1)
+  0x00007f2f5dc0b1f2: jne    0x00007f2f5dc0b248
+  0x00007f2f5dc0b1f8: mov    %rdi,%rbx
+  0x00007f2f5dc0b1fb: movabs $0x7f2f714f6bd0,%r9  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b205: addq   $0x1,0x218(%r9)
+  0x00007f2f5dc0b20d: mov    %rdi,%rsi
+  0x00007f2f5dc0b210: nopl   0x0(%rax)
+  0x00007f2f5dc0b217: callq  0x00007f2f5e08c320  ; ImmutableOopMap{[184]=Oop [176]=Oop [168]=Oop }
+                                                ;*invokevirtual initTable {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@49 (line 1017)
+                                                ;   {optimized virtual_call}
+  0x00007f2f5dc0b21c: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b226: incl   0x250(%rcx)
+  0x00007f2f5dc0b22c: mov    0xc4(%rsp),%esi
+  0x00007f2f5dc0b233: mov    0xc0(%rsp),%r8d
+  0x00007f2f5dc0b23b: mov    0xb8(%rsp),%rcx
+  0x00007f2f5dc0b243: jmpq   0x00007f2f5dc0c68a
+  0x00007f2f5dc0b248: dec    %r9d
+  0x00007f2f5dc0b24b: and    0xc8(%rsp),%r9d
+  0x00007f2f5dc0b253: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b25d: addq   $0x1,0x268(%rcx)
+  0x00007f2f5dc0b265: movabs $0x7f2f711d1e08,%rcx  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b26f: mov    0x100(%rcx),%edx
+  0x00007f2f5dc0b275: add    $0x8,%edx
+  0x00007f2f5dc0b278: mov    %edx,0x100(%rcx)
+  0x00007f2f5dc0b27e: and    $0x7ffff8,%edx
+  0x00007f2f5dc0b284: cmp    $0x0,%edx
+  0x00007f2f5dc0b287: je     0x00007f2f5dc0ca37
+  0x00007f2f5dc0b28d: movslq %r9d,%rdx
+  0x00007f2f5dc0b290: mov    $0x3,%ecx
+  0x00007f2f5dc0b295: shl    %cl,%rdx
+  0x00007f2f5dc0b298: movabs $0x18,%r10
+  0x00007f2f5dc0b2a2: add    %r10,%rdx
+  0x00007f2f5dc0b2a5: movabs $0x7f2f711d1e08,%rsi  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b2af: lea    0x178(%rsi),%rsi
+  0x00007f2f5dc0b2b6: mov    %rbx,%rdi
+  0x00007f2f5dc0b2b9: mov    0x8(%rdi),%rdi
+  0x00007f2f5dc0b2bd: xor    0x8(%rsi),%rdi
+  0x00007f2f5dc0b2c1: test   $0xfffffffffffffffc,%rdi
+  0x00007f2f5dc0b2c8: je     0x00007f2f5dc0b2db
+  0x00007f2f5dc0b2ca: test   $0x2,%rdi
+  0x00007f2f5dc0b2d1: jne    0x00007f2f5dc0b2db
+  0x00007f2f5dc0b2d3: orq    $0x2,0x8(%rsi)
+  0x00007f2f5dc0b2db: movabs $0x7f275d060050,%rsi  ;   {oop(a 'jdk/internal/misc/Unsafe'{0x00007f275d060050})}
+  0x00007f2f5dc0b2e5: movabs $0x7f2f711d1e08,%rdi  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b2ef: addq   $0x1,0x140(%rdi)
+  0x00007f2f5dc0b2f7: movabs $0x7f2f711d2670,%rsi  ;   {metadata(method data for {method} {0x00007f2f710547c8} 'getObjectAcquire' '(Ljava/lang/Object;J)Ljava/lang/Object;' in 'jdk/internal/misc/Unsafe')}
+  0x00007f2f5dc0b301: mov    0x100(%rsi),%edi
+  0x00007f2f5dc0b307: add    $0x8,%edi
+  0x00007f2f5dc0b30a: mov    %edi,0x100(%rsi)
+  0x00007f2f5dc0b310: and    $0x7ffff8,%edi
+  0x00007f2f5dc0b316: cmp    $0x0,%edi
+  0x00007f2f5dc0b319: je     0x00007f2f5dc0ca58
+  0x00007f2f5dc0b31f: mov    (%rbx,%rdx,1),%rsi
+  0x00007f2f5dc0b323: cmp    $0x0,%rsi
+  0x00007f2f5dc0b327: jne    0x00007f2f5dc0b33f
+  0x00007f2f5dc0b329: movabs $0x7f2f711d1e08,%rdi  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b333: orb    $0x1,0x189(%rdi)
+  0x00007f2f5dc0b33a: jmpq   0x00007f2f5dc0b3fa
+  0x00007f2f5dc0b33f: movabs $0x7f2f710ec328,%rax  ;   {metadata('java/util/concurrent/ConcurrentHashMap$Node')}
+  0x00007f2f5dc0b349: mov    0x8(%rsi),%rdi
+  0x00007f2f5dc0b34d: cmp    0x38(%rdi),%rax
+  0x00007f2f5dc0b351: jne    0x00007f2f5dc0b3de
+  0x00007f2f5dc0b357: movabs $0x7f2f711d1e08,%rdi  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b361: mov    0x8(%rsi),%rax
+  0x00007f2f5dc0b365: cmp    0x1a0(%rdi),%rax
+  0x00007f2f5dc0b36c: jne    0x00007f2f5dc0b37b
+  0x00007f2f5dc0b36e: addq   $0x1,0x1a8(%rdi)
+  0x00007f2f5dc0b376: jmpq   0x00007f2f5dc0b3fa
+  0x00007f2f5dc0b37b: cmp    0x1b0(%rdi),%rax
+  0x00007f2f5dc0b382: jne    0x00007f2f5dc0b391
+  0x00007f2f5dc0b384: addq   $0x1,0x1b8(%rdi)
+  0x00007f2f5dc0b38c: jmpq   0x00007f2f5dc0b3fa
+  0x00007f2f5dc0b391: cmpq   $0x0,0x1a0(%rdi)
+  0x00007f2f5dc0b39c: jne    0x00007f2f5dc0b3b5
+  0x00007f2f5dc0b39e: mov    %rax,0x1a0(%rdi)
+  0x00007f2f5dc0b3a5: movq   $0x1,0x1a8(%rdi)
+  0x00007f2f5dc0b3b0: jmpq   0x00007f2f5dc0b3fa
+  0x00007f2f5dc0b3b5: cmpq   $0x0,0x1b0(%rdi)
+  0x00007f2f5dc0b3c0: jne    0x00007f2f5dc0b3d9
+  0x00007f2f5dc0b3c2: mov    %rax,0x1b0(%rdi)
+  0x00007f2f5dc0b3c9: movq   $0x1,0x1b8(%rdi)
+  0x00007f2f5dc0b3d4: jmpq   0x00007f2f5dc0b3fa
+  0x00007f2f5dc0b3d9: jmpq   0x00007f2f5dc0b3fa
+  0x00007f2f5dc0b3de: movabs $0x7f2f711d1e08,%rdi  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b3e8: subq   $0x1,0x190(%rdi)
+  0x00007f2f5dc0b3f0: jmpq   0x00007f2f5dc0ca79
+  0x00007f2f5dc0b3f5: jmpq   0x00007f2f5dc0b3fa
+  0x00007f2f5dc0b3fa: mov    %rsi,%rdi
+  0x00007f2f5dc0b3fd: mov    %rdi,0xd0(%rsp)
+  0x00007f2f5dc0b405: cmp    $0x0,%rdi
+  0x00007f2f5dc0b409: movabs $0x7f2f714f6bd0,%rsi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b413: movabs $0x278,%rax
+  0x00007f2f5dc0b41d: jne    0x00007f2f5dc0b42d
+  0x00007f2f5dc0b423: movabs $0x288,%rax
+  0x00007f2f5dc0b42d: mov    (%rsi,%rax,1),%rcx
+  0x00007f2f5dc0b431: lea    0x1(%rcx),%rcx
+  0x00007f2f5dc0b435: mov    %rcx,(%rsi,%rax,1)
+  0x00007f2f5dc0b439: mov    %rdx,%r8
+  0x00007f2f5dc0b43c: jne    0x00007f2f5dc0b63a
+  0x00007f2f5dc0b442: mov    0xc8(%rsp),%esi
+  0x00007f2f5dc0b449: mov    0xb8(%rsp),%rcx
+  0x00007f2f5dc0b451: mov    0xb0(%rsp),%rdx
+  0x00007f2f5dc0b459: mov    %rdx,%r11
+  0x00007f2f5dc0b45c: movabs $0x7f2f710ec328,%rdx  ;   {metadata('java/util/concurrent/ConcurrentHashMap$Node')}
+  0x00007f2f5dc0b466: mov    %rcx,%r14
+  0x00007f2f5dc0b469: mov    %rsi,%r13
+  0x00007f2f5dc0b46c: jmpq   0x00007f2f5dc0ca82
+  0x00007f2f5dc0b471: movabs $0x30,%rcx
+  0x00007f2f5dc0b47b: shr    $0x3,%rcx
+  0x00007f2f5dc0b47f: lea    -0x1(%rcx),%rdi
+  0x00007f2f5dc0b483: bsr    %rdi,%rax
+  0x00007f2f5dc0b487: shl    $0x2,%rdi
+  0x00007f2f5dc0b48b: add    $0x1d,%rax
+  0x00007f2f5dc0b48f: xor    %rax,%rdi
+  0x00007f2f5dc0b492: cmp    $0x9,%rcx
+  0x00007f2f5dc0b496: sbb    %rcx,%rcx
+  0x00007f2f5dc0b499: and    %rcx,%rdi
+  0x00007f2f5dc0b49c: xor    %rax,%rdi
+  0x00007f2f5dc0b49f: mov    %rax,%rcx
+  0x00007f2f5dc0b4a2: mov    0x190(%r15),%rdi
+  0x00007f2f5dc0b4a9: mov    (%rdi,%rcx,8),%rdi
+  0x00007f2f5dc0b4ad: xor    %rax,%rax
+  0x00007f2f5dc0b4b0: mov    (%rdi),%eax
+  0x00007f2f5dc0b4b2: cmp    0x4(%rdi),%eax
+  0x00007f2f5dc0b4b5: jae    0x00007f2f5dc0b4d2
+  0x00007f2f5dc0b4bb: mov    %rdi,%rcx
+  0x00007f2f5dc0b4be: add    $0x28,%rcx
+  0x00007f2f5dc0b4c2: mov    (%rcx,%rax,8),%rax
+  0x00007f2f5dc0b4c6: mov    (%rdi),%ecx
+  0x00007f2f5dc0b4c8: add    $0x1,%ecx
+  0x00007f2f5dc0b4cb: mov    %ecx,(%rdi)
+  0x00007f2f5dc0b4cd: jmpq   0x00007f2f5dc0b4d7
+  0x00007f2f5dc0b4d2: jmpq   0x00007f2f5dc0ca82
+  0x00007f2f5dc0b4d7: mov    0xb8(%rdx),%rcx
+  0x00007f2f5dc0b4de: mov    %rcx,(%rax)
+  0x00007f2f5dc0b4e1: mov    %rdx,0x8(%rax)
+  0x00007f2f5dc0b4e5: xor    %rcx,%rcx
+  0x00007f2f5dc0b4e8: mov    %rcx,0x10(%rax)
+  0x00007f2f5dc0b4ec: mov    %rcx,0x18(%rax)
+  0x00007f2f5dc0b4f0: mov    %rcx,0x20(%rax)
+  0x00007f2f5dc0b4f4: mov    %rcx,0x28(%rax)
+  0x00007f2f5dc0b4f8: mov    %rax,%rdx
+  0x00007f2f5dc0b4fb: mov    %rdx,%rax
+  0x00007f2f5dc0b4fe: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b508: addq   $0x1,0x298(%rcx)
+  0x00007f2f5dc0b510: movabs $0x7f2f714f74d8,%rax  ;   {metadata(method data for {method} {0x00007f2f710ebbf8} '<init>' '(ILjava/lang/Object;Ljava/lang/Object;)V' in 'java/util/concurrent/ConcurrentHashMap$Node')}
+  0x00007f2f5dc0b51a: mov    0x100(%rax),%ecx
+  0x00007f2f5dc0b520: add    $0x8,%ecx
+  0x00007f2f5dc0b523: mov    %ecx,0x100(%rax)
+  0x00007f2f5dc0b529: and    $0x7ffff8,%ecx
+  0x00007f2f5dc0b52f: cmp    $0x0,%ecx
+  0x00007f2f5dc0b532: je     0x00007f2f5dc0ca8f
+  0x00007f2f5dc0b538: mov    %rdx,%rax
+  0x00007f2f5dc0b53b: movabs $0x7f2f714f74d8,%rcx  ;   {metadata(method data for {method} {0x00007f2f710ebbf8} '<init>' '(ILjava/lang/Object;Ljava/lang/Object;)V' in 'java/util/concurrent/ConcurrentHashMap$Node')}
+  0x00007f2f5dc0b545: addq   $0x1,0x140(%rcx)
+  0x00007f2f5dc0b54d: movabs $0x7f2f711e4c40,%rax  ;   {metadata(method data for {method} {0x00007f2f70f8d5d0} '<init>' '()V' in 'java/lang/Object')}
+  0x00007f2f5dc0b557: mov    0x100(%rax),%ecx
+  0x00007f2f5dc0b55d: add    $0x8,%ecx
+  0x00007f2f5dc0b560: mov    %ecx,0x100(%rax)
+  0x00007f2f5dc0b566: and    $0x7ffff8,%ecx
+  0x00007f2f5dc0b56c: cmp    $0x0,%ecx
+  0x00007f2f5dc0b56f: je     0x00007f2f5dc0cab0
+  0x00007f2f5dc0b575: mov    %r13d,0x10(%rdx)
+  0x00007f2f5dc0b579: mov    %r11,0x18(%rdx)
+  0x00007f2f5dc0b57d: mov    %r14,0x20(%rdx)
+  0x00007f2f5dc0b581: lock addl $0x0,-0x40(%rsp)
+  0x00007f2f5dc0b587: movabs $0x7f2f714f6bd0,%rax  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b591: addq   $0x1,0x2a8(%rax)
+  0x00007f2f5dc0b599: movabs $0x7f2f714f80e0,%rax  ;   {metadata(method data for {method} {0x00007f2f710d91b8} 'casTabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;ILjava/util/concurrent/ConcurrentHashMap$Node;Ljava/util/concurrent/ConcurrentHashMap$Node;)Z' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b5a3: mov    0x100(%rax),%ecx
+  0x00007f2f5dc0b5a9: add    $0x8,%ecx
+  0x00007f2f5dc0b5ac: mov    %ecx,0x100(%rax)
+  0x00007f2f5dc0b5b2: and    $0x7ffff8,%ecx
+  0x00007f2f5dc0b5b8: cmp    $0x0,%ecx
+  0x00007f2f5dc0b5bb: je     0x00007f2f5dc0cad1
+  0x00007f2f5dc0b5c1: lea    (%rbx,%r8,1),%rcx
+  0x00007f2f5dc0b5c5: movabs $0x0,%rax          ;   {oop(NULL)}
+  0x00007f2f5dc0b5cf: lock cmpxchg %rdx,(%rcx)
+  0x00007f2f5dc0b5d4: mov    $0x1,%edx
+  0x00007f2f5dc0b5d9: je     0x00007f2f5dc0b5e4
+  0x00007f2f5dc0b5df: mov    $0x0,%edx
+  0x00007f2f5dc0b5e4: and    $0x1,%edx
+  0x00007f2f5dc0b5e7: cmp    $0x0,%edx
+  0x00007f2f5dc0b5ea: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b5f4: movabs $0x2c8,%rcx
+  0x00007f2f5dc0b5fe: jne    0x00007f2f5dc0b60e
+  0x00007f2f5dc0b604: movabs $0x2b8,%rcx
+  0x00007f2f5dc0b60e: mov    (%rdx,%rcx,1),%rsi
+  0x00007f2f5dc0b612: lea    0x1(%rsi),%rsi
+  0x00007f2f5dc0b616: mov    %rsi,(%rdx,%rcx,1)
+  0x00007f2f5dc0b61a: jne    0x00007f2f5dc0c7f6
+  0x00007f2f5dc0b620: mov    %rbx,%rax
+  0x00007f2f5dc0b623: mov    0xc4(%rsp),%esi
+  0x00007f2f5dc0b62a: mov    0xc0(%rsp),%r8d
+  0x00007f2f5dc0b632: mov    %r14,%rcx
+  0x00007f2f5dc0b635: jmpq   0x00007f2f5dc0c68a
+  0x00007f2f5dc0b63a: mov    0xc8(%rsp),%r13d
+  0x00007f2f5dc0b642: mov    0xb8(%rsp),%r14
+  0x00007f2f5dc0b64a: mov    0xb0(%rsp),%r11
+  0x00007f2f5dc0b652: mov    0x10(%rdi),%eax    ; implicit exception: dispatches to 0x00007f2f5dc0caf2
+  0x00007f2f5dc0b655: cmp    $0xffffffff,%eax
+  0x00007f2f5dc0b658: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b662: movabs $0x2f0,%rcx
+  0x00007f2f5dc0b66c: jne    0x00007f2f5dc0b67c
+  0x00007f2f5dc0b672: movabs $0x300,%rcx
+  0x00007f2f5dc0b67c: mov    (%rdx,%rcx,1),%rsi
+  0x00007f2f5dc0b680: lea    0x1(%rsi),%rsi
+  0x00007f2f5dc0b684: mov    %rsi,(%rdx,%rcx,1)
+  0x00007f2f5dc0b688: jne    0x00007f2f5dc0b6e8
+  0x00007f2f5dc0b68e: mov    0xa8(%rsp),%rax
+  0x00007f2f5dc0b696: movabs $0x7f2f714f6bd0,%r8  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b6a0: addq   $0x1,0x310(%r8)
+  0x00007f2f5dc0b6a8: mov    %rbx,%rdx
+  0x00007f2f5dc0b6ab: mov    %rdi,%rcx
+  0x00007f2f5dc0b6ae: mov    0xa8(%rsp),%rsi
+  0x00007f2f5dc0b6b6: nop
+  0x00007f2f5dc0b6b7: callq  0x00007f2f5dc0cd05  ; ImmutableOopMap{[168]=Oop [184]=Oop [176]=Oop }
+                                                ;*invokevirtual helpTransfer {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@120 (line 1023)
+                                                ;   {optimized virtual_call}
+  0x00007f2f5dc0b6bc: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b6c6: incl   0x348(%rdx)
+  0x00007f2f5dc0b6cc: mov    0xc4(%rsp),%esi
+  0x00007f2f5dc0b6d3: mov    0xc0(%rsp),%r8d
+  0x00007f2f5dc0b6db: mov    0xb8(%rsp),%rcx
+  0x00007f2f5dc0b6e3: jmpq   0x00007f2f5dc0c68a
+  0x00007f2f5dc0b6e8: mov    0xc0(%rsp),%ecx
+  0x00007f2f5dc0b6ef: cmp    $0x0,%ecx
+  0x00007f2f5dc0b6f2: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b6fc: movabs $0x370,%rsi
+  0x00007f2f5dc0b706: jne    0x00007f2f5dc0b716
+  0x00007f2f5dc0b70c: movabs $0x360,%rsi
+  0x00007f2f5dc0b716: mov    (%rdx,%rsi,1),%r11
+  0x00007f2f5dc0b71a: lea    0x1(%r11),%r11
+  0x00007f2f5dc0b71e: mov    %r11,(%rdx,%rsi,1)
+  0x00007f2f5dc0b722: jne    0x00007f2f5dc0b74c
+  0x00007f2f5dc0b728: mov    %eax,0xcc(%rsp)
+  0x00007f2f5dc0b72f: mov    %r8,0xe0(%rsp)
+  0x00007f2f5dc0b737: mov    %r9d,0xe8(%rsp)
+  0x00007f2f5dc0b73f: mov    %rbx,0xd8(%rsp)
+  0x00007f2f5dc0b747: jmpq   0x00007f2f5dc0b993
+  0x00007f2f5dc0b74c: cmp    0xc8(%rsp),%eax
+  0x00007f2f5dc0b753: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b75d: movabs $0x390,%rsi
+  0x00007f2f5dc0b767: je     0x00007f2f5dc0b777
+  0x00007f2f5dc0b76d: movabs $0x380,%rsi
+  0x00007f2f5dc0b777: mov    (%rdx,%rsi,1),%r11
+  0x00007f2f5dc0b77b: lea    0x1(%r11),%r11
+  0x00007f2f5dc0b77f: mov    %r11,(%rdx,%rsi,1)
+  0x00007f2f5dc0b783: je     0x00007f2f5dc0b7ad
+  0x00007f2f5dc0b789: mov    %eax,0xcc(%rsp)
+  0x00007f2f5dc0b790: mov    %r8,0xe0(%rsp)
+  0x00007f2f5dc0b798: mov    %r9d,0xe8(%rsp)
+  0x00007f2f5dc0b7a0: mov    %rbx,0xd8(%rsp)
+  0x00007f2f5dc0b7a8: jmpq   0x00007f2f5dc0b993
+  0x00007f2f5dc0b7ad: mov    0xb0(%rsp),%rdx
+  0x00007f2f5dc0b7b5: mov    0x18(%rdi),%rsi
+  0x00007f2f5dc0b7b9: cmp    %rdx,%rsi
+  0x00007f2f5dc0b7bc: movabs $0x7f2f714f6bd0,%r11  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b7c6: movabs $0x3b0,%r13
+  0x00007f2f5dc0b7d0: jne    0x00007f2f5dc0b7e0
+  0x00007f2f5dc0b7d6: movabs $0x3a0,%r13
+  0x00007f2f5dc0b7e0: mov    (%r11,%r13,1),%r14
+  0x00007f2f5dc0b7e4: lea    0x1(%r14),%r14
+  0x00007f2f5dc0b7e8: mov    %r14,(%r11,%r13,1)
+  0x00007f2f5dc0b7ec: jne    0x00007f2f5dc0b816
+  0x00007f2f5dc0b7f2: mov    %eax,0xcc(%rsp)
+  0x00007f2f5dc0b7f9: mov    %r8,0xe0(%rsp)
+  0x00007f2f5dc0b801: mov    %r9d,0xe8(%rsp)
+  0x00007f2f5dc0b809: mov    %rbx,0xd8(%rsp)
+  0x00007f2f5dc0b811: jmpq   0x00007f2f5dc0b955
+  0x00007f2f5dc0b816: cmp    $0x0,%rsi
+  0x00007f2f5dc0b81a: movabs $0x7f2f714f6bd0,%r11  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b824: movabs $0x3c0,%r13
+  0x00007f2f5dc0b82e: je     0x00007f2f5dc0b83e
+  0x00007f2f5dc0b834: movabs $0x3d0,%r13
+  0x00007f2f5dc0b83e: mov    (%r11,%r13,1),%r14
+  0x00007f2f5dc0b842: lea    0x1(%r14),%r14
+  0x00007f2f5dc0b846: mov    %r14,(%r11,%r13,1)
+  0x00007f2f5dc0b84a: mov    %eax,0xcc(%rsp)
+  0x00007f2f5dc0b851: mov    %r8,0xe0(%rsp)
+  0x00007f2f5dc0b859: mov    %r9d,0xe8(%rsp)
+  0x00007f2f5dc0b861: mov    %rbx,0xd8(%rsp)
+  0x00007f2f5dc0b869: je     0x00007f2f5dc0b993
+  0x00007f2f5dc0b86f: mov    %rdx,%r11
+  0x00007f2f5dc0b872: movabs $0x7f2f714f6bd0,%r13  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b87c: mov    0x8(%r11),%r11
+  0x00007f2f5dc0b880: cmp    0x3f0(%r13),%r11
+  0x00007f2f5dc0b887: jne    0x00007f2f5dc0b896
+  0x00007f2f5dc0b889: addq   $0x1,0x3f8(%r13)
+  0x00007f2f5dc0b891: jmpq   0x00007f2f5dc0b8fc
+  0x00007f2f5dc0b896: cmp    0x400(%r13),%r11
+  0x00007f2f5dc0b89d: jne    0x00007f2f5dc0b8ac
+  0x00007f2f5dc0b89f: addq   $0x1,0x408(%r13)
+  0x00007f2f5dc0b8a7: jmpq   0x00007f2f5dc0b8fc
+  0x00007f2f5dc0b8ac: cmpq   $0x0,0x3f0(%r13)
+  0x00007f2f5dc0b8b7: jne    0x00007f2f5dc0b8d0
+  0x00007f2f5dc0b8b9: mov    %r11,0x3f0(%r13)
+  0x00007f2f5dc0b8c0: movq   $0x1,0x3f8(%r13)
+  0x00007f2f5dc0b8cb: jmpq   0x00007f2f5dc0b8fc
+  0x00007f2f5dc0b8d0: cmpq   $0x0,0x400(%r13)
+  0x00007f2f5dc0b8db: jne    0x00007f2f5dc0b8f4
+  0x00007f2f5dc0b8dd: mov    %r11,0x400(%r13)
+  0x00007f2f5dc0b8e4: movq   $0x1,0x408(%r13)
+  0x00007f2f5dc0b8ef: jmpq   0x00007f2f5dc0b8fc
+  0x00007f2f5dc0b8f4: addq   $0x1,0x3e0(%r13)
+  0x00007f2f5dc0b8fc: mov    %rdx,%r11
+  0x00007f2f5dc0b8ff: mov    %rsi,%rdx
+  0x00007f2f5dc0b902: mov    %r11,%rsi
+  0x00007f2f5dc0b905: movabs $0xffffffffffffffff,%rax
+  0x00007f2f5dc0b90f: callq  0x00007f2f5d103f60  ; ImmutableOopMap{[168]=Oop [184]=Oop [176]=Oop [216]=Oop [208]=Oop }
+                                                ;*invokevirtual equals {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@159 (line 1026)
+                                                ;   {virtual_call}
+  0x00007f2f5dc0b914: cmp    $0x0,%eax
+  0x00007f2f5dc0b917: movabs $0x7f2f714f6bd0,%rax  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b921: movabs $0x418,%rdx
+  0x00007f2f5dc0b92b: je     0x00007f2f5dc0b93b
+  0x00007f2f5dc0b931: movabs $0x428,%rdx
+  0x00007f2f5dc0b93b: mov    (%rax,%rdx,1),%rsi
+  0x00007f2f5dc0b93f: lea    0x1(%rsi),%rsi
+  0x00007f2f5dc0b943: mov    %rsi,(%rax,%rdx,1)
+  0x00007f2f5dc0b947: mov    0xd0(%rsp),%rdi
+  0x00007f2f5dc0b94f: je     0x00007f2f5dc0b993
+  0x00007f2f5dc0b955: mov    0x20(%rdi),%rsi
+  0x00007f2f5dc0b959: cmp    $0x0,%rsi
+  0x00007f2f5dc0b95d: movabs $0x7f2f714f6bd0,%rax  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0b967: movabs $0x448,%rdx
+  0x00007f2f5dc0b971: jne    0x00007f2f5dc0b981
+  0x00007f2f5dc0b977: movabs $0x438,%rdx
+  0x00007f2f5dc0b981: mov    (%rax,%rdx,1),%rbx
+  0x00007f2f5dc0b985: lea    0x1(%rbx),%rbx
+  0x00007f2f5dc0b989: mov    %rbx,(%rax,%rdx,1)
+  0x00007f2f5dc0b98d: jne    0x00007f2f5dc0c7e0
+  0x00007f2f5dc0b993: lea    0x118(%rsp),%rdx
+  0x00007f2f5dc0b99b: mov    %rdi,0x8(%rdx)
+  0x00007f2f5dc0b99f: mov    (%rdi),%rax
+  0x00007f2f5dc0b9a2: mov    %rax,%rsi
+  0x00007f2f5dc0b9a5: and    $0x7,%rsi
+  0x00007f2f5dc0b9a9: cmp    $0x5,%rsi
+  0x00007f2f5dc0b9ad: jne    0x00007f2f5dc0ba2f
+  0x00007f2f5dc0b9b3: mov    0x8(%rdi),%rsi
+  0x00007f2f5dc0b9b7: mov    0xb8(%rsi),%rsi
+  0x00007f2f5dc0b9be: or     %r15,%rsi
+  0x00007f2f5dc0b9c1: xor    %rax,%rsi
+  0x00007f2f5dc0b9c4: and    $0xffffffffffffff87,%rsi
+  0x00007f2f5dc0b9c8: je     0x00007f2f5dc0ba57
+  0x00007f2f5dc0b9ce: test   $0x7,%rsi
+  0x00007f2f5dc0b9d5: jne    0x00007f2f5dc0ba1f
+  0x00007f2f5dc0b9db: test   $0x300,%rsi
+  0x00007f2f5dc0b9e2: jne    0x00007f2f5dc0ba01
+  0x00007f2f5dc0b9e4: and    $0x37f,%rax
+  0x00007f2f5dc0b9eb: mov    %rax,%rsi
+  0x00007f2f5dc0b9ee: or     %r15,%rsi
+  0x00007f2f5dc0b9f1: lock cmpxchg %rsi,(%rdi)
+  0x00007f2f5dc0b9f6: jne    0x00007f2f5dc0caf7
+  0x00007f2f5dc0b9fc: jmpq   0x00007f2f5dc0ba57
+  0x00007f2f5dc0ba01: mov    0x8(%rdi),%rsi
+  0x00007f2f5dc0ba05: mov    0xb8(%rsi),%rsi
+  0x00007f2f5dc0ba0c: or     %r15,%rsi
+  0x00007f2f5dc0ba0f: lock cmpxchg %rsi,(%rdi)
+  0x00007f2f5dc0ba14: jne    0x00007f2f5dc0caf7
+  0x00007f2f5dc0ba1a: jmpq   0x00007f2f5dc0ba57
+  0x00007f2f5dc0ba1f: mov    0x8(%rdi),%rsi
+  0x00007f2f5dc0ba23: mov    0xb8(%rsi),%rsi
+  0x00007f2f5dc0ba2a: lock cmpxchg %rsi,(%rdi)
+  0x00007f2f5dc0ba2f: mov    (%rdi),%rax
+  0x00007f2f5dc0ba32: or     $0x1,%rax
+  0x00007f2f5dc0ba36: mov    %rax,(%rdx)
+  0x00007f2f5dc0ba39: lock cmpxchg %rdx,(%rdi)
+  0x00007f2f5dc0ba3e: je     0x00007f2f5dc0ba57
+  0x00007f2f5dc0ba44: sub    %rsp,%rax
+  0x00007f2f5dc0ba47: and    $0xfffffffffffff007,%rax
+  0x00007f2f5dc0ba4e: mov    %rax,(%rdx)
+  0x00007f2f5dc0ba51: jne    0x00007f2f5dc0caf7
+  0x00007f2f5dc0ba57: mov    0xe0(%rsp),%rdx
+  0x00007f2f5dc0ba5f: mov    0xd8(%rsp),%rbx
+  0x00007f2f5dc0ba67: movabs $0x7f2f714f6bd0,%rsi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0ba71: addq   $0x1,0x458(%rsi)
+  0x00007f2f5dc0ba79: movabs $0x7f2f711d1e08,%rsi  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0ba83: mov    0x100(%rsi),%eax
+  0x00007f2f5dc0ba89: add    $0x8,%eax
+  0x00007f2f5dc0ba8c: mov    %eax,0x100(%rsi)
+  0x00007f2f5dc0ba92: and    $0x7ffff8,%eax
+  0x00007f2f5dc0ba98: cmp    $0x0,%eax
+  0x00007f2f5dc0ba9b: je     0x00007f2f5dc0cb0a
+  0x00007f2f5dc0baa1: movabs $0x7f2f711d1e08,%rsi  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0baab: lea    0x178(%rsi),%rsi
+  0x00007f2f5dc0bab2: mov    %rbx,%rax
+  0x00007f2f5dc0bab5: mov    0x8(%rax),%rax
+  0x00007f2f5dc0bab9: xor    0x8(%rsi),%rax
+  0x00007f2f5dc0babd: test   $0xfffffffffffffffc,%rax
+  0x00007f2f5dc0bac3: je     0x00007f2f5dc0bad5
+  0x00007f2f5dc0bac5: test   $0x2,%rax
+  0x00007f2f5dc0bacb: jne    0x00007f2f5dc0bad5
+  0x00007f2f5dc0bacd: orq    $0x2,0x8(%rsi)
+  0x00007f2f5dc0bad5: movabs $0x7f275d060050,%rsi  ;   {oop(a 'jdk/internal/misc/Unsafe'{0x00007f275d060050})}
+  0x00007f2f5dc0badf: movabs $0x7f2f711d1e08,%rax  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bae9: addq   $0x1,0x140(%rax)
+  0x00007f2f5dc0baf1: movabs $0x7f2f711d2670,%rsi  ;   {metadata(method data for {method} {0x00007f2f710547c8} 'getObjectAcquire' '(Ljava/lang/Object;J)Ljava/lang/Object;' in 'jdk/internal/misc/Unsafe')}
+  0x00007f2f5dc0bafb: mov    0x100(%rsi),%eax
+  0x00007f2f5dc0bb01: add    $0x8,%eax
+  0x00007f2f5dc0bb04: mov    %eax,0x100(%rsi)
+  0x00007f2f5dc0bb0a: and    $0x7ffff8,%eax
+  0x00007f2f5dc0bb10: cmp    $0x0,%eax
+  0x00007f2f5dc0bb13: je     0x00007f2f5dc0cb2b
+  0x00007f2f5dc0bb19: mov    (%rbx,%rdx,1),%rdx
+  0x00007f2f5dc0bb1d: cmp    $0x0,%rdx
+  0x00007f2f5dc0bb21: jne    0x00007f2f5dc0bb39
+  0x00007f2f5dc0bb23: movabs $0x7f2f711d1e08,%rsi  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bb2d: orb    $0x1,0x189(%rsi)
+  0x00007f2f5dc0bb34: jmpq   0x00007f2f5dc0bbf4
+  0x00007f2f5dc0bb39: movabs $0x7f2f710ec328,%rax  ;   {metadata('java/util/concurrent/ConcurrentHashMap$Node')}
+  0x00007f2f5dc0bb43: mov    0x8(%rdx),%rsi
+  0x00007f2f5dc0bb47: cmp    0x38(%rsi),%rax
+  0x00007f2f5dc0bb4b: jne    0x00007f2f5dc0bbd8
+  0x00007f2f5dc0bb51: movabs $0x7f2f711d1e08,%rsi  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bb5b: mov    0x8(%rdx),%rax
+  0x00007f2f5dc0bb5f: cmp    0x1a0(%rsi),%rax
+  0x00007f2f5dc0bb66: jne    0x00007f2f5dc0bb75
+  0x00007f2f5dc0bb68: addq   $0x1,0x1a8(%rsi)
+  0x00007f2f5dc0bb70: jmpq   0x00007f2f5dc0bbf4
+  0x00007f2f5dc0bb75: cmp    0x1b0(%rsi),%rax
+  0x00007f2f5dc0bb7c: jne    0x00007f2f5dc0bb8b
+  0x00007f2f5dc0bb7e: addq   $0x1,0x1b8(%rsi)
+  0x00007f2f5dc0bb86: jmpq   0x00007f2f5dc0bbf4
+  0x00007f2f5dc0bb8b: cmpq   $0x0,0x1a0(%rsi)
+  0x00007f2f5dc0bb96: jne    0x00007f2f5dc0bbaf
+  0x00007f2f5dc0bb98: mov    %rax,0x1a0(%rsi)
+  0x00007f2f5dc0bb9f: movq   $0x1,0x1a8(%rsi)
+  0x00007f2f5dc0bbaa: jmpq   0x00007f2f5dc0bbf4
+  0x00007f2f5dc0bbaf: cmpq   $0x0,0x1b0(%rsi)
+  0x00007f2f5dc0bbba: jne    0x00007f2f5dc0bbd3
+  0x00007f2f5dc0bbbc: mov    %rax,0x1b0(%rsi)
+  0x00007f2f5dc0bbc3: movq   $0x1,0x1b8(%rsi)
+  0x00007f2f5dc0bbce: jmpq   0x00007f2f5dc0bbf4
+  0x00007f2f5dc0bbd3: jmpq   0x00007f2f5dc0bbf4
+  0x00007f2f5dc0bbd8: movabs $0x7f2f711d1e08,%rsi  ;   {metadata(method data for {method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bbe2: subq   $0x1,0x190(%rsi)
+  0x00007f2f5dc0bbea: jmpq   0x00007f2f5dc0cb4c
+  0x00007f2f5dc0bbef: jmpq   0x00007f2f5dc0bbf4
+  0x00007f2f5dc0bbf4: cmp    %rdi,%rdx
+  0x00007f2f5dc0bbf7: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bc01: movabs $0x478,%rsi
+  0x00007f2f5dc0bc0b: je     0x00007f2f5dc0bc1b
+  0x00007f2f5dc0bc11: movabs $0x468,%rsi
+  0x00007f2f5dc0bc1b: mov    (%rdx,%rsi,1),%rax
+  0x00007f2f5dc0bc1f: lea    0x1(%rax),%rax
+  0x00007f2f5dc0bc23: mov    %rax,(%rdx,%rsi,1)
+  0x00007f2f5dc0bc27: je     0x00007f2f5dc0bc5b
+  0x00007f2f5dc0bc2d: mov    0xc4(%rsp),%eax
+  0x00007f2f5dc0bc34: movabs $0x0,%rdi          ;   {oop(NULL)}
+  0x00007f2f5dc0bc3e: mov    %rbx,0xd8(%rsp)
+  0x00007f2f5dc0bc46: mov    0xc0(%rsp),%r8d
+  0x00007f2f5dc0bc4e: mov    0xb8(%rsp),%rcx
+  0x00007f2f5dc0bc56: jmpq   0x00007f2f5dc0c5ff
+  0x00007f2f5dc0bc5b: mov    0xcc(%rsp),%eax
+  0x00007f2f5dc0bc62: cmp    $0x0,%eax
+  0x00007f2f5dc0bc65: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bc6f: movabs $0x488,%rsi
+  0x00007f2f5dc0bc79: jl     0x00007f2f5dc0bc89
+  0x00007f2f5dc0bc7f: movabs $0x498,%rsi
+  0x00007f2f5dc0bc89: mov    (%rdx,%rsi,1),%rax
+  0x00007f2f5dc0bc8d: lea    0x1(%rax),%rax
+  0x00007f2f5dc0bc91: mov    %rax,(%rdx,%rsi,1)
+  0x00007f2f5dc0bc95: jl     0x00007f2f5dc0c158
+  0x00007f2f5dc0bc9b: mov    %rdi,%rax
+  0x00007f2f5dc0bc9e: mov    $0x1,%ecx
+  0x00007f2f5dc0bca3: mov    %ecx,0xec(%rsp)
+  0x00007f2f5dc0bcaa: mov    %rbx,0xd8(%rsp)
+  0x00007f2f5dc0bcb2: nopw   0x0(%rax,%rax,1)
+  0x00007f2f5dc0bcb8: mov    0xc8(%rsp),%esi
+  0x00007f2f5dc0bcbf: mov    0xb0(%rsp),%rdx
+  0x00007f2f5dc0bcc7: mov    0x10(%rax),%r8d    ; implicit exception: dispatches to 0x00007f2f5dc0cb55
+  0x00007f2f5dc0bccb: cmp    %esi,%r8d
+  0x00007f2f5dc0bcce: movabs $0x7f2f714f6bd0,%r8  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bcd8: movabs $0x4b8,%r9
+  0x00007f2f5dc0bce2: je     0x00007f2f5dc0bcf2
+  0x00007f2f5dc0bce8: movabs $0x4a8,%r9
+  0x00007f2f5dc0bcf2: mov    (%r8,%r9,1),%r11
+  0x00007f2f5dc0bcf6: lea    0x1(%r11),%r11
+  0x00007f2f5dc0bcfa: mov    %r11,(%r8,%r9,1)
+  0x00007f2f5dc0bcfe: je     0x00007f2f5dc0bd0c
+  0x00007f2f5dc0bd04: mov    %rax,%r8
+  0x00007f2f5dc0bd07: jmpq   0x00007f2f5dc0be7d
+  0x00007f2f5dc0bd0c: mov    0x18(%rax),%r8
+  0x00007f2f5dc0bd10: cmp    %rdx,%r8
+  0x00007f2f5dc0bd13: movabs $0x7f2f714f6bd0,%r9  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bd1d: movabs $0x4c8,%r11
+  0x00007f2f5dc0bd27: je     0x00007f2f5dc0bd37
+  0x00007f2f5dc0bd2d: movabs $0x4d8,%r11
+  0x00007f2f5dc0bd37: mov    (%r9,%r11,1),%r13
+  0x00007f2f5dc0bd3b: lea    0x1(%r13),%r13
+  0x00007f2f5dc0bd3f: mov    %r13,(%r9,%r11,1)
+  0x00007f2f5dc0bd43: je     0x00007f2f5dc0bf1b
+  0x00007f2f5dc0bd49: cmp    $0x0,%r8
+  0x00007f2f5dc0bd4d: movabs $0x7f2f714f6bd0,%r9  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bd57: movabs $0x4f8,%r11
+  0x00007f2f5dc0bd61: jne    0x00007f2f5dc0bd71
+  0x00007f2f5dc0bd67: movabs $0x4e8,%r11
+  0x00007f2f5dc0bd71: mov    (%r9,%r11,1),%r13
+  0x00007f2f5dc0bd75: lea    0x1(%r13),%r13
+  0x00007f2f5dc0bd79: mov    %r13,(%r9,%r11,1)
+  0x00007f2f5dc0bd7d: jne    0x00007f2f5dc0bd8b
+  0x00007f2f5dc0bd83: mov    %rax,%r8
+  0x00007f2f5dc0bd86: jmpq   0x00007f2f5dc0be7d
+  0x00007f2f5dc0bd8b: mov    %rax,0xf0(%rsp)
+  0x00007f2f5dc0bd93: mov    %rdx,%r9
+  0x00007f2f5dc0bd96: movabs $0x7f2f714f6bd0,%r11  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bda0: mov    0x8(%r9),%r9
+  0x00007f2f5dc0bda4: cmp    0x518(%r11),%r9
+  0x00007f2f5dc0bdab: jne    0x00007f2f5dc0bdba
+  0x00007f2f5dc0bdad: addq   $0x1,0x520(%r11)
+  0x00007f2f5dc0bdb5: jmpq   0x00007f2f5dc0be20
+  0x00007f2f5dc0bdba: cmp    0x528(%r11),%r9
+  0x00007f2f5dc0bdc1: jne    0x00007f2f5dc0bdd0
+  0x00007f2f5dc0bdc3: addq   $0x1,0x530(%r11)
+  0x00007f2f5dc0bdcb: jmpq   0x00007f2f5dc0be20
+  0x00007f2f5dc0bdd0: cmpq   $0x0,0x518(%r11)
+  0x00007f2f5dc0bddb: jne    0x00007f2f5dc0bdf4
+  0x00007f2f5dc0bddd: mov    %r9,0x518(%r11)
+  0x00007f2f5dc0bde4: movq   $0x1,0x520(%r11)
+  0x00007f2f5dc0bdef: jmpq   0x00007f2f5dc0be20
+  0x00007f2f5dc0bdf4: cmpq   $0x0,0x528(%r11)
+  0x00007f2f5dc0bdff: jne    0x00007f2f5dc0be18
+  0x00007f2f5dc0be01: mov    %r9,0x528(%r11)
+  0x00007f2f5dc0be08: movq   $0x1,0x530(%r11)
+  0x00007f2f5dc0be13: jmpq   0x00007f2f5dc0be20
+  0x00007f2f5dc0be18: addq   $0x1,0x508(%r11)
+  0x00007f2f5dc0be20: mov    %rdx,%r9
+  0x00007f2f5dc0be23: mov    %r8,%rdx
+  0x00007f2f5dc0be26: mov    %r9,%rsi
+  0x00007f2f5dc0be29: nopl   0x0(%rax)
+  0x00007f2f5dc0be2d: movabs $0xffffffffffffffff,%rax
+  0x00007f2f5dc0be37: callq  0x00007f2f5d103f60  ; ImmutableOopMap{[168]=Oop [184]=Oop [176]=Oop [216]=Oop [208]=Oop [240]=Oop [288]=Oop }
+                                                ;*invokevirtual equals {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@242 (line 1039)
+                                                ;   {virtual_call}
+  0x00007f2f5dc0be3c: cmp    $0x0,%eax
+  0x00007f2f5dc0be3f: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0be49: movabs $0x550,%rsi
+  0x00007f2f5dc0be53: jne    0x00007f2f5dc0be63
+  0x00007f2f5dc0be59: movabs $0x540,%rsi
+  0x00007f2f5dc0be63: mov    (%rdx,%rsi,1),%rdi
+  0x00007f2f5dc0be67: lea    0x1(%rdi),%rdi
+  0x00007f2f5dc0be6b: mov    %rdi,(%rdx,%rsi,1)
+  0x00007f2f5dc0be6f: mov    0xf0(%rsp),%r8
+  0x00007f2f5dc0be77: jne    0x00007f2f5dc0bf1e
+  0x00007f2f5dc0be7d: mov    0x28(%r8),%rdx
+  0x00007f2f5dc0be81: cmp    $0x0,%rdx
+  0x00007f2f5dc0be85: movabs $0x7f2f714f6bd0,%rsi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0be8f: movabs $0x5a8,%rdi
+  0x00007f2f5dc0be99: je     0x00007f2f5dc0bea9
+  0x00007f2f5dc0be9f: movabs $0x598,%rdi
+  0x00007f2f5dc0bea9: mov    (%rsi,%rdi,1),%rax
+  0x00007f2f5dc0bead: lea    0x1(%rax),%rax
+  0x00007f2f5dc0beb1: mov    %rax,(%rsi,%rdi,1)
+  0x00007f2f5dc0beb5: je     0x00007f2f5dc0bfc2
+  0x00007f2f5dc0bebb: mov    0xec(%rsp),%ecx
+  0x00007f2f5dc0bec2: inc    %ecx
+  0x00007f2f5dc0bec4: movabs $0x7f2f714f6bd0,%rsi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bece: mov    0x104(%rsi),%edi
+  0x00007f2f5dc0bed4: add    $0x8,%edi
+  0x00007f2f5dc0bed7: mov    %edi,0x104(%rsi)
+  0x00007f2f5dc0bedd: and    $0xfff8,%edi
+  0x00007f2f5dc0bee3: cmp    $0x0,%edi
+  0x00007f2f5dc0bee6: je     0x00007f2f5dc0cb5a
+  0x00007f2f5dc0beec: mov    0x108(%r15),%r10   ; ImmutableOopMap{[168]=Oop [184]=Oop [176]=Oop [216]=Oop [208]=Oop rdx=Oop [288]=Oop }
+                                                ;*goto {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@305 (line 1035)
+
+  0x00007f2f5dc0bef3: test   %eax,(%r10)        ;   {poll}
+  0x00007f2f5dc0bef6: movabs $0x7f2f714f6bd0,%rsi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bf00: incl   0x5e0(%rsi)
+  0x00007f2f5dc0bf06: mov    %rdx,%r8
+  0x00007f2f5dc0bf09: mov    %rcx,%rbx
+  0x00007f2f5dc0bf0c: mov    %r8,%rax
+  0x00007f2f5dc0bf0f: mov    %ebx,0xec(%rsp)
+  0x00007f2f5dc0bf16: jmpq   0x00007f2f5dc0bcb8
+  0x00007f2f5dc0bf1b: mov    %rax,%r8
+  0x00007f2f5dc0bf1e: mov    0xec(%rsp),%ebx
+  0x00007f2f5dc0bf25: mov    0xc0(%rsp),%r9d
+  0x00007f2f5dc0bf2d: mov    0x20(%r8),%rdx
+  0x00007f2f5dc0bf31: cmp    $0x0,%r9d
+  0x00007f2f5dc0bf35: movabs $0x7f2f714f6bd0,%rsi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bf3f: movabs $0x570,%rdi
+  0x00007f2f5dc0bf49: je     0x00007f2f5dc0bf59
+  0x00007f2f5dc0bf4f: movabs $0x560,%rdi
+  0x00007f2f5dc0bf59: mov    (%rsi,%rdi,1),%rax
+  0x00007f2f5dc0bf5d: lea    0x1(%rax),%rax
+  0x00007f2f5dc0bf61: mov    %rax,(%rsi,%rdi,1)
+  0x00007f2f5dc0bf65: je     0x00007f2f5dc0bf88
+  0x00007f2f5dc0bf6b: mov    0xc8(%rsp),%r13d
+  0x00007f2f5dc0bf73: mov    0xb8(%rsp),%r14
+  0x00007f2f5dc0bf7b: mov    0xb0(%rsp),%r11
+  0x00007f2f5dc0bf83: jmpq   0x00007f2f5dc0c137
+  0x00007f2f5dc0bf88: mov    0xb8(%rsp),%rcx
+  0x00007f2f5dc0bf90: mov    %rcx,0x20(%r8)
+  0x00007f2f5dc0bf94: lock addl $0x0,-0x40(%rsp)
+  0x00007f2f5dc0bf9a: movabs $0x7f2f714f6bd0,%rsi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0bfa4: incl   0x580(%rsi)
+  0x00007f2f5dc0bfaa: mov    0xc8(%rsp),%r13d
+  0x00007f2f5dc0bfb2: mov    %rcx,%r14
+  0x00007f2f5dc0bfb5: mov    0xb0(%rsp),%r11
+  0x00007f2f5dc0bfbd: jmpq   0x00007f2f5dc0c137
+  0x00007f2f5dc0bfc2: mov    0xec(%rsp),%ebx
+  0x00007f2f5dc0bfc9: mov    0xc8(%rsp),%esi
+  0x00007f2f5dc0bfd0: mov    0xc0(%rsp),%r9d
+  0x00007f2f5dc0bfd8: mov    0xb8(%rsp),%rcx
+  0x00007f2f5dc0bfe0: mov    0xb0(%rsp),%rdx
+  0x00007f2f5dc0bfe8: mov    %rdx,%r11
+  0x00007f2f5dc0bfeb: movabs $0x7f2f710ec328,%rdx  ;   {metadata('java/util/concurrent/ConcurrentHashMap$Node')}
+  0x00007f2f5dc0bff5: mov    %rcx,%r14
+  0x00007f2f5dc0bff8: mov    %rsi,%r13
+  0x00007f2f5dc0bffb: jmpq   0x00007f2f5dc0cb7b
+  0x00007f2f5dc0c000: movabs $0x30,%rcx
+  0x00007f2f5dc0c00a: shr    $0x3,%rcx
+  0x00007f2f5dc0c00e: lea    -0x1(%rcx),%rdi
+  0x00007f2f5dc0c012: bsr    %rdi,%rax
+  0x00007f2f5dc0c016: shl    $0x2,%rdi
+  0x00007f2f5dc0c01a: add    $0x1d,%rax
+  0x00007f2f5dc0c01e: xor    %rax,%rdi
+  0x00007f2f5dc0c021: cmp    $0x9,%rcx
+  0x00007f2f5dc0c025: sbb    %rcx,%rcx
+  0x00007f2f5dc0c028: and    %rcx,%rdi
+  0x00007f2f5dc0c02b: xor    %rax,%rdi
+  0x00007f2f5dc0c02e: mov    %rax,%rcx
+  0x00007f2f5dc0c031: mov    0x190(%r15),%rdi
+  0x00007f2f5dc0c038: mov    (%rdi,%rcx,8),%rdi
+  0x00007f2f5dc0c03c: xor    %rax,%rax
+  0x00007f2f5dc0c03f: mov    (%rdi),%eax
+  0x00007f2f5dc0c041: cmp    0x4(%rdi),%eax
+  0x00007f2f5dc0c044: jae    0x00007f2f5dc0c061
+  0x00007f2f5dc0c04a: mov    %rdi,%rcx
+  0x00007f2f5dc0c04d: add    $0x28,%rcx
+  0x00007f2f5dc0c051: mov    (%rcx,%rax,8),%rax
+  0x00007f2f5dc0c055: mov    (%rdi),%ecx
+  0x00007f2f5dc0c057: add    $0x1,%ecx
+  0x00007f2f5dc0c05a: mov    %ecx,(%rdi)
+  0x00007f2f5dc0c05c: jmpq   0x00007f2f5dc0c066
+  0x00007f2f5dc0c061: jmpq   0x00007f2f5dc0cb7b
+  0x00007f2f5dc0c066: mov    0xb8(%rdx),%rcx
+  0x00007f2f5dc0c06d: mov    %rcx,(%rax)
+  0x00007f2f5dc0c070: mov    %rdx,0x8(%rax)
+  0x00007f2f5dc0c074: xor    %rcx,%rcx
+  0x00007f2f5dc0c077: mov    %rcx,0x10(%rax)
+  0x00007f2f5dc0c07b: mov    %rcx,0x18(%rax)
+  0x00007f2f5dc0c07f: mov    %rcx,0x20(%rax)
+  0x00007f2f5dc0c083: mov    %rcx,0x28(%rax)
+  0x00007f2f5dc0c087: mov    %rax,%rdx
+  0x00007f2f5dc0c08a: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c094: addq   $0x1,0x5b8(%rcx)
+  0x00007f2f5dc0c09c: movabs $0x7f2f714f74d8,%rdx  ;   {metadata(method data for {method} {0x00007f2f710ebbf8} '<init>' '(ILjava/lang/Object;Ljava/lang/Object;)V' in 'java/util/concurrent/ConcurrentHashMap$Node')}
+  0x00007f2f5dc0c0a6: mov    0x100(%rdx),%ecx
+  0x00007f2f5dc0c0ac: add    $0x8,%ecx
+  0x00007f2f5dc0c0af: mov    %ecx,0x100(%rdx)
+  0x00007f2f5dc0c0b5: and    $0x7ffff8,%ecx
+  0x00007f2f5dc0c0bb: cmp    $0x0,%ecx
+  0x00007f2f5dc0c0be: je     0x00007f2f5dc0cb88
+  0x00007f2f5dc0c0c4: mov    %rax,%rdx
+  0x00007f2f5dc0c0c7: movabs $0x7f2f714f74d8,%rcx  ;   {metadata(method data for {method} {0x00007f2f710ebbf8} '<init>' '(ILjava/lang/Object;Ljava/lang/Object;)V' in 'java/util/concurrent/ConcurrentHashMap$Node')}
+  0x00007f2f5dc0c0d1: addq   $0x1,0x140(%rcx)
+  0x00007f2f5dc0c0d9: movabs $0x7f2f711e4c40,%rdx  ;   {metadata(method data for {method} {0x00007f2f70f8d5d0} '<init>' '()V' in 'java/lang/Object')}
+  0x00007f2f5dc0c0e3: mov    0x100(%rdx),%ecx
+  0x00007f2f5dc0c0e9: add    $0x8,%ecx
+  0x00007f2f5dc0c0ec: mov    %ecx,0x100(%rdx)
+  0x00007f2f5dc0c0f2: and    $0x7ffff8,%ecx
+  0x00007f2f5dc0c0f8: cmp    $0x0,%ecx
+  0x00007f2f5dc0c0fb: je     0x00007f2f5dc0cba9
+  0x00007f2f5dc0c101: mov    %r13d,0x10(%rax)
+  0x00007f2f5dc0c105: mov    %r11,0x18(%rax)
+  0x00007f2f5dc0c109: mov    %r14,0x20(%rax)
+  0x00007f2f5dc0c10d: lock addl $0x0,-0x40(%rsp)
+  0x00007f2f5dc0c113: mov    %rax,0x28(%r8)
+  0x00007f2f5dc0c117: lock addl $0x0,-0x40(%rsp)
+  0x00007f2f5dc0c11d: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c127: incl   0x5c8(%rdx)
+  0x00007f2f5dc0c12d: movabs $0x0,%rdx          ;   {oop(NULL)}
+  0x00007f2f5dc0c137: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c141: incl   0x5f8(%rcx)
+  0x00007f2f5dc0c147: mov    %rdx,%rdi
+  0x00007f2f5dc0c14a: mov    %rbx,%rax
+  0x00007f2f5dc0c14d: mov    %r9,%r8
+  0x00007f2f5dc0c150: mov    %r14,%rcx
+  0x00007f2f5dc0c153: jmpq   0x00007f2f5dc0c5ff
+  0x00007f2f5dc0c158: mov    %rbx,0xd8(%rsp)
+  0x00007f2f5dc0c160: mov    0xc8(%rsp),%r13d
+  0x00007f2f5dc0c168: mov    0xc0(%rsp),%r9d
+  0x00007f2f5dc0c170: mov    0xb8(%rsp),%r14
+  0x00007f2f5dc0c178: mov    0xb0(%rsp),%r11
+  0x00007f2f5dc0c180: cmp    $0x0,%rdi
+  0x00007f2f5dc0c184: jne    0x00007f2f5dc0c19d
+  0x00007f2f5dc0c186: movabs $0x7f2f714f6bd0,%r8  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c190: orb    $0x1,0x609(%r8)
+  0x00007f2f5dc0c198: jmpq   0x00007f2f5dc0c284
+  0x00007f2f5dc0c19d: data16 xchg %ax,%ax
+  0x00007f2f5dc0c1a0: jmpq   0x00007f2f5dc0cbd9  ;   {no_reloc}
+  0x00007f2f5dc0c1a5: add    %al,(%rax)
+  0x00007f2f5dc0c1a7: add    %al,(%rax)
+  0x00007f2f5dc0c1a9: add    %cl,0x47(%rbx,%rcx,4)
+  0x00007f2f5dc0c1ad: or     %cl,-0x3a(%rbx,%rdi,1)
+  0x00007f2f5dc0c1b1: je     0x00007f2f5dc0c1e1
+  0x00007f2f5dc0c1b7: mov    0x10(%rsi),%ecx
+  0x00007f2f5dc0c1ba: cmp    (%r8,%rcx,1),%rsi
+  0x00007f2f5dc0c1be: je     0x00007f2f5dc0c1e1
+  0x00007f2f5dc0c1c4: cmp    $0x20,%ecx
+  0x00007f2f5dc0c1c7: jne    0x00007f2f5dc0c268
+  0x00007f2f5dc0c1cd: push   %r8
+  0x00007f2f5dc0c1cf: push   %rsi
+  0x00007f2f5dc0c1d0: callq  0x00007f2f5d0efe00  ;   {runtime_call slow_subtype_check Runtime1 stub}
+  0x00007f2f5dc0c1d5: pop    %r8
+  0x00007f2f5dc0c1d7: pop    %rsi
+  0x00007f2f5dc0c1d8: cmp    $0x0,%esi
+  0x00007f2f5dc0c1db: je     0x00007f2f5dc0c268
+  0x00007f2f5dc0c1e1: movabs $0x7f2f714f6bd0,%r8  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c1eb: mov    0x8(%rdi),%rsi
+  0x00007f2f5dc0c1ef: cmp    0x620(%r8),%rsi
+  0x00007f2f5dc0c1f6: jne    0x00007f2f5dc0c205
+  0x00007f2f5dc0c1f8: addq   $0x1,0x628(%r8)
+  0x00007f2f5dc0c200: jmpq   0x00007f2f5dc0c289
+  0x00007f2f5dc0c205: cmp    0x630(%r8),%rsi
+  0x00007f2f5dc0c20c: jne    0x00007f2f5dc0c21b
+  0x00007f2f5dc0c20e: addq   $0x1,0x638(%r8)
+  0x00007f2f5dc0c216: jmpq   0x00007f2f5dc0c289
+  0x00007f2f5dc0c21b: cmpq   $0x0,0x620(%r8)
+  0x00007f2f5dc0c226: jne    0x00007f2f5dc0c23f
+  0x00007f2f5dc0c228: mov    %rsi,0x620(%r8)
+  0x00007f2f5dc0c22f: movq   $0x1,0x628(%r8)
+  0x00007f2f5dc0c23a: jmpq   0x00007f2f5dc0c289
+  0x00007f2f5dc0c23f: cmpq   $0x0,0x630(%r8)
+  0x00007f2f5dc0c24a: jne    0x00007f2f5dc0c263
+  0x00007f2f5dc0c24c: mov    %rsi,0x630(%r8)
+  0x00007f2f5dc0c253: movq   $0x1,0x638(%r8)
+  0x00007f2f5dc0c25e: jmpq   0x00007f2f5dc0c289
+  0x00007f2f5dc0c263: jmpq   0x00007f2f5dc0c289
+  0x00007f2f5dc0c268: movabs $0x7f2f714f6bd0,%r8  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c272: subq   $0x1,0x610(%r8)
+  0x00007f2f5dc0c27a: jmpq   0x00007f2f5dc0c284
+  0x00007f2f5dc0c27f: jmpq   0x00007f2f5dc0c289
+  0x00007f2f5dc0c284: xor    %rdx,%rdx
+  0x00007f2f5dc0c287: jmp    0x00007f2f5dc0c293
+  0x00007f2f5dc0c289: movabs $0x1,%rdx
+  0x00007f2f5dc0c293: cmp    $0x0,%edx
+  0x00007f2f5dc0c296: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c2a0: movabs $0x648,%rcx
+  0x00007f2f5dc0c2aa: je     0x00007f2f5dc0c2ba
+  0x00007f2f5dc0c2b0: movabs $0x658,%rcx
+  0x00007f2f5dc0c2ba: mov    (%rdx,%rcx,1),%r8
+  0x00007f2f5dc0c2be: lea    0x1(%r8),%r8
+  0x00007f2f5dc0c2c2: mov    %r8,(%rdx,%rcx,1)
+  0x00007f2f5dc0c2c6: je     0x00007f2f5dc0c4cd
+  0x00007f2f5dc0c2cc: cmp    $0x0,%rdi
+  0x00007f2f5dc0c2d0: jne    0x00007f2f5dc0c2e8
+  0x00007f2f5dc0c2d2: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c2dc: orb    $0x1,0x661(%rcx)
+  0x00007f2f5dc0c2e3: jmpq   0x00007f2f5dc0c3ca
+  0x00007f2f5dc0c2e8: jmpq   0x00007f2f5dc0cbf2  ;   {no_reloc}
+  0x00007f2f5dc0c2ed: add    %al,(%rax)
+  0x00007f2f5dc0c2ef: add    %al,(%rax)
+  0x00007f2f5dc0c2f1: add    %cl,-0x75(%rax)
+  0x00007f2f5dc0c2f4: rex.WRXB or %r9b,0x3b(%r8)
+  0x00007f2f5dc0c2f8: lret   
+  0x00007f2f5dc0c2f9: je     0x00007f2f5dc0c327
+  0x00007f2f5dc0c2ff: mov    0x10(%rbx),%edx
+  0x00007f2f5dc0c302: cmp    (%rcx,%rdx,1),%rbx
+  0x00007f2f5dc0c306: je     0x00007f2f5dc0c327
+  0x00007f2f5dc0c30c: cmp    $0x20,%edx
+  0x00007f2f5dc0c30f: jne    0x00007f2f5dc0c3ae
+  0x00007f2f5dc0c315: push   %rcx
+  0x00007f2f5dc0c316: push   %rbx
+  0x00007f2f5dc0c317: callq  0x00007f2f5d0efe00  ;   {runtime_call slow_subtype_check Runtime1 stub}
+  0x00007f2f5dc0c31c: pop    %rcx
+  0x00007f2f5dc0c31d: pop    %rbx
+  0x00007f2f5dc0c31e: cmp    $0x0,%ebx
+  0x00007f2f5dc0c321: je     0x00007f2f5dc0c3ae
+  0x00007f2f5dc0c327: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c331: mov    0x8(%rdi),%rbx
+  0x00007f2f5dc0c335: cmp    0x678(%rcx),%rbx
+  0x00007f2f5dc0c33c: jne    0x00007f2f5dc0c34b
+  0x00007f2f5dc0c33e: addq   $0x1,0x680(%rcx)
+  0x00007f2f5dc0c346: jmpq   0x00007f2f5dc0c3ca
+  0x00007f2f5dc0c34b: cmp    0x688(%rcx),%rbx
+  0x00007f2f5dc0c352: jne    0x00007f2f5dc0c361
+  0x00007f2f5dc0c354: addq   $0x1,0x690(%rcx)
+  0x00007f2f5dc0c35c: jmpq   0x00007f2f5dc0c3ca
+  0x00007f2f5dc0c361: cmpq   $0x0,0x678(%rcx)
+  0x00007f2f5dc0c36c: jne    0x00007f2f5dc0c385
+  0x00007f2f5dc0c36e: mov    %rbx,0x678(%rcx)
+  0x00007f2f5dc0c375: movq   $0x1,0x680(%rcx)
+  0x00007f2f5dc0c380: jmpq   0x00007f2f5dc0c3ca
+  0x00007f2f5dc0c385: cmpq   $0x0,0x688(%rcx)
+  0x00007f2f5dc0c390: jne    0x00007f2f5dc0c3a9
+  0x00007f2f5dc0c392: mov    %rbx,0x688(%rcx)
+  0x00007f2f5dc0c399: movq   $0x1,0x690(%rcx)
+  0x00007f2f5dc0c3a4: jmpq   0x00007f2f5dc0c3ca
+  0x00007f2f5dc0c3a9: jmpq   0x00007f2f5dc0c3ca
+  0x00007f2f5dc0c3ae: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c3b8: subq   $0x1,0x668(%rcx)
+  0x00007f2f5dc0c3c0: jmpq   0x00007f2f5dc0cbfc
+  0x00007f2f5dc0c3c5: jmpq   0x00007f2f5dc0c3ca
+  0x00007f2f5dc0c3ca: mov    %rdi,%rsi
+  0x00007f2f5dc0c3cd: mov    %r13,%rdx
+  0x00007f2f5dc0c3d0: mov    %r11,%rcx
+  0x00007f2f5dc0c3d3: mov    %r14,%r8
+  0x00007f2f5dc0c3d6: nopl   0x0(%rax)
+  0x00007f2f5dc0c3dd: movabs $0xffffffffffffffff,%rax
+  0x00007f2f5dc0c3e7: callq  0x00007f2f5d04aa80  ; ImmutableOopMap{[168]=Oop [216]=Oop [208]=Oop [184]=Oop [176]=Oop [288]=Oop }
+                                                ;*invokevirtual putTreeVal {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@331 (line 1055)
+                                                ;   {virtual_call}
+  0x00007f2f5dc0c3ec: cmp    $0x0,%rax
+  0x00007f2f5dc0c3f0: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c3fa: movabs $0x6e8,%rcx
+  0x00007f2f5dc0c404: jne    0x00007f2f5dc0c414
+  0x00007f2f5dc0c40a: movabs $0x6d8,%rcx
+  0x00007f2f5dc0c414: mov    (%rdx,%rcx,1),%rsi
+  0x00007f2f5dc0c418: lea    0x1(%rsi),%rsi
+  0x00007f2f5dc0c41c: mov    %rsi,(%rdx,%rcx,1)
+  0x00007f2f5dc0c420: jne    0x00007f2f5dc0c445
+  0x00007f2f5dc0c426: movabs $0x0,%rax          ;   {oop(NULL)}
+  0x00007f2f5dc0c430: mov    0xc0(%rsp),%r8d
+  0x00007f2f5dc0c438: mov    0xb8(%rsp),%rcx
+  0x00007f2f5dc0c440: jmpq   0x00007f2f5dc0c4b0
+  0x00007f2f5dc0c445: mov    0xc0(%rsp),%r8d
+  0x00007f2f5dc0c44d: mov    0x20(%rax),%rdx    ; implicit exception: dispatches to 0x00007f2f5dc0cc05
+  0x00007f2f5dc0c451: cmp    $0x0,%r8d
+  0x00007f2f5dc0c455: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c45f: movabs $0x708,%rsi
+  0x00007f2f5dc0c469: je     0x00007f2f5dc0c479
+  0x00007f2f5dc0c46f: movabs $0x6f8,%rsi
+  0x00007f2f5dc0c479: mov    (%rcx,%rsi,1),%rdi
+  0x00007f2f5dc0c47d: lea    0x1(%rdi),%rdi
+  0x00007f2f5dc0c481: mov    %rdi,(%rcx,%rsi,1)
+  0x00007f2f5dc0c485: je     0x00007f2f5dc0c49b
+  0x00007f2f5dc0c48b: mov    %rdx,%rax
+  0x00007f2f5dc0c48e: mov    0xb8(%rsp),%rcx
+  0x00007f2f5dc0c496: jmpq   0x00007f2f5dc0c4b0
+  0x00007f2f5dc0c49b: mov    0xb8(%rsp),%rcx
+  0x00007f2f5dc0c4a3: mov    %rcx,0x20(%rax)
+  0x00007f2f5dc0c4a7: lock addl $0x0,-0x40(%rsp)
+  0x00007f2f5dc0c4ad: mov    %rdx,%rax
+  0x00007f2f5dc0c4b0: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c4ba: incl   0x718(%rdx)
+  0x00007f2f5dc0c4c0: mov    %rax,%rdi
+  0x00007f2f5dc0c4c3: mov    $0x2,%eax
+  0x00007f2f5dc0c4c8: jmpq   0x00007f2f5dc0c5ff
+  0x00007f2f5dc0c4cd: mov    %r9,%r8
+  0x00007f2f5dc0c4d0: mov    %r14,%rcx
+  0x00007f2f5dc0c4d3: cmp    $0x0,%rdi
+  0x00007f2f5dc0c4d7: jne    0x00007f2f5dc0c4ef
+  0x00007f2f5dc0c4d9: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c4e3: orb    $0x1,0x729(%rdx)
+  0x00007f2f5dc0c4ea: jmpq   0x00007f2f5dc0c5a6
+  0x00007f2f5dc0c4ef: movabs $0x7f2f710ede88,%rsi  ;   {metadata('java/util/concurrent/ConcurrentHashMap$ReservationNode')}
+  0x00007f2f5dc0c4f9: cmp    0x8(%rdi),%rsi
+  0x00007f2f5dc0c4fd: jne    0x00007f2f5dc0c58a
+  0x00007f2f5dc0c503: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c50d: mov    0x8(%rdi),%rsi
+  0x00007f2f5dc0c511: cmp    0x740(%rdx),%rsi
+  0x00007f2f5dc0c518: jne    0x00007f2f5dc0c527
+  0x00007f2f5dc0c51a: addq   $0x1,0x748(%rdx)
+  0x00007f2f5dc0c522: jmpq   0x00007f2f5dc0c5ab
+  0x00007f2f5dc0c527: cmp    0x750(%rdx),%rsi
+  0x00007f2f5dc0c52e: jne    0x00007f2f5dc0c53d
+  0x00007f2f5dc0c530: addq   $0x1,0x758(%rdx)
+  0x00007f2f5dc0c538: jmpq   0x00007f2f5dc0c5ab
+  0x00007f2f5dc0c53d: cmpq   $0x0,0x740(%rdx)
+  0x00007f2f5dc0c548: jne    0x00007f2f5dc0c561
+  0x00007f2f5dc0c54a: mov    %rsi,0x740(%rdx)
+  0x00007f2f5dc0c551: movq   $0x1,0x748(%rdx)
+  0x00007f2f5dc0c55c: jmpq   0x00007f2f5dc0c5ab
+  0x00007f2f5dc0c561: cmpq   $0x0,0x750(%rdx)
+  0x00007f2f5dc0c56c: jne    0x00007f2f5dc0c585
+  0x00007f2f5dc0c56e: mov    %rsi,0x750(%rdx)
+  0x00007f2f5dc0c575: movq   $0x1,0x758(%rdx)
+  0x00007f2f5dc0c580: jmpq   0x00007f2f5dc0c5ab
+  0x00007f2f5dc0c585: jmpq   0x00007f2f5dc0c5ab
+  0x00007f2f5dc0c58a: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c594: subq   $0x1,0x730(%rdx)
+  0x00007f2f5dc0c59c: jmpq   0x00007f2f5dc0c5a6
+  0x00007f2f5dc0c5a1: jmpq   0x00007f2f5dc0c5ab
+  0x00007f2f5dc0c5a6: xor    %rax,%rax
+  0x00007f2f5dc0c5a9: jmp    0x00007f2f5dc0c5b5
+  0x00007f2f5dc0c5ab: movabs $0x1,%rax
+  0x00007f2f5dc0c5b5: cmp    $0x0,%eax
+  0x00007f2f5dc0c5b8: movabs $0x7f2f714f6bd0,%rax  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c5c2: movabs $0x778,%rdx
+  0x00007f2f5dc0c5cc: jne    0x00007f2f5dc0c5dc
+  0x00007f2f5dc0c5d2: movabs $0x768,%rdx
+  0x00007f2f5dc0c5dc: mov    (%rax,%rdx,1),%rsi
+  0x00007f2f5dc0c5e0: lea    0x1(%rsi),%rsi
+  0x00007f2f5dc0c5e4: mov    %rsi,(%rax,%rdx,1)
+  0x00007f2f5dc0c5e8: jne    0x00007f2f5dc0c859
+  0x00007f2f5dc0c5ee: mov    0xc4(%rsp),%eax
+  0x00007f2f5dc0c5f5: movabs $0x0,%rdi          ;   {oop(NULL)}
+  0x00007f2f5dc0c5ff: mov    %rax,%rbx
+  0x00007f2f5dc0c602: lea    0x118(%rsp),%rax
+  0x00007f2f5dc0c60a: mov    0x8(%rax),%rsi
+  0x00007f2f5dc0c60e: mov    (%rsi),%rdx
+  0x00007f2f5dc0c611: and    $0x7,%rdx
+  0x00007f2f5dc0c615: cmp    $0x5,%rdx
+  0x00007f2f5dc0c619: je     0x00007f2f5dc0c636
+  0x00007f2f5dc0c61f: mov    (%rax),%rdx
+  0x00007f2f5dc0c622: test   %rdx,%rdx
+  0x00007f2f5dc0c625: je     0x00007f2f5dc0c636
+  0x00007f2f5dc0c62b: lock cmpxchg %rdx,(%rsi)
+  0x00007f2f5dc0c630: jne    0x00007f2f5dc0cc0a
+  0x00007f2f5dc0c636: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c640: incl   0x798(%rdx)
+  0x00007f2f5dc0c646: cmp    $0x0,%ebx
+  0x00007f2f5dc0c649: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c653: movabs $0x7c0,%rsi
+  0x00007f2f5dc0c65d: jne    0x00007f2f5dc0c66d
+  0x00007f2f5dc0c663: movabs $0x7b0,%rsi
+  0x00007f2f5dc0c66d: mov    (%rdx,%rsi,1),%rax
+  0x00007f2f5dc0c671: lea    0x1(%rax),%rax
+  0x00007f2f5dc0c675: mov    %rax,(%rdx,%rsi,1)
+  0x00007f2f5dc0c679: jne    0x00007f2f5dc0c6e9
+  0x00007f2f5dc0c67f: mov    0xd8(%rsp),%rax
+  0x00007f2f5dc0c687: mov    %rbx,%rsi
+  0x00007f2f5dc0c68a: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c694: mov    0x104(%rdx),%edi
+  0x00007f2f5dc0c69a: add    $0x8,%edi
+  0x00007f2f5dc0c69d: mov    %edi,0x104(%rdx)
+  0x00007f2f5dc0c6a3: and    $0xfff8,%edi
+  0x00007f2f5dc0c6a9: cmp    $0x0,%edi
+  0x00007f2f5dc0c6ac: je     0x00007f2f5dc0cc20
+  0x00007f2f5dc0c6b2: mov    0x108(%r15),%r10   ; ImmutableOopMap{[168]=Oop [176]=Oop rcx=Oop [184]=Oop rax=Oop }
+                                                ;*goto {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@420 (line 1074)
+
+  0x00007f2f5dc0c6b9: test   %eax,(%r10)        ;   {poll}
+  0x00007f2f5dc0c6bc: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c6c6: incl   0x848(%rdx)
+  0x00007f2f5dc0c6cc: mov    %rax,%rdx
+  0x00007f2f5dc0c6cf: mov    %rsi,%rax
+  0x00007f2f5dc0c6d2: mov    %rdx,%rbx
+  0x00007f2f5dc0c6d5: mov    %eax,0xc4(%rsp)
+  0x00007f2f5dc0c6dc: mov    0xa8(%rsp),%rdi
+  0x00007f2f5dc0c6e4: jmpq   0x00007f2f5dc0b180
+  0x00007f2f5dc0c6e9: mov    0xd8(%rsp),%rdx
+  0x00007f2f5dc0c6f1: cmp    $0x8,%ebx
+  0x00007f2f5dc0c6f4: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c6fe: movabs $0x7e0,%rsi
+  0x00007f2f5dc0c708: jge    0x00007f2f5dc0c718
+  0x00007f2f5dc0c70e: movabs $0x7d0,%rsi
+  0x00007f2f5dc0c718: mov    (%rcx,%rsi,1),%rax
+  0x00007f2f5dc0c71c: lea    0x1(%rax),%rax
+  0x00007f2f5dc0c720: mov    %rax,(%rcx,%rsi,1)
+  0x00007f2f5dc0c724: jge    0x00007f2f5dc0c736
+  0x00007f2f5dc0c72a: mov    %ebx,0x100(%rsp)
+  0x00007f2f5dc0c731: jmpq   0x00007f2f5dc0c784
+  0x00007f2f5dc0c736: mov    %rdi,0xf8(%rsp)
+  0x00007f2f5dc0c73e: mov    %ebx,0x100(%rsp)
+  0x00007f2f5dc0c745: mov    0xe8(%rsp),%r9d
+  0x00007f2f5dc0c74d: mov    0xa8(%rsp),%rsi
+  0x00007f2f5dc0c755: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c75f: addq   $0x1,0x7f0(%rcx)
+  0x00007f2f5dc0c767: mov    %r9,%rcx
+  0x00007f2f5dc0c76a: mov    0xa8(%rsp),%rsi
+  0x00007f2f5dc0c772: nopl   0x0(%rax,%rax,1)
+  0x00007f2f5dc0c777: callq  0x00007f2f5d04ad80  ; ImmutableOopMap{[168]=Oop [248]=Oop }
+                                                ;*invokevirtual treeifyBin {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@409 (line 1068)
+                                                ;   {optimized virtual_call}
+  0x00007f2f5dc0c77c: mov    0xf8(%rsp),%rdi
+  0x00007f2f5dc0c784: cmp    $0x0,%rdi
+  0x00007f2f5dc0c788: movabs $0x7f2f714f6bd0,%rax  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c792: movabs $0x838,%rdx
+  0x00007f2f5dc0c79c: jne    0x00007f2f5dc0c7ac
+  0x00007f2f5dc0c7a2: movabs $0x828,%rdx
+  0x00007f2f5dc0c7ac: mov    (%rax,%rdx,1),%rcx
+  0x00007f2f5dc0c7b0: lea    0x1(%rcx),%rcx
+  0x00007f2f5dc0c7b4: mov    %rcx,(%rax,%rdx,1)
+  0x00007f2f5dc0c7b8: jne    0x00007f2f5dc0c7ca
+  0x00007f2f5dc0c7be: mov    0x100(%rsp),%eax
+  0x00007f2f5dc0c7c5: jmpq   0x00007f2f5dc0c80d
+  0x00007f2f5dc0c7ca: mov    %rdi,%rax
+  0x00007f2f5dc0c7cd: add    $0x130,%rsp
+  0x00007f2f5dc0c7d4: pop    %rbp
+  0x00007f2f5dc0c7d5: mov    0x108(%r15),%r10
+  0x00007f2f5dc0c7dc: test   %eax,(%r10)        ;   {poll_return}
+  0x00007f2f5dc0c7df: retq   
+  0x00007f2f5dc0c7e0: mov    %rsi,%rax
+  0x00007f2f5dc0c7e3: add    $0x130,%rsp
+  0x00007f2f5dc0c7ea: pop    %rbp
+  0x00007f2f5dc0c7eb: mov    0x108(%r15),%r10
+  0x00007f2f5dc0c7f2: test   %eax,(%r10)        ;   {poll_return}
+  0x00007f2f5dc0c7f5: retq   
+  0x00007f2f5dc0c7f6: mov    0xc4(%rsp),%eax
+  0x00007f2f5dc0c7fd: movabs $0x7f2f714f6bd0,%rdx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c807: incl   0x2d8(%rdx)
+  0x00007f2f5dc0c80d: mov    0xa8(%rsp),%rsi
+  0x00007f2f5dc0c815: mov    %rsi,%rdx
+  0x00007f2f5dc0c818: movabs $0x7f2f714f6bd0,%rcx  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c822: addq   $0x1,0x860(%rcx)
+  0x00007f2f5dc0c82a: movabs $0x1,%rdx
+  0x00007f2f5dc0c834: mov    %rax,%rcx
+  0x00007f2f5dc0c837: callq  0x00007f2f5dc0a000  ; ImmutableOopMap{}
+                                                ;*invokevirtual addCount {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@427 (line 1075)
+                                                ;   {optimized virtual_call}
+  0x00007f2f5dc0c83c: movabs $0x0,%rax          ;   {oop(NULL)}
+  0x00007f2f5dc0c846: add    $0x130,%rsp
+  0x00007f2f5dc0c84d: pop    %rbp
+  0x00007f2f5dc0c84e: mov    0x108(%r15),%r10
+  0x00007f2f5dc0c855: test   %eax,(%r10)        ;   {poll_return}
+  0x00007f2f5dc0c858: retq   
+  0x00007f2f5dc0c859: nopl   0x0(%rax)
+  0x00007f2f5dc0c860: jmpq   0x00007f2f5dc0cc50  ;   {no_reloc}
+  0x00007f2f5dc0c865: add    %al,(%rax)
+  0x00007f2f5dc0c867: add    %al,(%rax)
+  0x00007f2f5dc0c869: add    %ch,%cl
+  0x00007f2f5dc0c86b: jmp    0x00007f2f5dc0c870
+  0x00007f2f5dc0c86d: add    %al,(%rax)
+  0x00007f2f5dc0c86f: mov    %rax,%rdx
+  0x00007f2f5dc0c872: movabs $0x7f2f714f6bd0,%rsi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c87c: addq   $0x1,0x788(%rsi)
+  0x00007f2f5dc0c884: movabs $0x7f275d35a6a0,%rdx  ;   {oop("Recursive update"{0x00007f275d35a6a0})}
+  0x00007f2f5dc0c88e: mov    %rax,%rsi
+  0x00007f2f5dc0c891: mov    %rax,0x108(%rsp)
+  0x00007f2f5dc0c899: nopw   0x0(%rax,%rax,1)
+  0x00007f2f5dc0c89f: callq  0x00007f2f5d04ad80  ; ImmutableOopMap{[264]=Oop [208]=Oop [288]=Oop }
+                                                ;*invokespecial <init> {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@374 (line 1063)
+                                                ;   {optimized virtual_call}
+  0x00007f2f5dc0c8a4: mov    0x108(%rsp),%rax   ; ImmutableOopMap{[208]=Oop [288]=Oop rax=Oop }
+                                                ;*athrow {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@377 (line 1063)
+
+  0x00007f2f5dc0c8ac: movabs $0x7f2f5dc0c8ac,%rdx  ;   {section_word}
+  0x00007f2f5dc0c8b6: callq  0x00007f2f5d0eec00  ;   {runtime_call handle_exception_nofpu Runtime1 stub}
+  0x00007f2f5dc0c8bb: nop
+  0x00007f2f5dc0c8bc: nopl   0x0(%rax)
+  0x00007f2f5dc0c8c0: jmpq   0x00007f2f5dc0cc76  ;   {no_reloc}
+  0x00007f2f5dc0c8c5: add    %al,(%rax)
+  0x00007f2f5dc0c8c7: add    %al,(%rax)
+  0x00007f2f5dc0c8c9: add    %ch,%cl
+  0x00007f2f5dc0c8cb: mov    $0x3,%cl
+  0x00007f2f5dc0c8cd: add    %al,(%rax)
+  0x00007f2f5dc0c8cf: movabs $0x40,%rcx
+  0x00007f2f5dc0c8d9: shr    $0x3,%rcx
+  0x00007f2f5dc0c8dd: lea    -0x1(%rcx),%rdi
+  0x00007f2f5dc0c8e1: bsr    %rdi,%rax
+  0x00007f2f5dc0c8e5: shl    $0x2,%rdi
+  0x00007f2f5dc0c8e9: add    $0x1d,%rax
+  0x00007f2f5dc0c8ed: xor    %rax,%rdi
+  0x00007f2f5dc0c8f0: cmp    $0x9,%rcx
+  0x00007f2f5dc0c8f4: sbb    %rcx,%rcx
+  0x00007f2f5dc0c8f7: and    %rcx,%rdi
+  0x00007f2f5dc0c8fa: xor    %rax,%rdi
+  0x00007f2f5dc0c8fd: mov    %rax,%rcx
+  0x00007f2f5dc0c900: mov    0x190(%r15),%rdi
+  0x00007f2f5dc0c907: mov    (%rdi,%rcx,8),%rdi
+  0x00007f2f5dc0c90b: xor    %rax,%rax
+  0x00007f2f5dc0c90e: mov    (%rdi),%eax
+  0x00007f2f5dc0c910: cmp    0x4(%rdi),%eax
+  0x00007f2f5dc0c913: jae    0x00007f2f5dc0c930
+  0x00007f2f5dc0c919: mov    %rdi,%rcx
+  0x00007f2f5dc0c91c: add    $0x28,%rcx
+  0x00007f2f5dc0c920: mov    (%rcx,%rax,8),%rax
+  0x00007f2f5dc0c924: mov    (%rdi),%ecx
+  0x00007f2f5dc0c926: add    $0x1,%ecx
+  0x00007f2f5dc0c929: mov    %ecx,(%rdi)
+  0x00007f2f5dc0c92b: jmpq   0x00007f2f5dc0c935
+  0x00007f2f5dc0c930: jmpq   0x00007f2f5dc0cc80
+  0x00007f2f5dc0c935: mov    0xb8(%rdx),%rcx
+  0x00007f2f5dc0c93c: mov    %rcx,(%rax)
+  0x00007f2f5dc0c93f: mov    %rdx,0x8(%rax)
+  0x00007f2f5dc0c943: xor    %rcx,%rcx
+  0x00007f2f5dc0c946: movabs $0x6,%rdi
+  0x00007f2f5dc0c950: mov    %rcx,0x8(%rax,%rdi,8)
+  0x00007f2f5dc0c955: dec    %rdi
+  0x00007f2f5dc0c958: jne    0x00007f2f5dc0c950
+  0x00007f2f5dc0c95a: mov    %rax,%rsi
+  0x00007f2f5dc0c95d: movabs $0x7f2f714f6bd0,%rdi  ;   {metadata(method data for {method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c967: addq   $0x1,0x180(%rdi)
+  0x00007f2f5dc0c96f: mov    %rax,%rsi
+  0x00007f2f5dc0c972: mov    %rax,0x110(%rsp)
+  0x00007f2f5dc0c97a: nopl   0x0(%rax,%rax,1)
+  0x00007f2f5dc0c97f: callq  0x00007f2f5d04ad80  ; ImmutableOopMap{[272]=Oop }
+                                                ;*invokespecial <init> {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@12 (line 1011)
+                                                ;   {optimized virtual_call}
+  0x00007f2f5dc0c984: mov    0x110(%rsp),%rax
+  0x00007f2f5dc0c98c: jmpq   0x00007f2f5dc0ccce
+  0x00007f2f5dc0c991: mov    0x448(%r15),%rax
+  0x00007f2f5dc0c998: xor    %r10,%r10
+  0x00007f2f5dc0c99b: mov    %r10,0x448(%r15)
+  0x00007f2f5dc0c9a2: xor    %r10,%r10
+  0x00007f2f5dc0c9a5: mov    %r10,0x450(%r15)
+  0x00007f2f5dc0c9ac: mov    %rax,%rsi
+  0x00007f2f5dc0c9af: lea    0x118(%rsp),%rax
+  0x00007f2f5dc0c9b7: mov    0x8(%rax),%rbx
+  0x00007f2f5dc0c9bb: mov    (%rbx),%rdi
+  0x00007f2f5dc0c9be: and    $0x7,%rdi
+  0x00007f2f5dc0c9c2: cmp    $0x5,%rdi
+  0x00007f2f5dc0c9c6: je     0x00007f2f5dc0c9e3
+  0x00007f2f5dc0c9cc: mov    (%rax),%rdi
+  0x00007f2f5dc0c9cf: test   %rdi,%rdi
+  0x00007f2f5dc0c9d2: je     0x00007f2f5dc0c9e3
+  0x00007f2f5dc0c9d8: lock cmpxchg %rdi,(%rbx)
+  0x00007f2f5dc0c9dd: jne    0x00007f2f5dc0cc8d
+  0x00007f2f5dc0c9e3: mov    %rsi,%rax
+  0x00007f2f5dc0c9e6: jmpq   0x00007f2f5dc0ccce
+  0x00007f2f5dc0c9eb: movabs $0x7f2f710da050,%r10  ;   {metadata({method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0c9f5: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0c9fa: movq   $0xffffffffffffffff,(%rsp)
+  0x00007f2f5dc0ca02: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{rsi=Oop [168]=Oop rdx=Oop [176]=Oop rcx=Oop [184]=Oop }
+                                                ;*synchronization entry
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@-1 (line 1011)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0ca07: jmpq   0x00007f2f5dc0aff7
+  0x00007f2f5dc0ca0c: callq  0x00007f2f5d0ed420  ; ImmutableOopMap{[184]=Oop [168]=Oop rdx=Oop [176]=Oop }
+                                                ;*invokevirtual hashCode {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@17 (line 1012)
+                                                ;   {runtime_call throw_null_pointer_exception Runtime1 stub}
+  0x00007f2f5dc0ca11: movabs $0x7f2f710d8cf8,%r10  ;   {metadata({method} {0x00007f2f710d8cf8} 'spread' '(I)I' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0ca1b: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0ca20: movq   $0xffffffffffffffff,(%rsp)
+  0x00007f2f5dc0ca28: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[168]=Oop [184]=Oop [176]=Oop }
+                                                ;*synchronization entry
+                                                ; - java.util.concurrent.ConcurrentHashMap::spread@-1 (line 697)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@20 (line 1012)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0ca2d: jmpq   0x00007f2f5dc0b14e
+  0x00007f2f5dc0ca32: callq  0x00007f2f5d0ed420  ; ImmutableOopMap{rdi=Oop [168]=Oop [184]=Oop [176]=Oop rbx=Oop }
+                                                ;*arraylength {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@41 (line 1016)
+                                                ;   {runtime_call throw_null_pointer_exception Runtime1 stub}
+  0x00007f2f5dc0ca37: movabs $0x7f2f710d90d8,%r10  ;   {metadata({method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0ca41: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0ca46: movq   $0xffffffffffffffff,(%rsp)
+  0x00007f2f5dc0ca4e: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[184]=Oop [176]=Oop [168]=Oop rbx=Oop }
+                                                ;*synchronization entry
+                                                ; - java.util.concurrent.ConcurrentHashMap::tabAt@-1 (line 760)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@69 (line 1018)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0ca53: jmpq   0x00007f2f5dc0b28d
+  0x00007f2f5dc0ca58: movabs $0x7f2f710547c8,%r10  ;   {metadata({method} {0x00007f2f710547c8} 'getObjectAcquire' '(Ljava/lang/Object;J)Ljava/lang/Object;' in 'jdk/internal/misc/Unsafe')}
+  0x00007f2f5dc0ca62: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0ca67: movq   $0xffffffffffffffff,(%rsp)
+  0x00007f2f5dc0ca6f: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[184]=Oop [176]=Oop [168]=Oop rbx=Oop }
+                                                ;*synchronization entry
+                                                ; - jdk.internal.misc.Unsafe::getObjectAcquire@-1 (line 2042)
+                                                ; - java.util.concurrent.ConcurrentHashMap::tabAt@15 (line 760)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@69 (line 1018)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0ca74: jmpq   0x00007f2f5dc0b31f
+  0x00007f2f5dc0ca79: mov    %rsi,(%rsp)
+  0x00007f2f5dc0ca7d: callq  0x00007f2f5d0ef820  ; ImmutableOopMap{[184]=Oop [176]=Oop [168]=Oop rbx=Oop }
+                                                ;*checkcast {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::tabAt@18 (line 760)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@69 (line 1018)
+                                                ;   {runtime_call throw_class_cast_exception Runtime1 stub}
+  0x00007f2f5dc0ca82: mov    %rdx,%rdx
+  0x00007f2f5dc0ca85: callq  0x00007f2f5d0edd00  ; ImmutableOopMap{[168]=Oop rbx=Oop r11=Oop [176]=Oop r14=Oop [184]=Oop }
+                                                ;*new {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@83 (line 1019)
+                                                ;   {runtime_call fast_new_instance Runtime1 stub}
+  0x00007f2f5dc0ca8a: jmpq   0x00007f2f5dc0b4f8
+  0x00007f2f5dc0ca8f: movabs $0x7f2f710ebbf8,%r10  ;   {metadata({method} {0x00007f2f710ebbf8} '<init>' '(ILjava/lang/Object;Ljava/lang/Object;)V' in 'java/util/concurrent/ConcurrentHashMap$Node')}
+  0x00007f2f5dc0ca99: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0ca9e: movq   $0xffffffffffffffff,(%rsp)
+  0x00007f2f5dc0caa6: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[168]=Oop rbx=Oop r11=Oop [176]=Oop r14=Oop [184]=Oop rdx=Oop }
+                                                ;*synchronization entry
+                                                ; - java.util.concurrent.ConcurrentHashMap$Node::<init>@-1 (line 631)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@91 (line 1019)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0caab: jmpq   0x00007f2f5dc0b538
+  0x00007f2f5dc0cab0: movabs $0x7f2f70f8d5d0,%r10  ;   {metadata({method} {0x00007f2f70f8d5d0} '<init>' '()V' in 'java/lang/Object')}
+  0x00007f2f5dc0caba: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0cabf: movq   $0xffffffffffffffff,(%rsp)
+  0x00007f2f5dc0cac7: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[168]=Oop rbx=Oop r11=Oop [176]=Oop r14=Oop [184]=Oop rdx=Oop }
+                                                ;*synchronization entry
+                                                ; - java.lang.Object::<init>@-1 (line 50)
+                                                ; - java.util.concurrent.ConcurrentHashMap$Node::<init>@1 (line 631)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@91 (line 1019)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0cacc: jmpq   0x00007f2f5dc0b575
+  0x00007f2f5dc0cad1: movabs $0x7f2f710d91b8,%r10  ;   {metadata({method} {0x00007f2f710d91b8} 'casTabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;ILjava/util/concurrent/ConcurrentHashMap$Node;Ljava/util/concurrent/ConcurrentHashMap$Node;)Z' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0cadb: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0cae0: movq   $0xffffffffffffffff,(%rsp)
+  0x00007f2f5dc0cae8: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[168]=Oop rbx=Oop r11=Oop [176]=Oop r14=Oop [184]=Oop rdx=Oop }
+                                                ;*synchronization entry
+                                                ; - java.util.concurrent.ConcurrentHashMap::casTabAt@-1 (line 765)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@94 (line 1019)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0caed: jmpq   0x00007f2f5dc0b5c1
+  0x00007f2f5dc0caf2: callq  0x00007f2f5d0ed420  ; ImmutableOopMap{[168]=Oop r11=Oop [176]=Oop r14=Oop [184]=Oop rdi=Oop [208]=Oop rbx=Oop }
+                                                ;*getfield hash {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@105 (line 1022)
+                                                ;   {runtime_call throw_null_pointer_exception Runtime1 stub}
+  0x00007f2f5dc0caf7: mov    %rdi,0x8(%rsp)
+  0x00007f2f5dc0cafc: mov    %rdx,(%rsp)
+  0x00007f2f5dc0cb00: callq  0x00007f2f5d0f0400  ; ImmutableOopMap{[168]=Oop [184]=Oop [176]=Oop [216]=Oop rdi=Oop [208]=Oop [288]=Oop }
+                                                ;*monitorenter {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@187 (line 1031)
+                                                ;   {runtime_call monitorenter_nofpu Runtime1 stub}
+  0x00007f2f5dc0cb05: jmpq   0x00007f2f5dc0ba57
+  0x00007f2f5dc0cb0a: movabs $0x7f2f710d90d8,%r10  ;   {metadata({method} {0x00007f2f710d90d8} 'tabAt' '([Ljava/util/concurrent/ConcurrentHashMap$Node;I)Ljava/util/concurrent/ConcurrentHashMap$Node;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0cb14: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0cb19: movq   $0xffffffffffffffff,(%rsp)
+  0x00007f2f5dc0cb21: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[168]=Oop [184]=Oop [176]=Oop rdi=Oop [208]=Oop rbx=Oop [288]=Oop }
+                                                ;*synchronization entry
+                                                ; - java.util.concurrent.ConcurrentHashMap::tabAt@-1 (line 760)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@192 (line 1032)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0cb26: jmpq   0x00007f2f5dc0baa1
+  0x00007f2f5dc0cb2b: movabs $0x7f2f710547c8,%r10  ;   {metadata({method} {0x00007f2f710547c8} 'getObjectAcquire' '(Ljava/lang/Object;J)Ljava/lang/Object;' in 'jdk/internal/misc/Unsafe')}
+  0x00007f2f5dc0cb35: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0cb3a: movq   $0xffffffffffffffff,(%rsp)
+  0x00007f2f5dc0cb42: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[168]=Oop [184]=Oop [176]=Oop rdi=Oop [208]=Oop rbx=Oop [288]=Oop }
+                                                ;*synchronization entry
+                                                ; - jdk.internal.misc.Unsafe::getObjectAcquire@-1 (line 2042)
+                                                ; - java.util.concurrent.ConcurrentHashMap::tabAt@15 (line 760)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@192 (line 1032)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0cb47: jmpq   0x00007f2f5dc0bb19
+  0x00007f2f5dc0cb4c: mov    %rdx,(%rsp)
+  0x00007f2f5dc0cb50: callq  0x00007f2f5d0ef820  ; ImmutableOopMap{[168]=Oop [184]=Oop [176]=Oop rdi=Oop [208]=Oop rbx=Oop [288]=Oop }
+                                                ;*checkcast {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::tabAt@18 (line 760)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@192 (line 1032)
+                                                ;   {runtime_call throw_class_cast_exception Runtime1 stub}
+  0x00007f2f5dc0cb55: callq  0x00007f2f5d0ed420  ; ImmutableOopMap{[168]=Oop [184]=Oop rax=Oop [216]=Oop [208]=Oop rdx=Oop [176]=Oop [288]=Oop }
+                                                ;*getfield hash {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@214 (line 1037)
+                                                ;   {runtime_call throw_null_pointer_exception Runtime1 stub}
+  0x00007f2f5dc0cb5a: movabs $0x7f2f710da050,%r10  ;   {metadata({method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0cb64: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0cb69: movq   $0x131,(%rsp)
+  0x00007f2f5dc0cb71: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[168]=Oop [184]=Oop [176]=Oop [216]=Oop [208]=Oop rdx=Oop [288]=Oop }
+                                                ;*goto {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@305 (line 1035)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0cb76: jmpq   0x00007f2f5dc0beec
+  0x00007f2f5dc0cb7b: mov    %rdx,%rdx
+  0x00007f2f5dc0cb7e: callq  0x00007f2f5d0edd00  ; ImmutableOopMap{[168]=Oop [216]=Oop [208]=Oop r8=Oop r11=Oop [176]=Oop r14=Oop [184]=Oop [288]=Oop }
+                                                ;*new {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@285 (line 1047)
+                                                ;   {runtime_call fast_new_instance Runtime1 stub}
+  0x00007f2f5dc0cb83: jmpq   0x00007f2f5dc0c087
+  0x00007f2f5dc0cb88: movabs $0x7f2f710ebbf8,%r10  ;   {metadata({method} {0x00007f2f710ebbf8} '<init>' '(ILjava/lang/Object;Ljava/lang/Object;)V' in 'java/util/concurrent/ConcurrentHashMap$Node')}
+  0x00007f2f5dc0cb92: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0cb97: movq   $0xffffffffffffffff,(%rsp)
+  0x00007f2f5dc0cb9f: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[168]=Oop [216]=Oop [208]=Oop r8=Oop r11=Oop [176]=Oop r14=Oop [184]=Oop rax=Oop [288]=Oop }
+                                                ;*synchronization entry
+                                                ; - java.util.concurrent.ConcurrentHashMap$Node::<init>@-1 (line 631)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@293 (line 1047)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0cba4: jmpq   0x00007f2f5dc0c0c4
+  0x00007f2f5dc0cba9: movabs $0x7f2f70f8d5d0,%r10  ;   {metadata({method} {0x00007f2f70f8d5d0} '<init>' '()V' in 'java/lang/Object')}
+  0x00007f2f5dc0cbb3: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0cbb8: movq   $0xffffffffffffffff,(%rsp)
+  0x00007f2f5dc0cbc0: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[168]=Oop [216]=Oop [208]=Oop r8=Oop r11=Oop [176]=Oop r14=Oop [184]=Oop rax=Oop [288]=Oop }
+                                                ;*synchronization entry
+                                                ; - java.lang.Object::<init>@-1 (line 50)
+                                                ; - java.util.concurrent.ConcurrentHashMap$Node::<init>@1 (line 631)
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@293 (line 1047)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0cbc5: jmpq   0x00007f2f5dc0c101
+  0x00007f2f5dc0cbca: movabs $0x0,%rsi          ;   {metadata(NULL)}
+  0x00007f2f5dc0cbd4: mov    $0xa050f00,%eax
+  0x00007f2f5dc0cbd9: callq  0x00007f2f5d0f1480  ; ImmutableOopMap{[168]=Oop [216]=Oop r11=Oop [176]=Oop r14=Oop [184]=Oop rdi=Oop [208]=Oop [288]=Oop }
+                                                ;*instanceof {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@313 (line 1052)
+                                                ;   {runtime_call load_klass_patching Runtime1 stub}
+  0x00007f2f5dc0cbde: jmpq   0x00007f2f5dc0c1a0
+  0x00007f2f5dc0cbe3: movabs $0x0,%rbx          ;   {metadata(NULL)}
+  0x00007f2f5dc0cbed: mov    $0xa050f00,%eax
+  0x00007f2f5dc0cbf2: callq  0x00007f2f5d0f1480  ; ImmutableOopMap{[168]=Oop [216]=Oop r11=Oop [176]=Oop r14=Oop [184]=Oop rdi=Oop [208]=Oop [288]=Oop }
+                                                ;*checkcast {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@324 (line 1055)
+                                                ;   {runtime_call load_klass_patching Runtime1 stub}
+  0x00007f2f5dc0cbf7: jmpq   0x00007f2f5dc0c2e8
+  0x00007f2f5dc0cbfc: mov    %rdi,(%rsp)
+  0x00007f2f5dc0cc00: callq  0x00007f2f5d0ef820  ; ImmutableOopMap{[168]=Oop [216]=Oop r11=Oop [176]=Oop r14=Oop [184]=Oop rdi=Oop [208]=Oop [288]=Oop }
+                                                ;*checkcast {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@324 (line 1055)
+                                                ;   {runtime_call throw_class_cast_exception Runtime1 stub}
+  0x00007f2f5dc0cc05: callq  0x00007f2f5d0ed420  ; ImmutableOopMap{[168]=Oop [216]=Oop [184]=Oop [176]=Oop [208]=Oop rax=Oop [288]=Oop }
+                                                ;*getfield val {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@342 (line 1057)
+                                                ;   {runtime_call throw_null_pointer_exception Runtime1 stub}
+  0x00007f2f5dc0cc0a: lea    0x118(%rsp),%rax
+  0x00007f2f5dc0cc12: mov    %rax,(%rsp)
+  0x00007f2f5dc0cc16: callq  0x00007f2f5d0f0a00  ;   {runtime_call monitorexit_nofpu Runtime1 stub}
+  0x00007f2f5dc0cc1b: jmpq   0x00007f2f5dc0c636
+  0x00007f2f5dc0cc20: movabs $0x7f2f710da050,%r10  ;   {metadata({method} {0x00007f2f710da050} 'putVal' '(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;' in 'java/util/concurrent/ConcurrentHashMap')}
+  0x00007f2f5dc0cc2a: mov    %r10,0x8(%rsp)
+  0x00007f2f5dc0cc2f: movq   $0x1a4,(%rsp)
+  0x00007f2f5dc0cc37: callq  0x00007f2f5d0f2500  ; ImmutableOopMap{[168]=Oop [176]=Oop rcx=Oop [184]=Oop rax=Oop }
+                                                ;*goto {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@420 (line 1074)
+                                                ;   {runtime_call counter_overflow Runtime1 stub}
+  0x00007f2f5dc0cc3c: jmpq   0x00007f2f5dc0c6b2
+  0x00007f2f5dc0cc41: movabs $0x0,%rdx          ;   {metadata(NULL)}
+  0x00007f2f5dc0cc4b: mov    $0xa050f00,%eax
+  0x00007f2f5dc0cc50: callq  0x00007f2f5d0f1480  ; ImmutableOopMap{[208]=Oop [288]=Oop }
+                                                ;*new {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@368 (line 1063)
+                                                ;   {runtime_call load_klass_patching Runtime1 stub}
+  0x00007f2f5dc0cc55: jmpq   0x00007f2f5dc0c860
+  0x00007f2f5dc0cc5a: mov    %rdx,%rdx
+  0x00007f2f5dc0cc5d: callq  0x00007f2f5d0eda00  ; ImmutableOopMap{[208]=Oop [288]=Oop }
+                                                ;*new {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@368 (line 1063)
+                                                ;   {runtime_call new_instance Runtime1 stub}
+  0x00007f2f5dc0cc62: jmpq   0x00007f2f5dc0c86f
+  0x00007f2f5dc0cc67: movabs $0x0,%rdx          ;   {metadata(NULL)}
+  0x00007f2f5dc0cc71: mov    $0xa050f00,%eax
+  0x00007f2f5dc0cc76: callq  0x00007f2f5d0f1480  ; ImmutableOopMap{}
+                                                ;*new {reexecute=1 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@8 (line 1011)
+                                                ;   {runtime_call load_klass_patching Runtime1 stub}
+  0x00007f2f5dc0cc7b: jmpq   0x00007f2f5dc0c8c0
+  0x00007f2f5dc0cc80: mov    %rdx,%rdx
+  0x00007f2f5dc0cc83: callq  0x00007f2f5d0edd00  ; ImmutableOopMap{}
+                                                ;*new {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - java.util.concurrent.ConcurrentHashMap::putVal@8 (line 1011)
+                                                ;   {runtime_call fast_new_instance Runtime1 stub}
+  0x00007f2f5dc0cc88: jmpq   0x00007f2f5dc0c95a
+  0x00007f2f5dc0cc8d: lea    0x118(%rsp),%rax
+  0x00007f2f5dc0cc95: mov    %rax,(%rsp)
+  0x00007f2f5dc0cc99: callq  0x00007f2f5d0f0a00  ;   {runtime_call monitorexit_nofpu Runtime1 stub}
+  0x00007f2f5dc0cc9e: jmpq   0x00007f2f5dc0c9e3
+  0x00007f2f5dc0cca3: nop
+  0x00007f2f5dc0cca4: nop
+  0x00007f2f5dc0cca5: mov    0x448(%r15),%rax
+  0x00007f2f5dc0ccac: movabs $0x0,%r10
+  0x00007f2f5dc0ccb6: mov    %r10,0x448(%r15)
+  0x00007f2f5dc0ccbd: movabs $0x0,%r10
+  0x00007f2f5dc0ccc7: mov    %r10,0x450(%r15)
+  0x00007f2f5dc0ccce: add    $0x130,%rsp
+  0x00007f2f5dc0ccd5: pop    %rbp
+  0x00007f2f5dc0ccd6: jmpq   0x00007f2f5d0ec500  ;   {runtime_call unwind_exception Runtime1 stub}
+  0x00007f2f5dc0ccdb: hlt    
+  0x00007f2f5dc0ccdc: hlt    
+  0x00007f2f5dc0ccdd: hlt    
+  0x00007f2f5dc0ccde: hlt    
+  0x00007f2f5dc0ccdf: hlt    
+[Stub Code]
+  0x00007f2f5dc0cce0: nopl   0x0(%rax,%rax,1)   ;   {no_reloc}
+  0x00007f2f5dc0cce5: movabs $0x0,%rbx          ;   {static_stub}
+  0x00007f2f5dc0ccef: jmpq   0x00007f2f5dc0ccef  ;   {runtime_call}
+  0x00007f2f5dc0ccf4: nop
+  0x00007f2f5dc0ccf5: movabs $0x7f2f710dd6d0,%rbx  ;   {static_stub}
+  0x00007f2f5dc0ccff: jmpq   0x00007f2f5d042c4d  ;   {runtime_call I2C/C2I adapters}
+  0x00007f2f5dc0cd04: nop
+  0x00007f2f5dc0cd05: movabs $0x7f2f710ddb00,%rbx  ;   {static_stub}
+  0x00007f2f5dc0cd0f: jmpq   0x00007f2f5d041a55  ;   {runtime_call I2C/C2I adapters}
+  0x00007f2f5dc0cd14: nop
+  0x00007f2f5dc0cd15: movabs $0x0,%rbx          ;   {static_stub}
+  0x00007f2f5dc0cd1f: jmpq   0x00007f2f5dc0cd1f  ;   {runtime_call}
+  0x00007f2f5dc0cd24: nop
+  0x00007f2f5dc0cd25: movabs $0x0,%rbx          ;   {static_stub}
+  0x00007f2f5dc0cd2f: jmpq   0x00007f2f5dc0cd2f  ;   {runtime_call}
+  0x00007f2f5dc0cd34: nop
+  0x00007f2f5dc0cd35: movabs $0x0,%rbx          ;   {static_stub}
+  0x00007f2f5dc0cd3f: jmpq   0x00007f2f5dc0cd3f  ;   {runtime_call}
+  0x00007f2f5dc0cd44: nop
+  0x00007f2f5dc0cd45: movabs $0x0,%rbx          ;   {static_stub}
+  0x00007f2f5dc0cd4f: jmpq   0x00007f2f5dc0cd4f  ;   {runtime_call}
+  0x00007f2f5dc0cd54: nop
+  0x00007f2f5dc0cd55: movabs $0x0,%rbx          ;   {static_stub}
+  0x00007f2f5dc0cd5f: jmpq   0x00007f2f5dc0cd5f  ;   {runtime_call}
+  0x00007f2f5dc0cd64: nop
+  0x00007f2f5dc0cd65: movabs $0x0,%rbx          ;   {static_stub}
+  0x00007f2f5dc0cd6f: jmpq   0x00007f2f5dc0cd6f  ;   {runtime_call}
+  0x00007f2f5dc0cd74: nop
+  0x00007f2f5dc0cd75: movabs $0x0,%rbx          ;   {static_stub}
+  0x00007f2f5dc0cd7f: jmpq   0x00007f2f5dc0cd7f  ;   {runtime_call}
+[Exception Handler]
+  0x00007f2f5dc0cd84: callq  0x00007f2f5d0ef200  ;   {runtime_call handle_exception_from_callee Runtime1 stub}
+  0x00007f2f5dc0cd89: movabs $0x7f2f72ac078a,%rdi  ;   {external_word}
+  0x00007f2f5dc0cd93: and    $0xfffffffffffffff0,%rsp
+  0x00007f2f5dc0cd97: callq  0x00007f2f72704020  ;   {runtime_call MacroAssembler::debug64(char*, long, long*)}
+  0x00007f2f5dc0cd9c: hlt    
+[Deopt Handler Code]
+  0x00007f2f5dc0cd9d: movabs $0x7f2f5dc0cd9d,%r10  ;   {section_word}
+  0x00007f2f5dc0cda7: push   %r10
+  0x00007f2f5dc0cda9: jmpq   0x00007f2f5d04a3a0  ;   {runtime_call DeoptimizationBlob}
+  0x00007f2f5dc0cdae: hlt    
+  0x00007f2f5dc0cdaf: hlt    
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007f25c043a440, length=28, elements={
+0x00007f2f6c027800, 0x00007f2f6c14c800, 0x00007f2f6c19c000, 0x00007f2f6c038000,
+0x00007f2f6c23c000, 0x00007f2f6c286800, 0x00007f2f6c2d1000, 0x00007f2f6c372000,
+0x00007f2f6c60c000, 0x00007f2f6c6ca800, 0x00007f2f6d3b7800, 0x00007f2f6d403000,
+0x00007f259c014000, 0x00007f2594002800, 0x00007f2594008800, 0x00007f2594050000,
+0x00007f2594098800, 0x00007f25940e1800, 0x00007f257c18b000, 0x00007f25c8001000,
+0x00007f2578228800, 0x00007f259c05e800, 0x00007f257c196000, 0x00007f25c0244000,
+0x00007f25c03e8000, 0x00007f25c0431000, 0x00007f25c047a000, 0x00007f25c037f000
+}
+
+Java Threads: ( => current thread )
+  0x00007f2f6c027800 JavaThread "main" [_thread_blocked, id=45203, stack(0x00007f2f719e6000,0x00007f2f71ae7000)]
+  0x00007f2f6c14c800 JavaThread "Reference Handler" daemon [_thread_blocked, id=45205, stack(0x00007f2f70cad000,0x00007f2f70dae000)]
+  0x00007f2f6c19c000 JavaThread "Finalizer" daemon [_thread_blocked, id=45206, stack(0x00007f2f70bac000,0x00007f2f70cad000)]
+  0x00007f2f6c038000 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=45207, stack(0x00007f2f707c4000,0x00007f2f708c5000)]
+  0x00007f2f6c23c000 JavaThread "Service Thread" daemon [_thread_blocked, id=45208, stack(0x00007f2f706c3000,0x00007f2f707c4000)]
+  0x00007f2f6c286800 JavaThread "C1 CompilerThread0" daemon [_thread_blocked, id=45209, stack(0x00007f2f705c2000,0x00007f2f706c3000)]
+  0x00007f2f6c2d1000 JavaThread "Sweeper thread" daemon [_thread_blocked, id=45210, stack(0x00007f2f704c1000,0x00007f2f705c2000)]
+  0x00007f2f6c372000 JavaThread "Common-Cleaner" daemon [_thread_blocked, id=45211, stack(0x00007f2f70394000,0x00007f2f70495000)]
+  0x00007f2f6c60c000 JavaThread "Thread-0" [_thread_blocked, id=45216, stack(0x00007f2f70192000,0x00007f2f70293000)]
+  0x00007f2f6c6ca800 JavaThread "Reference Reaper" daemon [_thread_blocked, id=45219, stack(0x00007f25dc8fc000,0x00007f25dc9fd000)]
+  0x00007f2f6d3b7800 JavaThread "MSC service thread 1-1" [_thread_blocked, id=45220, stack(0x00007f25a7aff000,0x00007f25a7c00000)]
+  0x00007f2f6d403000 JavaThread "MSC service thread 1-2" [_thread_blocked, id=45221, stack(0x00007f25a79fe000,0x00007f25a7aff000)]
+  0x00007f259c014000 JavaThread "MSC service thread 1-3" [_thread_blocked, id=45222, stack(0x00007f25a78fd000,0x00007f25a79fe000)]
+  0x00007f2594002800 JavaThread "MSC service thread 1-4" [_thread_blocked, id=45223, stack(0x00007f25a77fc000,0x00007f25a78fd000)]
+  0x00007f2594008800 JavaThread "MSC service thread 1-5" [_thread_blocked, id=45224, stack(0x00007f25a76fb000,0x00007f25a77fc000)]
+  0x00007f2594050000 JavaThread "MSC service thread 1-6" [_thread_blocked, id=45225, stack(0x00007f25a75fa000,0x00007f25a76fb000)]
+  0x00007f2594098800 JavaThread "MSC service thread 1-7" [_thread_blocked, id=45226, stack(0x00007f25a74f9000,0x00007f25a75fa000)]
+  0x00007f25940e1800 JavaThread "MSC service thread 1-8" [_thread_blocked, id=45227, stack(0x00007f25a73f8000,0x00007f25a74f9000)]
+  0x00007f257c18b000 JavaThread "Controller Boot Thread" [_thread_blocked, id=45228, stack(0x00007f25a6df7000,0x00007f25a6ff8000)]
+  0x00007f25c8001000 JavaThread "SIGINT handler" daemon [_thread_blocked, id=45310, stack(0x00007f25a69f5000,0x00007f25a6af6000)]
+  0x00007f2578228800 JavaThread "Thread-2" [_thread_blocked, id=45312, stack(0x00007f25a5ce8000,0x00007f25a5de9000)]
+  0x00007f259c05e800 JavaThread "ServerService Thread Pool -- 28" [_thread_blocked, id=45313, stack(0x00007f25a65f1000,0x00007f25a66f2000)]
+=>0x00007f257c196000 JavaThread "ServerService Thread Pool -- 29" [_thread_in_Java, id=45314, stack(0x00007f25a64f0000,0x00007f25a65f1000)]
+  0x00007f25c0244000 JavaThread "C1 CompilerThread1" daemon [_thread_blocked, id=45315, stack(0x00007f25a5be7000,0x00007f25a5ce8000)]
+  0x00007f25c03e8000 JavaThread "C1 CompilerThread2" daemon [_thread_blocked, id=45316, stack(0x00007f25a6cf6000,0x00007f25a6df7000)]
+  0x00007f25c0431000 JavaThread "C1 CompilerThread3" daemon [_thread_blocked, id=45317, stack(0x00007f25a68f4000,0x00007f25a69f5000)]
+  0x00007f25c047a000 JavaThread "C1 CompilerThread4" daemon [_thread_blocked, id=45318, stack(0x00007f25a52de000,0x00007f25a53df000)]
+  0x00007f25c037f000 JavaThread "C1 CompilerThread5" daemon [_thread_blocked, id=45319, stack(0x00007f25a5eea000,0x00007f25a5feb000)]
+
+Other Threads:
+  0x00007f2f6c0fc000 VMThread "VM Thread" [stack: 0x00007f2f70db0000,0x00007f2f70eb0000] [id=45204]
+  0x00007f2f6c48e800 WatcherThread [stack: 0x00007f25dcf00000,0x00007f25dd000000] [id=45215]
+
+Threads with active compile tasks:
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap:
+Epsilon Heap
+Allocation space:
+ Metaspace       used 31306K, capacity 33621K, committed 33836K, reserved 34816K
+
+
+Polling page: 0x00007f2f7306b000
+
+Metaspace:
+
+Usage:
+   32.83 MB capacity,    30.57 MB ( 93%) used,     2.12 MB (  6%) free+waste,   143.44 KB ( <1%) overhead. 
+
+Virtual space:
+     34.00 MB reserved,      33.04 MB ( 97%) committed 
+
+Chunk freelists:
+27.00 KB
+
+MaxMetaspaceSize: unlimited
+No class space
+Initial GC threshold: 20.80 MB
+Current GC threshold: 33.12 MB
+CDS: off
+
+CodeHeap 'non-profiled nmethods': size=116940Kb used=472Kb max_used=472Kb free=116467Kb
+ bounds [0x00007f2f64dcd000, 0x00007f2f6503d000, 0x00007f2f6c000000]
+CodeHeap 'profiled nmethods': size=116940Kb used=8065Kb max_used=8065Kb free=108874Kb
+ bounds [0x00007f2f5db9a000, 0x00007f2f5e38a000, 0x00007f2f64dcd000]
+CodeHeap 'non-nmethods': size=11880Kb used=4052Kb max_used=4615Kb free=7827Kb
+ bounds [0x00007f2f5d000000, 0x00007f2f5d4f0000, 0x00007f2f5db9a000]
+ total_blobs=3691 nmethods=3152 adapters=464
+ compilation: enabled
+              stopped_count=0, restarted_count=0
+ full_count=0
+
+Compilation events (20 events):
+Event: 86.294 Thread 0x00007f25c03e8000 nmethod 3088 0x00007f2f5e346e90 code [0x00007f2f5e347760, 0x00007f2f5e34cde0]
+Event: 397.420 Thread 0x00007f2f6c286800 3116       1       org.jboss.msc.service.ServiceContainerImpl::getExecutor (5 bytes)
+Event: 397.421 Thread 0x00007f2f6c286800 nmethod 3116 0x00007f2f64e41c10 code [0x00007f2f64e41dc0, 0x00007f2f64e41e70]
+Event: 397.421 Thread 0x00007f2f6c286800 3117       3       org.jboss.threads.EnhancedQueueExecutor$PoolThreadNode::compareAndSetTask (10 bytes)
+Event: 397.424 Thread 0x00007f2f6c286800 nmethod 3117 0x00007f2f5e34ea10 code [0x00007f2f5e34ec20, 0x00007f2f5e34f1b0]
+Event: 397.424 Thread 0x00007f2f6c286800 3119       3       org.jboss.msc.service.ServiceControllerImpl::updateStabilityState (218 bytes)
+Event: 397.427 Thread 0x00007f2f6c286800 nmethod 3119 0x00007f2f5e34f390 code [0x00007f2f5e34f700, 0x00007f2f5e350f00]
+Event: 397.427 Thread 0x00007f2f6c286800 3118       3       org.jboss.msc.service.ServiceControllerImpl::addAsyncTasks (54 bytes)
+Event: 397.427 Thread 0x00007f2f6c286800 nmethod 3118 0x00007f2f5e351610 code [0x00007f2f5e3517c0, 0x00007f2f5e351910]
+Event: 397.427 Thread 0x00007f2f6c286800 3120       3       org.jboss.msc.service.ServiceRegistrationImpl::getLock (2 bytes)
+Event: 397.427 Thread 0x00007f2f6c286800 nmethod 3120 0x00007f2f5e351990 code [0x00007f2f5e351b40, 0x00007f2f5e351c30]
+Event: 397.427 Thread 0x00007f2f6c286800 3121       1       org.jboss.msc.service.ServiceRegistrationImpl::getDependents (5 bytes)
+Event: 397.427 Thread 0x00007f2f6c286800 nmethod 3121 0x00007f2f64e41f10 code [0x00007f2f64e420c0, 0x00007f2f64e42170]
+Event: 397.427 Thread 0x00007f2f6c286800 3122       1       org.jboss.threads.EnhancedQueueExecutor$PoolThreadNode::getThread (5 bytes)
+Event: 397.428 Thread 0x00007f2f6c286800 nmethod 3122 0x00007f2f64e42210 code [0x00007f2f64e423c0, 0x00007f2f64e42470]
+Event: 397.428 Thread 0x00007f2f6c286800 3123       3       org.jboss.msc.service.IdentityHashSet$IdentityHashSetIterator::next (74 bytes)
+Event: 397.429 Thread 0x00007f2f6c286800 nmethod 3123 0x00007f2f5e351d10 code [0x00007f2f5e351f00, 0x00007f2f5e352380]
+Event: 397.430 Thread 0x00007f2f6c286800 3125   !   3       org.jboss.msc.service.ServiceControllerImpl::doExecute (90 bytes)
+Event: 397.430 Thread 0x00007f2f6c286800 nmethod 3125 0x00007f2f5e352590 code [0x00007f2f5e3527e0, 0x00007f2f5e353030]
+Event: 397.430 Thread 0x00007f2f6c286800 3124       3       org.jboss.msc.service.ServiceControllerImpl::transition (1366 bytes)
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (2 events):
+Event: 8.695 Thread 0x00007f2594002800 DEOPT PACKING pc=0x00007f2f5e170104 sp=0x00007f25a78fb6a0
+Event: 8.695 Thread 0x00007f2594002800 DEOPT UNPACKING pc=0x00007f2f5d04a62b sp=0x00007f25a78fac68 mode 3
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (20 events):
+Event: 397.428 Thread 0x00007f2594002800 Exception <a 'java/lang/LinkageError'{0x00007f2765835e80}> (0x00007f2765835e80) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 1829]
+Event: 397.429 Thread 0x00007f2594008800 Exception <a 'java/lang/LinkageError'{0x00007f2764d8bbc0}: loader 'org.jboss.msc@1.4.13.Final' @7b9a4292 attempted duplicate class definition for org.jboss.msc.service.ServiceControllerImpl$StopContextImpl. (org.jboss.msc.service.ServiceControllerImpl$StopContextImpl is in unnamed module of loader 'org.jboss.msc@1.4.13.Final' @7b9a4292, parent loader 'app')> (0x00007f2764d8bbc0) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 2260]
+Event: 397.429 Thread 0x00007f2594008800 Exception <a 'java/lang/LinkageError'{0x00007f2764d8bbc0}> (0x00007f2764d8bbc0) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 1829]
+Event: 397.429 Thread 0x00007f25940e1800 Exception <a 'java/lang/LinkageError'{0x00007f27661d9b80}: loader 'org.jboss.msc@1.4.13.Final' @7b9a4292 attempted duplicate class definition for org.jboss.msc.service.ServiceControllerImpl$StopContextImpl. (org.jboss.msc.service.ServiceControllerImpl$StopContextImpl is in unnamed module of loader 'org.jboss.msc@1.4.13.Final' @7b9a4292, parent loader 'app')> (0x00007f27661d9b80) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 2260]
+Event: 397.429 Thread 0x00007f25940e1800 Exception <a 'java/lang/LinkageError'{0x00007f27661d9b80}> (0x00007f27661d9b80) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 1829]
+Event: 397.430 Thread 0x00007f2f6d3b7800 Exception <a 'java/lang/LinkageError'{0x00007f2765832bc0}: loader 'org.jboss.msc@1.4.13.Final' @7b9a4292 attempted duplicate class definition for org.jboss.msc.service.ServiceControllerImpl$DependentStoppedTask. (org.jboss.msc.service.ServiceControllerImpl$DependentStoppedTask is in unnamed module of loader 'org.jboss.msc@1.4.13.Final' @7b9a4292, parent loader 'app')> (0x00007f2765832bc0) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 2260]
+Event: 397.430 Thread 0x00007f2f6d3b7800 Exception <a 'java/lang/LinkageError'{0x00007f2765832bc0}> (0x00007f2765832bc0) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 1829]
+Event: 397.430 Thread 0x00007f2594002800 Exception <a 'java/lang/LinkageError'{0x00007f2765835f00}: loader 'org.jboss.msc@1.4.13.Final' @7b9a4292 attempted duplicate class definition for org.jboss.msc.service.ServiceControllerImpl$DependentStoppedTask. (org.jboss.msc.service.ServiceControllerImpl$DependentStoppedTask is in unnamed module of loader 'org.jboss.msc@1.4.13.Final' @7b9a4292, parent loader 'app')> (0x00007f2765835f00) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 2260]
+Event: 397.430 Thread 0x00007f2594002800 Exception <a 'java/lang/LinkageError'{0x00007f2765835f00}> (0x00007f2765835f00) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 1829]
+Event: 397.430 Thread 0x00007f2594008800 Exception <a 'java/lang/LinkageError'{0x00007f2764d8bc40}: loader 'org.jboss.msc@1.4.13.Final' @7b9a4292 attempted duplicate class definition for org.jboss.msc.service.ServiceControllerImpl$DependentStoppedTask. (org.jboss.msc.service.ServiceControllerImpl$DependentStoppedTask is in unnamed module of loader 'org.jboss.msc@1.4.13.Final' @7b9a4292, parent loader 'app')> (0x00007f2764d8bc40) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 2260]
+Event: 397.430 Thread 0x00007f2594008800 Exception <a 'java/lang/LinkageError'{0x00007f2764d8bc40}> (0x00007f2764d8bc40) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 1829]
+Event: 397.430 Thread 0x00007f25940e1800 Exception <a 'java/lang/LinkageError'{0x00007f27661d9c00}: loader 'org.jboss.msc@1.4.13.Final' @7b9a4292 attempted duplicate class definition for org.jboss.msc.service.ServiceControllerImpl$DependentStoppedTask. (org.jboss.msc.service.ServiceControllerImpl$DependentStoppedTask is in unnamed module of loader 'org.jboss.msc@1.4.13.Final' @7b9a4292, parent loader 'app')> (0x00007f27661d9c00) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 2260]
+Event: 397.430 Thread 0x00007f25940e1800 Exception <a 'java/lang/LinkageError'{0x00007f27661d9c00}> (0x00007f27661d9c00) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 1829]
+Event: 397.431 Thread 0x00007f2594050000 Exception <a 'java/lang/LinkageError'{0x00007f276e1921c0}: loader 'org.jboss.msc@1.4.13.Final' @7b9a4292 attempted duplicate class definition for org.jboss.msc.service.ServiceControllerImpl$RemoveTask. (org.jboss.msc.service.ServiceControllerImpl$RemoveTask is in unnamed module of loader 'org.jboss.msc@1.4.13.Final' @7b9a4292, parent loader 'app')> (0x00007f276e1921c0) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 2260]
+Event: 397.432 Thread 0x00007f2594050000 Exception <a 'java/lang/LinkageError'{0x00007f276e1921c0}> (0x00007f276e1921c0) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 1829]
+Event: 397.432 Thread 0x00007f2f6d403000 Exception <a 'java/lang/LinkageError'{0x00007f27646fc000}: loader 'org.jboss.msc@1.4.13.Final' @7b9a4292 attempted duplicate class definition for org.jboss.msc.service.ServiceControllerImpl$RemoveTask. (org.jboss.msc.service.ServiceControllerImpl$RemoveTask is in unnamed module of loader 'org.jboss.msc@1.4.13.Final' @7b9a4292, parent loader 'app')> (0x00007f27646fc000) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 2260]
+Event: 397.432 Thread 0x00007f2f6d403000 Exception <a 'java/lang/LinkageError'{0x00007f27646fc000}> (0x00007f27646fc000) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 1829]
+Event: 397.432 Thread 0x00007f2594008800 Exception <a 'java/lang/LinkageError'{0x00007f2764d8bcc0}: loader 'org.jboss.msc@1.4.13.Final' @7b9a4292 attempted duplicate class definition for org.jboss.msc.service.ServiceControllerImpl$RemoveTask. (org.jboss.msc.service.ServiceControllerImpl$RemoveTask is in unnamed module of loader 'org.jboss.msc@1.4.13.Final' @7b9a4292, parent loader 'app')> (0x00007f2764d8bcc0) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 2260]
+Event: 397.432 Thread 0x00007f2594008800 Exception <a 'java/lang/LinkageError'{0x00007f2764d8bcc0}> (0x00007f2764d8bcc0) thrown at [src/hotspot/share/classfile/systemDictionary.cpp, line 1829]
+Event: 397.451 Thread 0x00007f257c196000 Implicit null exception at 0x00007f2f5dc0b349 to 0x0000000000000000
+
+Events (20 events):
+Event: 397.428 Executing VM operation: RevokeBias
+Event: 397.429 Executing VM operation: RevokeBias done
+Event: 397.429 Executing VM operation: RevokeBias
+Event: 397.429 Executing VM operation: RevokeBias done
+Event: 397.432 Executing VM operation: RevokeBias
+Event: 397.432 Thread 0x00007f259c05e800 Thread added: 0x00007f259c05e800
+Event: 397.432 Protecting memory [0x00007f25a65f1000,0x00007f25a65f5000] with protection modes 0
+Event: 397.432 Executing VM operation: RevokeBias done
+Event: 397.432 Executing VM operation: RevokeBias
+Event: 397.433 Executing VM operation: RevokeBias done
+Event: 397.433 Executing VM operation: CollectForMetadataAllocation
+Event: 397.434 Executing VM operation: CollectForMetadataAllocation done
+Event: 397.449 Thread 0x00007f257c196000 Thread added: 0x00007f257c196000
+Event: 397.449 Executing VM operation: RevokeBias
+Event: 397.449 Protecting memory [0x00007f25a64f0000,0x00007f25a64f4000] with protection modes 0
+Event: 397.450 Executing VM operation: RevokeBias done
+Event: 397.450 Thread 0x00007f2590005800 Thread exited: 0x00007f2590005800
+Event: 397.450 Thread 0x00007f2574001800 Thread exited: 0x00007f2574001800
+Event: 397.451 Executing VM operation: RevokeBias
+Event: 397.451 Executing VM operation: RevokeBias done
+
+
+Dynamic libraries:
+55c82b560000-55c82b561000 r--p 00000000 fe:01 575715                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/bin/java
+55c82b561000-55c82b562000 r-xp 00001000 fe:01 575715                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/bin/java
+55c82b562000-55c82b563000 r--p 00002000 fe:01 575715                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/bin/java
+55c82b563000-55c82b564000 r--p 00002000 fe:01 575715                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/bin/java
+55c82b564000-55c82b565000 rw-p 00003000 fe:01 575715                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/bin/java
+55c82cbe4000-55c82cc05000 rw-p 00000000 00:00 0                          [heap]
+7f2514000000-7f25140a2000 rw-p 00000000 00:00 0 
+7f25140a2000-7f2518000000 ---p 00000000 00:00 0 
+7f251c000000-7f251c029000 rw-p 00000000 00:00 0 
+7f251c029000-7f2520000000 ---p 00000000 00:00 0 
+7f2520000000-7f2520021000 rw-p 00000000 00:00 0 
+7f2520021000-7f2524000000 ---p 00000000 00:00 0 
+7f2524000000-7f2524028000 rw-p 00000000 00:00 0 
+7f2524028000-7f2528000000 ---p 00000000 00:00 0 
+7f2528000000-7f2528086000 rw-p 00000000 00:00 0 
+7f2528086000-7f252c000000 ---p 00000000 00:00 0 
+7f252c000000-7f252c05f000 rw-p 00000000 00:00 0 
+7f252c05f000-7f2530000000 ---p 00000000 00:00 0 
+7f2530000000-7f2530021000 rw-p 00000000 00:00 0 
+7f2530021000-7f2534000000 ---p 00000000 00:00 0 
+7f2534000000-7f2534021000 rw-p 00000000 00:00 0 
+7f2534021000-7f2538000000 ---p 00000000 00:00 0 
+7f2538000000-7f253803a000 rw-p 00000000 00:00 0 
+7f253803a000-7f253c000000 ---p 00000000 00:00 0 
+7f253c000000-7f253c1c1000 rw-p 00000000 00:00 0 
+7f253c1c1000-7f2540000000 ---p 00000000 00:00 0 
+7f2540000000-7f254027e000 rw-p 00000000 00:00 0 
+7f254027e000-7f2544000000 ---p 00000000 00:00 0 
+7f2544000000-7f25440ca000 rw-p 00000000 00:00 0 
+7f25440ca000-7f2548000000 ---p 00000000 00:00 0 
+7f2548000000-7f2548021000 rw-p 00000000 00:00 0 
+7f2548021000-7f254c000000 ---p 00000000 00:00 0 
+7f254c000000-7f254c078000 rw-p 00000000 00:00 0 
+7f254c078000-7f2550000000 ---p 00000000 00:00 0 
+7f2550000000-7f2550021000 rw-p 00000000 00:00 0 
+7f2550021000-7f2554000000 ---p 00000000 00:00 0 
+7f2554000000-7f25540d5000 rw-p 00000000 00:00 0 
+7f25540d5000-7f2558000000 ---p 00000000 00:00 0 
+7f2558000000-7f2558068000 rw-p 00000000 00:00 0 
+7f2558068000-7f255c000000 ---p 00000000 00:00 0 
+7f255c000000-7f255c239000 rw-p 00000000 00:00 0 
+7f255c239000-7f2560000000 ---p 00000000 00:00 0 
+7f2560000000-7f2560021000 rw-p 00000000 00:00 0 
+7f2560021000-7f2564000000 ---p 00000000 00:00 0 
+7f2564000000-7f2564021000 rw-p 00000000 00:00 0 
+7f2564021000-7f2568000000 ---p 00000000 00:00 0 
+7f2568000000-7f256820d000 rw-p 00000000 00:00 0 
+7f256820d000-7f256c000000 ---p 00000000 00:00 0 
+7f256c000000-7f256c190000 rw-p 00000000 00:00 0 
+7f256c190000-7f2570000000 ---p 00000000 00:00 0 
+7f2570000000-7f2570027000 rw-p 00000000 00:00 0 
+7f2570027000-7f2574000000 ---p 00000000 00:00 0 
+7f2574000000-7f257404d000 rw-p 00000000 00:00 0 
+7f257404d000-7f2578000000 ---p 00000000 00:00 0 
+7f2578000000-7f2578274000 rw-p 00000000 00:00 0 
+7f2578274000-7f257c000000 ---p 00000000 00:00 0 
+7f257c000000-7f257c21c000 rw-p 00000000 00:00 0 
+7f257c21c000-7f2580000000 ---p 00000000 00:00 0 
+7f2580000000-7f2580675000 rw-p 00000000 00:00 0 
+7f2580675000-7f2584000000 ---p 00000000 00:00 0 
+7f2584000000-7f2584021000 rw-p 00000000 00:00 0 
+7f2584021000-7f2588000000 ---p 00000000 00:00 0 
+7f2588000000-7f2588021000 rw-p 00000000 00:00 0 
+7f2588021000-7f258c000000 ---p 00000000 00:00 0 
+7f258c000000-7f258c021000 rw-p 00000000 00:00 0 
+7f258c021000-7f2590000000 ---p 00000000 00:00 0 
+7f2590000000-7f2590055000 rw-p 00000000 00:00 0 
+7f2590055000-7f2594000000 ---p 00000000 00:00 0 
+7f2594000000-7f2594170000 rw-p 00000000 00:00 0 
+7f2594170000-7f2598000000 ---p 00000000 00:00 0 
+7f2598000000-7f2598021000 rw-p 00000000 00:00 0 
+7f2598021000-7f259c000000 ---p 00000000 00:00 0 
+7f259c000000-7f259c174000 rw-p 00000000 00:00 0 
+7f259c174000-7f25a0000000 ---p 00000000 00:00 0 
+7f25a0000000-7f25a0021000 rw-p 00000000 00:00 0 
+7f25a0021000-7f25a4000000 ---p 00000000 00:00 0 
+7f25a490f000-7f25a4978000 r--p 00000000 fe:01 843671                     /usr/lib/hsdis-amd64.so
+7f25a4978000-7f25a4a1f000 r-xp 00069000 fe:01 843671                     /usr/lib/hsdis-amd64.so
+7f25a4a1f000-7f25a4a69000 r--p 00110000 fe:01 843671                     /usr/lib/hsdis-amd64.so
+7f25a4a69000-7f25a4b33000 r--p 00159000 fe:01 843671                     /usr/lib/hsdis-amd64.so
+7f25a4b33000-7f25a4b3a000 rw-p 00223000 fe:01 843671                     /usr/lib/hsdis-amd64.so
+7f25a4b3a000-7f25a502f000 rw-p 00000000 00:00 0 
+7f25a502f000-7f25a50de000 ---p 00000000 00:00 0 
+7f25a50de000-7f25a52de000 rw-p 00000000 00:00 0 
+7f25a52de000-7f25a52e2000 ---p 00000000 00:00 0 
+7f25a52e2000-7f25a53df000 rw-p 00000000 00:00 0 
+7f25a53df000-7f25a53e3000 ---p 00000000 00:00 0 
+7f25a53e3000-7f25a54e0000 rw-p 00000000 00:00 0 
+7f25a54e0000-7f25a54e4000 ---p 00000000 00:00 0 
+7f25a54e4000-7f25a55e1000 rw-p 00000000 00:00 0 
+7f25a55e1000-7f25a55e5000 ---p 00000000 00:00 0 
+7f25a55e5000-7f25a56e2000 rw-p 00000000 00:00 0 
+7f25a56e2000-7f25a56e6000 ---p 00000000 00:00 0 
+7f25a56e6000-7f25a57e3000 rw-p 00000000 00:00 0 
+7f25a57e3000-7f25a57e7000 ---p 00000000 00:00 0 
+7f25a57e7000-7f25a58e4000 rw-p 00000000 00:00 0 
+7f25a58e4000-7f25a58e8000 ---p 00000000 00:00 0 
+7f25a58e8000-7f25a59e5000 rw-p 00000000 00:00 0 
+7f25a59e5000-7f25a59e9000 ---p 00000000 00:00 0 
+7f25a59e9000-7f25a5ae6000 rw-p 00000000 00:00 0 
+7f25a5ae6000-7f25a5aea000 ---p 00000000 00:00 0 
+7f25a5aea000-7f25a5be7000 rw-p 00000000 00:00 0 
+7f25a5be7000-7f25a5beb000 ---p 00000000 00:00 0 
+7f25a5beb000-7f25a5ce8000 rw-p 00000000 00:00 0 
+7f25a5ce8000-7f25a5cec000 ---p 00000000 00:00 0 
+7f25a5cec000-7f25a5de9000 rw-p 00000000 00:00 0 
+7f25a5de9000-7f25a5ded000 ---p 00000000 00:00 0 
+7f25a5ded000-7f25a5eea000 rw-p 00000000 00:00 0 
+7f25a5eea000-7f25a5eee000 ---p 00000000 00:00 0 
+7f25a5eee000-7f25a5feb000 rw-p 00000000 00:00 0 
+7f25a5feb000-7f25a5fef000 ---p 00000000 00:00 0 
+7f25a5fef000-7f25a60ec000 rw-p 00000000 00:00 0 
+7f25a60ec000-7f25a60f0000 ---p 00000000 00:00 0 
+7f25a60f0000-7f25a61ed000 rw-p 00000000 00:00 0 
+7f25a61ed000-7f25a61f1000 ---p 00000000 00:00 0 
+7f25a61f1000-7f25a62ee000 rw-p 00000000 00:00 0 
+7f25a62ee000-7f25a62f2000 ---p 00000000 00:00 0 
+7f25a62f2000-7f25a63ef000 rw-p 00000000 00:00 0 
+7f25a63ef000-7f25a63f3000 ---p 00000000 00:00 0 
+7f25a63f3000-7f25a64f0000 rw-p 00000000 00:00 0 
+7f25a64f0000-7f25a64f4000 ---p 00000000 00:00 0 
+7f25a64f4000-7f25a65f1000 rw-p 00000000 00:00 0 
+7f25a65f1000-7f25a65f5000 ---p 00000000 00:00 0 
+7f25a65f5000-7f25a66f2000 rw-p 00000000 00:00 0 
+7f25a66f2000-7f25a66f6000 ---p 00000000 00:00 0 
+7f25a66f6000-7f25a67f3000 rw-p 00000000 00:00 0 
+7f25a67f3000-7f25a67f7000 ---p 00000000 00:00 0 
+7f25a67f7000-7f25a68f4000 rw-p 00000000 00:00 0 
+7f25a68f4000-7f25a68f8000 ---p 00000000 00:00 0 
+7f25a68f8000-7f25a69f5000 rw-p 00000000 00:00 0 
+7f25a69f5000-7f25a69f9000 ---p 00000000 00:00 0 
+7f25a69f9000-7f25a6ce8000 rw-p 00000000 00:00 0 
+7f25a6ce8000-7f25a6cf6000 ---p 00000000 00:00 0 
+7f25a6cf6000-7f25a6cfa000 ---p 00000000 00:00 0 
+7f25a6cfa000-7f25a6df7000 rw-p 00000000 00:00 0 
+7f25a6df7000-7f25a6dfb000 ---p 00000000 00:00 0 
+7f25a6dfb000-7f25a71ea000 rw-p 00000000 00:00 0 
+7f25a71ea000-7f25a71f8000 ---p 00000000 00:00 0 
+7f25a71f8000-7f25a73ea000 rw-p 00000000 00:00 0 
+7f25a73ea000-7f25a73f8000 ---p 00000000 00:00 0 
+7f25a73f8000-7f25a73fc000 ---p 00000000 00:00 0 
+7f25a73fc000-7f25a74f9000 rw-p 00000000 00:00 0 
+7f25a74f9000-7f25a74fd000 ---p 00000000 00:00 0 
+7f25a74fd000-7f25a75fa000 rw-p 00000000 00:00 0 
+7f25a75fa000-7f25a75fe000 ---p 00000000 00:00 0 
+7f25a75fe000-7f25a76fb000 rw-p 00000000 00:00 0 
+7f25a76fb000-7f25a76ff000 ---p 00000000 00:00 0 
+7f25a76ff000-7f25a77fc000 rw-p 00000000 00:00 0 
+7f25a77fc000-7f25a7800000 ---p 00000000 00:00 0 
+7f25a7800000-7f25a78fd000 rw-p 00000000 00:00 0 
+7f25a78fd000-7f25a7901000 ---p 00000000 00:00 0 
+7f25a7901000-7f25a79fe000 rw-p 00000000 00:00 0 
+7f25a79fe000-7f25a7a02000 ---p 00000000 00:00 0 
+7f25a7a02000-7f25a7aff000 rw-p 00000000 00:00 0 
+7f25a7aff000-7f25a7b03000 ---p 00000000 00:00 0 
+7f25a7b03000-7f25a7df2000 rw-p 00000000 00:00 0 
+7f25a7df2000-7f25a7e00000 ---p 00000000 00:00 0 
+7f25a7e00000-7f25a7ff2000 rw-p 00000000 00:00 0 
+7f25a7ff2000-7f25a8000000 ---p 00000000 00:00 0 
+7f25a8000000-7f25a8021000 rw-p 00000000 00:00 0 
+7f25a8021000-7f25ac000000 ---p 00000000 00:00 0 
+7f25ac000000-7f25ac186000 rw-p 00000000 00:00 0 
+7f25ac186000-7f25b0000000 ---p 00000000 00:00 0 
+7f25b0000000-7f25b0116000 rw-p 00000000 00:00 0 
+7f25b0116000-7f25b4000000 ---p 00000000 00:00 0 
+7f25b4000000-7f25b4215000 rw-p 00000000 00:00 0 
+7f25b4215000-7f25b8000000 ---p 00000000 00:00 0 
+7f25b8000000-7f25b8021000 rw-p 00000000 00:00 0 
+7f25b8021000-7f25bc000000 ---p 00000000 00:00 0 
+7f25bc000000-7f25bc1f6000 rw-p 00000000 00:00 0 
+7f25bc1f6000-7f25c0000000 ---p 00000000 00:00 0 
+7f25c0000000-7f25c0a89000 rw-p 00000000 00:00 0 
+7f25c0a89000-7f25c4000000 ---p 00000000 00:00 0 
+7f25c4000000-7f25c4021000 rw-p 00000000 00:00 0 
+7f25c4021000-7f25c8000000 ---p 00000000 00:00 0 
+7f25c8000000-7f25c804d000 rw-p 00000000 00:00 0 
+7f25c804d000-7f25cc000000 ---p 00000000 00:00 0 
+7f25cc000000-7f25cc021000 rw-p 00000000 00:00 0 
+7f25cc021000-7f25d0000000 ---p 00000000 00:00 0 
+7f25d0000000-7f25d0021000 rw-p 00000000 00:00 0 
+7f25d0021000-7f25d4000000 ---p 00000000 00:00 0 
+7f25d4000000-7f25d4021000 rw-p 00000000 00:00 0 
+7f25d4021000-7f25d8000000 ---p 00000000 00:00 0 
+7f25d8000000-7f25d8249000 rw-p 00000000 00:00 0 
+7f25d8249000-7f25dc000000 ---p 00000000 00:00 0 
+7f25dc0fc000-7f25dc2fc000 rw-p 00000000 00:00 0 
+7f25dc2fc000-7f25dc4fc000 rw-p 00000000 00:00 0 
+7f25dc4fc000-7f25dc6fc000 rw-p 00000000 00:00 0 
+7f25dc6fc000-7f25dc8fc000 rw-p 00000000 00:00 0 
+7f25dc8fc000-7f25dc900000 ---p 00000000 00:00 0 
+7f25dc900000-7f25dc9fd000 rw-p 00000000 00:00 0 
+7f25dc9fd000-7f25dca01000 ---p 00000000 00:00 0 
+7f25dca01000-7f25dccfe000 rw-p 00000000 00:00 0 
+7f25dccfe000-7f25dcefe000 rw-p 00000000 00:00 0 
+7f25dcefe000-7f25dceff000 ---p 00000000 00:00 0 
+7f25dceff000-7f25dd000000 rw-p 00000000 00:00 0 
+7f25dd000000-7f275d000000 rw-s 00000000 00:18 24                         /dev/shm/prout
+7f275d000000-7f2f5d000000 rw-s 00000000 00:05 525                        /dev/fakeblk
+7f2f5d000000-7f2f5d4f0000 rwxp 00000000 00:00 0 
+7f2f5d4f0000-7f2f5db9a000 ---p 00000000 00:00 0 
+7f2f5db9a000-7f2f5e38a000 rwxp 00000000 00:00 0 
+7f2f5e38a000-7f2f64dcd000 ---p 00000000 00:00 0 
+7f2f64dcd000-7f2f6503d000 rwxp 00000000 00:00 0 
+7f2f6503d000-7f2f6c000000 ---p 00000000 00:00 0 
+7f2f6c000000-7f2f6d488000 rw-p 00000000 00:00 0 
+7f2f6d488000-7f2f70000000 ---p 00000000 00:00 0 
+7f2f7002c000-7f2f70033000 r--s 00000000 fe:01 789188                     /usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache
+7f2f70033000-7f2f7003d000 r--p 00000000 fe:01 576813                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libsunec.so
+7f2f7003d000-7f2f70066000 r-xp 0000a000 fe:01 576813                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libsunec.so
+7f2f70066000-7f2f70075000 r--p 00033000 fe:01 576813                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libsunec.so
+7f2f70075000-7f2f7007a000 r--p 00041000 fe:01 576813                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libsunec.so
+7f2f7007a000-7f2f7007c000 rw-p 00046000 fe:01 576813                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libsunec.so
+7f2f7007c000-7f2f7007e000 r--p 00000000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7f2f7007e000-7f2f70081000 r-xp 00002000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7f2f70081000-7f2f70082000 r--p 00005000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7f2f70082000-7f2f70083000 ---p 00006000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7f2f70083000-7f2f70084000 r--p 00006000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7f2f70084000-7f2f70085000 rw-p 00007000 fe:01 576015                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement_ext.so
+7f2f70085000-7f2f70088000 r--p 00000000 fe:01 575908                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement.so
+7f2f70088000-7f2f70089000 r-xp 00003000 fe:01 575908                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement.so
+7f2f70089000-7f2f7008a000 r--p 00004000 fe:01 575908                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement.so
+7f2f7008a000-7f2f7008b000 r--p 00004000 fe:01 575908                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement.so
+7f2f7008b000-7f2f7008c000 rw-p 00005000 fe:01 575908                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libmanagement.so
+7f2f7008c000-7f2f7008d000 r--p 00000000 fe:01 575355                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libextnet.so
+7f2f7008d000-7f2f7008e000 r-xp 00001000 fe:01 575355                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libextnet.so
+7f2f7008e000-7f2f7008f000 r--p 00002000 fe:01 575355                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libextnet.so
+7f2f7008f000-7f2f70090000 r--p 00002000 fe:01 575355                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libextnet.so
+7f2f70090000-7f2f70091000 rw-p 00003000 fe:01 575355                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libextnet.so
+7f2f70091000-7f2f70095000 ---p 00000000 00:00 0 
+7f2f70095000-7f2f70192000 rw-p 00000000 00:00 0 
+7f2f70192000-7f2f70196000 ---p 00000000 00:00 0 
+7f2f70196000-7f2f70293000 rw-p 00000000 00:00 0 
+7f2f70293000-7f2f70297000 ---p 00000000 00:00 0 
+7f2f70297000-7f2f70394000 rw-p 00000000 00:00 0 
+7f2f70394000-7f2f70398000 ---p 00000000 00:00 0 
+7f2f70398000-7f2f70495000 rw-p 00000000 00:00 0 
+7f2f70495000-7f2f70499000 r--p 00000000 fe:01 574849                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnet.so
+7f2f70499000-7f2f704a8000 r-xp 00004000 fe:01 574849                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnet.so
+7f2f704a8000-7f2f704ac000 r--p 00013000 fe:01 574849                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnet.so
+7f2f704ac000-7f2f704ad000 r--p 00016000 fe:01 574849                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnet.so
+7f2f704ad000-7f2f704ae000 rw-p 00017000 fe:01 574849                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnet.so
+7f2f704ae000-7f2f704b5000 r--p 00000000 fe:01 574856                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnio.so
+7f2f704b5000-7f2f704bc000 r-xp 00007000 fe:01 574856                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnio.so
+7f2f704bc000-7f2f704bf000 r--p 0000e000 fe:01 574856                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnio.so
+7f2f704bf000-7f2f704c0000 r--p 00010000 fe:01 574856                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnio.so
+7f2f704c0000-7f2f704c1000 rw-p 00011000 fe:01 574856                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libnio.so
+7f2f704c1000-7f2f704c5000 ---p 00000000 00:00 0 
+7f2f704c5000-7f2f705c2000 rw-p 00000000 00:00 0 
+7f2f705c2000-7f2f705c6000 ---p 00000000 00:00 0 
+7f2f705c6000-7f2f706c3000 rw-p 00000000 00:00 0 
+7f2f706c3000-7f2f706c7000 ---p 00000000 00:00 0 
+7f2f706c7000-7f2f707c4000 rw-p 00000000 00:00 0 
+7f2f707c4000-7f2f707c8000 ---p 00000000 00:00 0 
+7f2f707c8000-7f2f708c5000 rw-p 00000000 00:00 0 
+7f2f708c5000-7f2f70bac000 r--p 00000000 fe:01 786832                     /usr/lib/locale/locale-archive
+7f2f70bac000-7f2f70bb0000 ---p 00000000 00:00 0 
+7f2f70bb0000-7f2f70cad000 rw-p 00000000 00:00 0 
+7f2f70cad000-7f2f70cb1000 ---p 00000000 00:00 0 
+7f2f70cb1000-7f2f70dae000 rw-p 00000000 00:00 0 
+7f2f70dae000-7f2f70daf000 ---p 00000000 00:00 0 
+7f2f70daf000-7f2f7178c000 rw-p 00000000 00:00 0 
+7f2f7178c000-7f2f71791000 rw-p 00000000 00:00 0 
+7f2f71791000-7f2f71871000 ---p 00000000 00:00 0 
+7f2f71871000-7f2f71881000 rw-p 00000000 00:00 0 
+7f2f71881000-7f2f71956000 ---p 00000000 00:00 0 
+7f2f71956000-7f2f71960000 rw-p 00000000 00:00 0 
+7f2f71960000-7f2f7196e000 ---p 00000000 00:00 0 
+7f2f7196e000-7f2f71971000 r--p 00000000 fe:01 787101                     /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7f2f71971000-7f2f71978000 r-xp 00003000 fe:01 787101                     /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7f2f71978000-7f2f7197a000 r--p 0000a000 fe:01 787101                     /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7f2f7197a000-7f2f7197b000 r--p 0000b000 fe:01 787101                     /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7f2f7197b000-7f2f7197c000 rw-p 0000c000 fe:01 787101                     /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7f2f7197c000-7f2f71982000 rw-p 00000000 00:00 0 
+7f2f71986000-7f2f71988000 r--p 00000000 fe:01 574842                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libzip.so
+7f2f71988000-7f2f7198c000 r-xp 00002000 fe:01 574842                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libzip.so
+7f2f7198c000-7f2f7198e000 r--p 00006000 fe:01 574842                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libzip.so
+7f2f7198e000-7f2f7198f000 r--p 00007000 fe:01 574842                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libzip.so
+7f2f7198f000-7f2f71990000 rw-p 00008000 fe:01 574842                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libzip.so
+7f2f71990000-7f2f71998000 rw-s 00000000 fe:01 2359381                    /tmp/hsperfdata_root/45202
+7f2f71998000-7f2f7199c000 r--p 00000000 fe:01 574846                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjimage.so
+7f2f7199c000-7f2f719af000 r-xp 00004000 fe:01 574846                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjimage.so
+7f2f719af000-7f2f719b5000 r--p 00017000 fe:01 574846                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjimage.so
+7f2f719b5000-7f2f719b7000 r--p 0001c000 fe:01 574846                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjimage.so
+7f2f719b7000-7f2f719b8000 rw-p 0001e000 fe:01 574846                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjimage.so
+7f2f719b8000-7f2f719c6000 r--p 00000000 fe:01 574823                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjava.so
+7f2f719c6000-7f2f719dc000 r-xp 0000e000 fe:01 574823                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjava.so
+7f2f719dc000-7f2f719e3000 r--p 00024000 fe:01 574823                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjava.so
+7f2f719e3000-7f2f719e4000 r--p 0002a000 fe:01 574823                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjava.so
+7f2f719e4000-7f2f719e5000 rw-p 0002b000 fe:01 574823                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libjava.so
+7f2f719e5000-7f2f719e6000 rw-p 00000000 00:00 0 
+7f2f719e6000-7f2f719ea000 ---p 00000000 00:00 0 
+7f2f719ea000-7f2f71ae7000 rw-p 00000000 00:00 0 
+7f2f71ae7000-7f2f71af4000 r--p 00000000 fe:01 787094                     /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7f2f71af4000-7f2f71b8e000 r-xp 0000d000 fe:01 787094                     /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7f2f71b8e000-7f2f71c29000 r--p 000a7000 fe:01 787094                     /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7f2f71c29000-7f2f71c2a000 r--p 00141000 fe:01 787094                     /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7f2f71c2a000-7f2f71c2b000 rw-p 00142000 fe:01 787094                     /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7f2f71c2b000-7f2f71c2d000 r--p 00000000 fe:01 787107                     /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7f2f71c2d000-7f2f71c31000 r-xp 00002000 fe:01 787107                     /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7f2f71c31000-7f2f71c33000 r--p 00006000 fe:01 787107                     /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7f2f71c33000-7f2f71c34000 r--p 00007000 fe:01 787107                     /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7f2f71c34000-7f2f71c35000 rw-p 00008000 fe:01 787107                     /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7f2f71c35000-7f2f71eb2000 r--p 00000000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7f2f71eb2000-7f2f72aa4000 r-xp 0027d000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7f2f72aa4000-7f2f72cf9000 r--p 00e6f000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7f2f72cf9000-7f2f72cfa000 ---p 010c4000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7f2f72cfa000-7f2f72dbd000 r--p 010c4000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7f2f72dbd000-7f2f72df7000 rw-p 01187000 fe:01 573836                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/server/libjvm.so
+7f2f72df7000-7f2f72e50000 rw-p 00000000 00:00 0 
+7f2f72e50000-7f2f72e56000 r--p 00000000 fe:01 787105                     /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7f2f72e56000-7f2f72e66000 r-xp 00006000 fe:01 787105                     /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7f2f72e66000-7f2f72e6c000 r--p 00016000 fe:01 787105                     /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7f2f72e6c000-7f2f72e6d000 r--p 0001b000 fe:01 787105                     /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7f2f72e6d000-7f2f72e6e000 rw-p 0001c000 fe:01 787105                     /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7f2f72e6e000-7f2f72e72000 rw-p 00000000 00:00 0 
+7f2f72e72000-7f2f72e73000 r--p 00000000 fe:01 787091                     /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7f2f72e73000-7f2f72e75000 r-xp 00001000 fe:01 787091                     /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7f2f72e75000-7f2f72e76000 r--p 00003000 fe:01 787091                     /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7f2f72e76000-7f2f72e77000 r--p 00003000 fe:01 787091                     /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7f2f72e77000-7f2f72e78000 rw-p 00004000 fe:01 787091                     /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7f2f72e78000-7f2f72e7b000 r--p 00000000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7f2f72e7b000-7f2f72e8c000 r-xp 00003000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7f2f72e8c000-7f2f72e92000 r--p 00014000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7f2f72e92000-7f2f72e93000 ---p 0001a000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7f2f72e93000-7f2f72e94000 r--p 0001a000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7f2f72e94000-7f2f72e95000 rw-p 0001b000 fe:01 788525                     /usr/lib/x86_64-linux-gnu/libz.so.1.2.11
+7f2f72e95000-7f2f72eb7000 r--p 00000000 fe:01 787090                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f2f72eb7000-7f2f73010000 r-xp 00022000 fe:01 787090                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f2f73010000-7f2f7305f000 r--p 0017b000 fe:01 787090                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f2f7305f000-7f2f73063000 r--p 001c9000 fe:01 787090                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f2f73063000-7f2f73065000 rw-p 001cd000 fe:01 787090                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f2f73065000-7f2f73069000 rw-p 00000000 00:00 0 
+7f2f7306b000-7f2f7306c000 ---p 00000000 00:00 0 
+7f2f7306c000-7f2f7306d000 r--p 00000000 00:00 0 
+7f2f7306d000-7f2f73072000 r--p 00000000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7f2f73072000-7f2f73079000 r-xp 00005000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7f2f73079000-7f2f7307b000 r--p 0000c000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7f2f7307b000-7f2f7307c000 ---p 0000e000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7f2f7307c000-7f2f7307e000 r--p 0000e000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7f2f7307e000-7f2f7307f000 rw-p 00010000 fe:01 574815                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/libverify.so
+7f2f7307f000-7f2f73082000 r--p 00000000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7f2f73082000-7f2f7308c000 r-xp 00003000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7f2f7308c000-7f2f7308f000 r--p 0000d000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7f2f7308f000-7f2f73090000 ---p 00010000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7f2f73090000-7f2f73091000 r--p 00010000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7f2f73091000-7f2f73092000 rw-p 00011000 fe:01 574803                     /home/adam/jdk11u/build/linux-x86_64-normal-server-release/jdk/lib/jli/libjli.so
+7f2f73092000-7f2f73094000 rw-p 00000000 00:00 0 
+7f2f73094000-7f2f73095000 r--p 00000000 fe:01 786446                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f2f73095000-7f2f730b5000 r-xp 00001000 fe:01 786446                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f2f730b5000-7f2f730bd000 r--p 00021000 fe:01 786446                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f2f730be000-7f2f730bf000 r--p 00029000 fe:01 786446                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f2f730bf000-7f2f730c0000 rw-p 0002a000 fe:01 786446                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f2f730c0000-7f2f730c1000 rw-p 00000000 00:00 0 
+7ffd70b4d000-7ffd70b6e000 rw-p 00000000 00:00 0                          [stack]
+7ffd70bde000-7ffd70be2000 r--p 00000000 00:00 0                          [vvar]
+7ffd70be2000-7ffd70be4000 r-xp 00000000 00:00 0                          [vdso]
+
+
+VM Arguments:
+jvm_args: -XX:AllocateHeapAt=/dev/fakeblk -Xlog:gc=debug -XX:-OptimizeStringConcat -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -Xnoclassgc -XX:+AlwaysPreTouch -XX:-ClassUnloading -XX:TieredStopAtLevel=3 -Xms32g -Xmx32g -XX:-ClassUnloading 
+java_command: ../dacapo-23.11-chopin.jar tradebeans -s vlarge
+java_class_path (initial): ../dacapo-23.11-chopin.jar
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+    ccstr AllocateHeapAt                           = /dev/fakeblk                              {product} {command line}
+     bool AlwaysPreTouch                           = true                                      {product} {command line}
+     intx CICompilerCount                          = 12                                        {product} {ergonomic}
+     bool ClassUnloading                           = false                                     {product} {command line}
+     bool ClassUnloadingWithConcurrentMark         = false                                     {product} {command line}
+   size_t InitialHeapSize                          = 34359738368                               {product} {command line}
+   size_t MaxHeapSize                              = 34359738368                               {product} {command line}
+   size_t MinHeapDeltaBytes                        = 172032                                    {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 12163472                               {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 119747384                              {pd product} {ergonomic}
+     bool OptimizeStringConcat                     = false                                  {C2 product} {command line}
+    uintx ProfiledCodeHeapSize                     = 119747384                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+     intx TieredStopAtLevel                        = 3                                         {product} {command line}
+     bool UnlockExperimentalVMOptions              = true                                 {experimental} {command line}
+     bool UseEpsilonGC                             = true                                 {experimental} {command line}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning,gc=debug uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+SHELL=/bin/bash
+LANG=en_US.UTF-8
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0xde46b0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGBUS: [libjvm.so+0xde46b0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGFPE: [libjvm.so+0xde46b0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGPIPE: [libjvm.so+0xbdf3f0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGXFSZ: [libjvm.so+0xbdf3f0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGILL: [libjvm.so+0xde46b0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGUSR2: [libjvm.so+0x2d1680], sa_mask[0]=00000000000100000000000000000000, sa_flags=SA_RESTART
+SIGHUP: [libjvm.so+0xbdfb20], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGINT: [libjvm.so+0xbdfb20], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGTERM: [libjvm.so+0xbdfb20], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGQUIT: [libjvm.so+0xbdfb20], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+
+
+---------------  S Y S T E M  ---------------
+
+OS:PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+NAME="Debian GNU/Linux"
+VERSION_ID="11"
+VERSION="11 (bullseye)"
+VERSION_CODENAME=bullseye
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+uname:Linux 5.10.0-28-amd64 #1 SMP Debian 5.10.209-2 (2024-01-31) x86_64
+OS uptime: 15 days 23:47 hours
+libc:glibc 2.31 NPTL 2.31 
+rlimit (soft/hard): STACK 8192k/infinity , CORE 0k/infinity , NPROC 256990/256990 , NOFILE 1048576/1048576 , AS infinity/infinity , CPU infinity/infinity , DATA infinity/infinity , FSIZE infinity/infinity , MEMLOCK 8229866k/8229866k
+load average:15.02 11.96 12.49
+
+/proc/meminfo:
+MemTotal:       65838928 kB
+MemFree:        21835836 kB
+MemAvailable:   22147232 kB
+Buffers:          387296 kB
+Cached:         40288000 kB
+SwapCached:        17980 kB
+Active:         40032588 kB
+Inactive:         836108 kB
+Active(anon):   39868868 kB
+Inactive(anon):   170388 kB
+Active(file):     163720 kB
+Inactive(file):   665720 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:        998396 kB
+SwapFree:         921360 kB
+Dirty:              1868 kB
+Writeback:             0 kB
+AnonPages:        178408 kB
+Mapped:         40251436 kB
+Shmem:          39846408 kB
+KReclaimable:     159108 kB
+Slab:             402436 kB
+SReclaimable:     159108 kB
+SUnreclaim:       243328 kB
+KernelStack:        9904 kB
+PageTables:        98972 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    33917860 kB
+Committed_AS:   41042692 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:     1217212 kB
+VmallocChunk:          0 kB
+Percpu:            37824 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+FileHugePages:         0 kB
+FilePmdMapped:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+DirectMap4k:     1304428 kB
+DirectMap2M:    41687040 kB
+DirectMap1G:    26214400 kB
+
+/sys/kernel/mm/transparent_hugepage/enabled:
+always [madvise] never
+/sys/kernel/mm/transparent_hugepage/defrag (defrag/compaction efforts parameter):
+always defer defer+madvise [madvise] never
+
+Process Memory:
+Virtual Size: 43424576K (peak: 43480040K)
+Resident Set Size: 6775268K (peak: 6775268K) (anon: 113636K, file: 370176K, shmem: 6291456K)
+Swapped out: 0K
+C-Heap outstanding allocations: 65114K, retained: 13301K (may have wrapped)
+glibc malloc tunables: (default)
+
+/proc/sys/kernel/threads-max (system-wide limit on the number of threads):
+513981
+/proc/sys/vm/max_map_count (maximum number of memory map areas a process may have):
+65530
+/proc/sys/kernel/pid_max (system-wide limit on number of process identifiers):
+4194304
+
+container (cgroup) information:
+container_type: cgroupv2
+cpu_cpuset_cpus: 21-25,27-46
+cpu_memory_nodes: not supported
+active_processor_count: 25
+cpu_quota: not supported
+cpu_period: not supported
+cpu_shares: not supported
+memory_limit_in_bytes: 1572864000
+memory_and_swap_limit_in_bytes: unlimited
+memory_soft_limit_in_bytes: unlimited
+memory_usage_in_bytes: 819646464
+memory_max_usage_in_bytes: not supported
+
+KVM virtualization detected
+Steal ticks since vm start: 71
+Steal ticks percentage since vm start:  0.000
+
+CPU:total 48 (initial active 25) (1 cores per cpu, 1 threads per core) family 16 model 2 stepping 3 microcode 0x1000065, cmov, cx8, fxsr, mmx, sse, sse2, sse3, popcnt, mmxext, 3dnowpref, lzcnt, sse4a, tsc
+CPU Model and flags from /proc/cpuinfo:
+model name	: AMD Opteron 23xx (Gen 3 Class Opteron)
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm 3dnowext 3dnow rep_good nopl cpuid extd_apicid tsc_known_freq pni cx16 x2apic popcnt tsc_deadline_timer hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw vmmcall arat
+Online cpus:
+0-47
+Offline cpus:
+
+BIOS frequency limitation:
+<Not Available>
+Frequency switch latency (ns):
+<Not Available>
+Available cpu frequencies:
+<Not Available>
+Current governor:
+<Not Available>
+Core performance/turbo boost:
+<Not Available>
+
+Memory: 4k page, physical 1536000k(735564k free), swap 998396k(921360k free)
+
+vm_info: OpenJDK 64-Bit Server VM (11.0.16-internal+0-adhoc.adam.jdk11u) for linux-amd64 JRE (11.0.16-internal+0-adhoc.adam.jdk11u), built on Apr  3 2025 14:12:42 by "adam" with gcc 10.2.1 20210110
+
+END.
