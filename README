@@ -18,7 +18,6 @@ sudo systemd-run --scope -p MemoryLimit=<size_of_cache> \
 							-Xlog:gc=debug \
 							-XX:-OptimizeStringConcat\
 							-XX:+UnlockExperimentalVMOptions\
-							-XX:-UseTLAB\
 							-XX:+UseEpsilonGC\
 							-Xnoclassgc\ 
 							-XX:TieredStopAtLevel=3\
